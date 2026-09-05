@@ -16,10 +16,10 @@ O modelo de dados foi projetado para gerenciar os fluxos fundamentais do dia a d
 
 ## 👥 Integrantes do Projeto
 
-*   Jean Ribeiro *
-*   Wendy Pereira *
-*   Angelo Roberto *
-*   Yasmin Gomes *
-*   Lucas Pereira *
+*   Jean Ribeiro 
+*   Wendy Pereira 
+*   Angelo Roberto 
+*   Yasmin Gomes 
+*   Lucas Pereira 
 
 ---
