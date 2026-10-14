@@ -1,4 +1,4 @@
-CREATE DATABASE clinica_medica;
+CREATE DATABASE IF NOT EXISTS clinica_medica;
 USE clinica_medica;
 
 -- =============================================================================================================================
@@ -25,7 +25,7 @@ CREATE TABLE Profissional_Saude (
 -- =============================================================================================================================
 
 CREATE TABLE Medico (
-    id_profissional INT, -- Atua simultaneamente como PK e FK, não usei "AUTO_INCREMENT" aqui, o ID vai ser inserido manualmente copiando o ID gerado na tabela pai ('Profissional_Saude') para amarrar a herança 1:1 | Linha que faltava na primeira versão
+    id_profissional INT, -- Atua simultaneamente como PK e FK, não usei "AUTO_INCREMENT" aqui, o ID vai ser inserido manualmente copiando o ID gerado na tabela pai ('Profissional_Saude') para amarrar a herança 1:1
     crm VARCHAR(20) NOT NULL, -- Numero de registro profissional obrigatorio de um medico
     id_supervisor INT, -- Campo opcional, não possui "NOT NULL" que guardará o ID do medico, criando hierarquia
     
@@ -47,7 +47,7 @@ CREATE TABLE Medico (
 -- =============================================================================================================================
 
 CREATE TABLE Enfermeiro (
-    id_profissional INT, -- Exatamente como no 'Medico', esse campo não é "AUTO_INCREMENT". Ele recebe o mesmo numero gerado na tabela 'Profissional_Saude' para garantir a relação 1:1 de herança | Linha que faltava na primeira versão
+    id_profissional INT, -- Exatamente como no 'Medico', esse campo não é "AUTO_INCREMENT". Ele recebe o mesmo numero gerado na tabela 'Profissional_Saude' para garantir a relação 1:1 de herança
     coren VARCHAR(20) NOT NULL, -- O registro do conselho de enfermagem, exigido para salvar a linha
     
     CONSTRAINT pk_enfermeiro PRIMARY KEY (id_profissional), -- Nomeia a chave primaria com o prefico pk_
@@ -111,9 +111,10 @@ CREATE TABLE Paciente (
 
     CONSTRAINT pk_paciente -- Define id_paciente como chave primaria da tabela
         PRIMARY KEY (id_paciente),
-
     CONSTRAINT uq_paciente_cpf -- Impede que dois pacientes sejam cadastrados com o mesmo CPF
-        UNIQUE (cpf)
+        UNIQUE (cpf),
+	CONSTRAINT ck_paciente_cpf
+		CHECK (cpf REGEXP '^[0-9]{11}$');
 );
 
 -- =============================================================================================================================
