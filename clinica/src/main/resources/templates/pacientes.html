@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pacientes | Clínica Médica</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 32px auto; max-width: 960px; padding: 0 16px; color: #243247; }
+        a { color: #155e75; }
+        table { width: 100%; border-collapse: collapse; }
+        caption { text-align: left; padding: 12px 0; }
+        th, td { padding: 12px; border-bottom: 1px solid #d1d5db; text-align: left; }
+        th { background: #f1f5f9; }
+        .tabela { overflow-x: auto; }
+        .erro { padding: 16px; background: #fff1f2; color: #9f1239; }
+    </style>
+</head>
+<body>
+    <nav><a th:href="@{/}">Voltar ao início</a></nav>
+    <main>
+        <h1>Pacientes</h1>
+        <a th:href="@{/pacientes/novo}">Novo paciente</a>
+        <p th:if="${erro != null}" th:text="${erro}" class="erro" role="alert"></p>
+        <section th:if="${erro == null}">
+            <p th:if="${#lists.isEmpty(pacientes)}">Nenhum paciente cadastrado.</p>
+            <div class="tabela" th:unless="${#lists.isEmpty(pacientes)}">
+                <table>
+                    <caption th:text="|Total de pacientes: ${#lists.size(pacientes)}|">Total de pacientes</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">CPF</th>
+                            <th scope="col">Data de nascimento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="paciente : ${pacientes}">
+                            <td th:text="${paciente.idPaciente}"></td>
+                            <td th:text="${paciente.nome}"></td>
+                            <td th:text="${paciente.cpf}"></td>
+                            <td th:text="${paciente.dataNascimento != null ? #temporals.format(paciente.dataNascimento, 'dd/MM/yyyy') : 'Não informada'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
