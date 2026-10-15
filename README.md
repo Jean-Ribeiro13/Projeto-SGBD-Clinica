@@ -1,96 +1,224 @@
-# Clínica — configuração inicial com Spring Boot
+# Clínica Médica — Spring Boot e MySQL
 
-Projeto didático inicial: uma página web e um teste opcional de conexão ao MySQL. Ainda não contém os CRUDs, login ou os demais requisitos da Etapa 2.
+Projeto acadêmico de banco de dados para uma clínica médica, com aplicação web desenvolvida em Java e Spring Boot.
+
+Atualmente, a aplicação permite cadastrar, listar, editar e excluir pacientes. O banco também possui tabelas de profissionais de saúde, especialidades, consultas, prontuários, evoluções clínicas, medicamentos e prescrições, cujas interfaces ainda serão desenvolvidas.
+
+## Funcionalidades implementadas
+
+- Página inicial com acesso à listagem de pacientes.
+- Listagem de pacientes em ordem alfabética.
+- Cadastro e edição de nome, CPF e data de nascimento.
+- Exclusão com confirmação.
+- Validação de nome obrigatório, com até 100 caracteres.
+- Validação do formato do CPF: exatamente 11 dígitos, sem pontuação.
+- Tratamento de CPF duplicado, mantendo os dados preenchidos no formulário.
+- Mensagens de sucesso após cadastro, edição e exclusão.
+- Tratamento de exclusões bloqueadas por registros vinculados.
+- Teste de conexão com o MySQL.
+
+A data de nascimento é opcional. A validação do CPF verifica o formato, mas não calcula os dígitos verificadores.
+
+O banco impede a exclusão de pacientes com consultas ou prontuário vinculado. Quando a exclusão é permitida, os contatos de emergência associados são removidos em cascata.
 
 ## Tecnologias
 
-- JDK 25
+- Java — JDK 25
 - Spring Boot 4.1.1
-- Maven (pode usar o Maven integrado ao IntelliJ)
-- Spring Web MVC, Thymeleaf, Spring JDBC e MySQL Connector/J
+- Maven
+- Spring Web MVC
+- Thymeleaf
+- Spring JDBC
+- Bean Validation
+- MySQL Connector/J
+- MySQL 8.0.16 ou superior
 
-## 1. Abrir no IntelliJ IDEA
+O acesso ao banco utiliza SQL explícito e parâmetros nas operações que recebem dados do usuário. As tabelas são criadas pelos scripts SQL.
 
-1. Se recebeu o ZIP, extraia-o primeiro.
-2. No IntelliJ, escolha **Open** e selecione a pasta `clinica`, que contém `pom.xml`.
-3. Se solicitado, abra como projeto Maven. Aguarde o download das dependências.
-4. Em **File > Project Structure > Project**, selecione o JDK 25 no campo **SDK**.
-5. Neste computador, o JDK foi encontrado em `C:\Program Files\Java\zulu25.36.15-ca-jdk25.0.4-win_x64`. Se ele não aparecer, use **Add SDK > JDK from disk** e selecione essa pasta.
-6. Nas configurações de Maven do IntelliJ, mantenha o Maven integrado e use o JDK do projeto para importação e execução.
+## Estrutura do repositório
 
-O terminal deste computador apontava para Java 8 na preparação deste projeto. Se executar pela IDE com JDK 25, não é necessário alterar o PATH do Windows agora.
-
-## 2. Executar primeiro sem banco
-
-1. Abra `src/main/java/br/edu/clinica/ClinicaApplication.java`.
-2. Clique no triângulo verde ao lado de `main` e escolha **Run**.
-3. Aguarde a mensagem `Started ClinicaApplication` no console.
-4. Acesse `http://localhost:8080` no navegador.
-
-Resultado esperado: **O Spring Boot está funcionando!**
-
-O perfil padrão `sem-banco` desativa a configuração de conexão nesta primeira execução. A aplicação escuta apenas no computador local.
-
-## 3. Ativar a conexão MySQL
-
-Confirme no Workbench que o banco existe:
-
-```sql
-SHOW DATABASES LIKE 'clinica_medica';
+```text
+repositorio/
+├── .gitignore
+├── README.md
+├── sql/
+│   ├── 01_ddl.sql
+│   ├── 02_dml.sql
+│   └── 03_consultas.sql
+└── clinica/
+    ├── pom.xml
+    └── src/main/
+        ├── java/br/edu/clinica/
+        │   ├── controller/
+        │   ├── dto/
+        │   ├── model/
+        │   ├── repository/
+        │   └── ClinicaApplication.java
+        └── resources/
+            ├── templates/
+            ├── application.properties
+            ├── application-mysql.properties
+            └── application-sem-banco.properties
 ```
 
-Se o banco ainda não existir, execute os scripts originais `01_ddl.sql` e depois `02_dml.sql`, verificando erros entre eles. Se ele já existe e está preenchido, não repita a criação ou a carga.
+## Como executar
 
-No IntelliJ:
+### 1. Preparar o ambiente
 
-1. Pare a aplicação pelo botão vermelho.
-2. Abra **Run > Edit Configurations** e selecione a configuração de `ClinicaApplication`.
-3. Se necessário, use **Modify options** para mostrar **Environment variables**.
-4. No editor de variáveis, adicione uma por linha:
+Instale:
 
-| Nome | Valor |
+- JDK 25.
+- MySQL Server.
+- IntelliJ IDEA.
+- MySQL Workbench ou outro cliente para executar os scripts.
+
+O Maven integrado ao IntelliJ pode ser utilizado. É necessário acesso à internet para baixar as dependências na primeira abertura.
+
+### 2. Criar e preencher o banco
+
+Abra uma conexão com o MySQL e execute os arquivos da pasta `sql` nesta ordem:
+
+1. `01_ddl.sql`: cria o banco `clinica_medica`, as tabelas e suas restrições.
+2. `02_dml.sql`: insere os dados de exemplo.
+3. `03_consultas.sql`: executa as consultas de leitura para explorar os dados.
+
+Confira se cada arquivo terminou sem erros antes de executar o seguinte.
+
+Os scripts de criação e carga devem ser executados em uma base nova. Eles não foram preparados para reexecução sobre um banco já preenchido.
+
+Para conferir a carga inicial:
+
+```sql
+USE clinica_medica;
+
+SELECT COUNT(*) AS total_pacientes
+FROM Paciente;
+```
+
+Após a carga original, o resultado esperado é 40 pacientes. Esse total pode mudar conforme a aplicação for utilizada.
+
+Os scripts reproduzem a estrutura e os dados de exemplo. Eles não incluem automaticamente alterações feitas posteriormente pela aplicação.
+
+### 3. Abrir o projeto no IntelliJ
+
+1. Clone o repositório ou baixe e extraia o ZIP.
+2. No IntelliJ, escolha **Open**.
+3. Selecione a pasta `clinica`, que contém o arquivo `pom.xml`.
+4. Abra como projeto Maven, se solicitado.
+5. Aguarde o carregamento das dependências.
+6. Em **File > Project Structure > Project**, selecione o JDK 25.
+7. Confira se a importação e a execução do Maven também utilizam o JDK 25.
+
+Caso o JDK não apareça na lista, adicione a pasta onde ele foi instalado no seu computador.
+
+### 4. Configurar a conexão com o banco
+
+Abra a configuração de execução de `ClinicaApplication` em **Run > Edit Configurations**.
+
+No campo **Active profiles**, informe:
+
+```text
+mysql
+```
+
+Se esse campo não estiver disponível, adicione a variável de ambiente `SPRING_PROFILES_ACTIVE` com o valor `mysql`.
+
+Em **Environment variables**, configure:
+
+| Variável | Valor |
 | --- | --- |
-| `SPRING_PROFILES_ACTIVE` | `mysql` |
 | `DB_USER` | Seu usuário do MySQL |
 | `DB_PASSWORD` | A senha desse usuário |
 | `DB_URL` | `jdbc:mysql://localhost:3306/clinica_medica` |
 
-Use o host e a porta da conexão do Workbench caso sejam diferentes. Use a senha do MySQL, não a senha do Windows. Não coloque credenciais no código nem compartilhe a configuração de execução com a opção de salvá-la como arquivo do projeto.
+Ajuste o host e a porta caso sua instalação utilize valores diferentes.
 
-5. Salve e execute novamente.
-6. Abra `http://localhost:8080/teste-banco`.
+As credenciais devem ser configuradas localmente por cada pessoa. Não coloque senhas nos arquivos versionados nem compartilhe configurações de execução que contenham credenciais.
 
-Resultado esperado: **Conexão com o MySQL funcionando!**
+### 5. Iniciar a aplicação
 
-Essa rota executa somente `SELECT 1`. Ela verifica o acesso ao banco selecionado, mas não valida as tabelas nem a carga. A página inicial, isoladamente, também não comprova a conexão.
+1. Abra `ClinicaApplication.java`.
+2. Execute o método `main` pelo botão **Run**.
+3. Aguarde a mensagem `Started ClinicaApplication` no console.
+4. Acesse [a página inicial](http://localhost:8080).
+5. Clique em **Ver pacientes**.
 
-## Como os arquivos se conectam
+Endereços disponíveis:
 
-- `pom.xml`: lista as bibliotecas que o Maven baixa e define a versão do Java.
-- `ClinicaApplication.java`: inicia o servidor e a aplicação.
-- `InicioController.java`: recebe a requisição à página inicial e retorna o nome do HTML.
-- `templates/inicio.html`: conteúdo exibido no navegador.
-- `BancoController.java`: testa a conexão, disponível apenas no perfil `mysql`.
-- `application.properties`: configurações comuns.
-- `application-sem-banco.properties`: configurações da primeira execução.
-- `application-mysql.properties`: lê as credenciais das variáveis de ambiente.
+| Endereço | Função |
+| --- | --- |
+| `http://localhost:8080/` | Página inicial |
+| `http://localhost:8080/pacientes` | Listagem de pacientes |
+| `http://localhost:8080/pacientes/novo` | Formulário de cadastro |
+| `http://localhost:8080/teste-banco` | Teste de conexão com o MySQL |
+
+A rota de teste executa apenas `SELECT 1`. Ela verifica a conexão, mas não confirma a existência das tabelas ou a carga dos dados.
+
+O perfil padrão `sem-banco` permite abrir a página inicial sem configurar o MySQL. Para utilizar o CRUD, ative o perfil `mysql`.
+
+## Organização do código
+
+- **Controller:** recebe as requisições, valida os dados recebidos e define a página ou o redirecionamento.
+- **DTO:** transporta os dados dos formulários e declara as regras de validação.
+- **Model:** representa os registros consultados no banco.
+- **Repository:** executa os comandos SQL e transforma os resultados em objetos Java.
+- **Templates:** páginas HTML preenchidas pelo Thymeleaf.
+
+No CRUD de pacientes:
+
+- `Paciente.java` representa um paciente.
+- `PacienteFormulario.java` recebe os campos de cadastro e edição.
+- `PacienteRepository.java` executa consultas, inserções, atualizações e exclusões.
+- `PacienteController.java` conecta as operações às páginas.
+- `pacientes.html` apresenta a listagem.
+- `paciente-formulario.html` apresenta o cadastro.
+- `paciente-edicao.html` apresenta a edição.
+
+## Verificação manual
+
+Para conferir a aplicação em outro computador:
+
+1. Abra a listagem e confira os pacientes da carga.
+2. Cadastre um paciente fictício.
+3. Edite seu nome e confira a alteração.
+4. Tente cadastrar um CPF já existente.
+5. Tente enviar um nome composto apenas por espaços.
+6. Tente enviar um CPF com menos de 11 dígitos.
+7. Cancele uma exclusão e confira que o registro permanece.
+8. Exclua um paciente de teste sem consultas ou prontuário.
+9. Tente excluir um paciente com consulta vinculada e confira a mensagem de bloqueio.
+
+Esses fluxos foram testados manualmente durante o desenvolvimento. Ainda não há uma suíte de testes automatizados.
 
 ## Problemas comuns
 
 | Sintoma | O que verificar |
 | --- | --- |
-| Java incompatível ou `release version 25 not supported` | SDK do projeto, JDK usado pelo Maven e JRE da configuração de execução devem apontar para o JDK 25. |
-| Imports do Spring em vermelho | Aguarde o Maven ou use a opção de recarregar os projetos Maven. O primeiro download precisa de internet. |
-| Porta 8080 ocupada | Pare a outra execução ou altere `server.port` para `8081` e use essa porta no navegador. |
-| `Access denied` | Confira usuário, senha e permissões de acesso ao banco. |
+| Java incompatível | Confira o JDK do projeto, do Maven e da execução. O projeto utiliza Java 25. |
+| Imports do Spring em vermelho | Aguarde o Maven ou recarregue o projeto Maven. |
+| Porta 8080 ocupada | Pare a outra execução ou altere `server.port` e utilize a nova porta no navegador. |
+| `Access denied` | Confira usuário, senha e permissões no MySQL. |
 | `Communications link failure` | Confira se o MySQL está iniciado e se host e porta estão corretos. |
-| `Unknown database` | Confira se `clinica_medica` foi criado na mesma conexão. |
-| `/teste-banco` retorna 404 | Confira se a variável `SPRING_PROFILES_ACTIVE=mysql` está na configuração executada e reinicie. |
+| `Unknown database` | Confira se `clinica_medica` existe no servidor configurado. |
+| Rota de pacientes retorna 404 | Confira se o perfil `mysql` está ativo e reinicie a aplicação. |
+| Tabela não encontrada durante a execução | Confira a execução do DDL e o banco selecionado na conexão. |
+| IntelliJ não reconhece a tabela no editor | A conexão usada pela inspeção SQL da IDE pode não estar configurada, mesmo que a aplicação funcione. |
 
-## Estado de verificação
+## Próximas etapas
 
-Os arquivos foram revisados e o JDK 25 local foi identificado. O projeto não foi compilado nem executado durante a preparação: o ambiente não permitiu baixar dependências pela rede. A conexão MySQL depende das credenciais que você configurará localmente.
+- Implementar os demais CRUDs.
+- Criar consultas parametrizadas com filtros, junções e agregações.
+- Criar relatório baseado em uma visão do banco.
+- Implementar uma operação transacional envolvendo múltiplas tabelas.
+- Desenvolver autenticação e controle de acesso.
+- Implementar auditoria por gatilhos.
+- Realizar os experimentos de concorrência e desempenho.
+- Consolidar a documentação exigida na Etapa 2.
 
-## Próximo passo
+## Integrantes
 
-Após confirmar a página inicial e a conexão, implementar a listagem de pacientes com Spring JDBC e Thymeleaf. Depois, acrescentar cadastro, edição e exclusão.
+- Jean Ribeiro
+- Wendy Pereira
+- Angelo Roberto
+- Yasmin Gomes
+- Lucas Pereira
