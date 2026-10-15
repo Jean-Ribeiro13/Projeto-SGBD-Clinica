@@ -15,6 +15,8 @@ import br.edu.clinica.dto.PacienteFormulario;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.dao.DuplicateKeyException;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 /*
     Executa o SELECT no MySQL e transforma as linhas em objetos
@@ -44,10 +46,25 @@ public class PacienteController {
 
     @PostMapping("/pacientes") // Recebe o envio feito pelo formulario
     public String cadastrar(
-            @ModelAttribute PacienteFormulario formulario){ // Instrui o Spring a preencher 'PacienteFormulario' com os campos enviados, associando os seus nomes aos atributos
-            repository.cadastrar(formulario); // Entrega os dados recebidos ao repository, que executa o INSERT no MySQL.
-        return "redirect:/pacientes"; // Manda o navegador abrir a listagem após a gravação. A listagem consulta novamente o banco, incluindo o novo paciente
-    }
+            @Valid // @Valid solicita a validação do objeto recebido.
+            @ModelAttribute("formulario") PacienteFormulario formulario, // Dá ao objeto recebido o mesmo nome usado no th:object do HTML. Assim, a página consegue recuperar os valores.
+            BindingResult resultado, // BindingResult reúne os erros encontrados e deve ficar imediatamente depois do parâmetro validado.
+            Model model) {
+
+            if (resultado.hasErrors()) { // hasErrors() verifica se houve erro. Se houver, mostramos novamente o formulário antes de chamar o repository.
+                return "paciente-formulario";
+            }
+            try { // Executa a tentativa de cadastro
+                repository.cadastrar(formulario);   // Entrega os dados recebidos ao repository, que executa o INSERT no MySQL.
+                return "redirect:/pacientes"; // Manda o navegador abrir a listagem após a gravação. A listagem consulta novamente o banco, incluindo o novo paciente
+            } catch (DuplicateKeyException erro) { // trata a violação de chave única. Nesse cadastro, o CPF é único e o ID é gerado pelo banco
+                model.addAttribute(
+                        "erro",
+                        "Ja existe um paciente cadastrado com esse CPF."
+                );
+                return "paciente-formulario"; // No erro retorna sem redirecionar. Isso permite renderizar novamente o formulario com o objeto recebido.
+            }
+        }
 
 
     @ExceptionHandler(DataAccessException.class)

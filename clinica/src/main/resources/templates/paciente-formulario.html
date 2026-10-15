@@ -5,8 +5,13 @@
     <title>Title</title>
 </head>
 <body>
-    <p th:if="${nomeRecebido != null}" th:text="|Dados recebidos de: ${nomeRecebido}. Ainda não gravados no banco.|">
-        </p>
+    <p th:if="${nomeRecebido != null}"
+       th:text="|Dados recebidos de: ${nomeRecebido}. Ainda não gravados no banco.|">
+    </p>
+    <p th:if="${erro != null}"
+       th:text="${erro}"
+       role="alert">
+    </p>
     <form th:action="@{/pacientes}"
           th:object="${formulario}"
           method="post">
@@ -16,6 +21,9 @@
         <input type="text" id="nome"
                th:field="*{nome}"
                maxlength="100" required>
+            <p th:if="${#fields.hasErrors('nome')}"
+               th:errors="*{nome}">
+            </p>
         </div>
 
         <div>
