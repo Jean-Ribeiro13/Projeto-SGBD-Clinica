@@ -13,9 +13,71 @@
         th { background: #f1f5f9; }
         .tabela { overflow-x: auto; }
         .erro { padding: 16px; background: #fff1f2; color: #9f1239; }
+        .acoes-paciente {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-excluir {
+            margin: 0;
+        }
+
+        .botao-acao {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            min-height: 36px;
+            padding: 8px 14px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.2;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.15s, border-color 0.15s;
+        }
+
+        .botao-editar {
+            color: #155e75;
+            background-color: #ecfeff;
+            border-color: #a5f3fc;
+        }
+
+        .botao-editar:hover {
+            background-color: #cffafe;
+            border-color: #67e8f9;
+        }
+
+        .botao-excluir {
+            color: #b91c1c;
+            background-color: #fff;
+            border-color: #fecaca;
+        }
+
+        .botao-excluir:hover {
+            background-color: #fef2f2;
+            border-color: #f87171;
+        }
+
+        .botao-acao:focus-visible {
+            outline: 3px solid #2563eb;
+            outline-offset: 3px;
+        }
     </style>
 </head>
 <body>
+    <p th:if="${sucesso != null}"
+       th:text="${sucesso}"
+       role="status">
+    </p>
+    <p th:if="${erro != null}"
+       th:text="${erro}"
+       role="alert">
+    </p>
     <nav><a th:href="@{/}">Voltar ao início</a></nav>
     <main>
         <h1>Pacientes</h1>
@@ -32,6 +94,7 @@
                             <th scope="col">Nome</th>
                             <th scope="col">CPF</th>
                             <th scope="col">Data de nascimento</th>
+                            <th scope="col">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,6 +103,23 @@
                             <td th:text="${paciente.nome}"></td>
                             <td th:text="${paciente.cpf}"></td>
                             <td th:text="${paciente.dataNascimento != null ? #temporals.format(paciente.dataNascimento, 'dd/MM/yyyy') : 'Não informada'}"></td>
+                            <td>
+                                <div class="acoes-paciente">
+                                    <a class="botao-acao botao-editar"
+                                       th:href="@{/pacientes/{id}/editar(id=${paciente.idPaciente})}">
+                                        Editar
+                                    </a>
+                                    <form class="form-excluir"
+                                          th:action="@{/pacientes/{id}/excluir(id=${paciente.idPaciente})}"
+                                          method="post"
+                                          onsubmit="return confirm('Excluir este paciente? Os contatos de emergência vinculados também serão removidos.');">
+
+                                        <button class="botao-acao botao-excluir" type="submit">
+                                            Excluir
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

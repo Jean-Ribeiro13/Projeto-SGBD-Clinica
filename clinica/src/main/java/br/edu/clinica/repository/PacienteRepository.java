@@ -3,6 +3,8 @@ package br.edu.clinica.repository;
 import br.edu.clinica.model.Paciente;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -36,8 +38,8 @@ public class PacienteRepository {
                 ORDER BY nome, id_paciente
                 """;
 
-        // Cria um PreparedStatement e converte cada linha em um Paciente.
-        // Esta consulta nao possui filtros nem parametros de entrada.
+        // Cria um PreparedStatement e converte cada linha num Paciente.
+        // Esta consulta não possui filtros nem parâmetros de entrada.
         return jdbc.query(conexao -> conexao.prepareStatement(sql), (rs, numeroLinha) ->
                 new Paciente(
                         rs.getInt("id_paciente"),
@@ -63,5 +65,50 @@ public class PacienteRepository {
 
                 // Importante lembrar que a ordem dos valores precisa de corresponder a ordem das colunas também
         );
+    }
+
+    public Optional<Paciente> buscarPorId(Integer id) {
+        String sql = """
+                SELECT id_paciente, nome, cpf, data_nascimento
+                FROM Paciente
+                WHERE id_paciente = ?
+                """;
+
+        List<Paciente> pacientes = jdbc.query(
+                sql,
+                (rs, numeroLinha) -> new Paciente(
+                        rs.getInt("id_paciente"),
+                        rs.getString("nome"),
+                        rs.getString("cpf"),
+                        rs.getObject("data_nascimento", LocalDate.class)
+                ),
+                id
+        );
+        return pacientes.stream().findFirst();
+    }
+
+    public int atualizar(Integer id, PacienteFormulario formulario) {
+        String sql = """
+                UPDATE Paciente
+                SET nome = ?, cpf = ?, data_nascimento = ?
+                WHERE id_paciente = ?
+                """;
+
+        return jdbc.update(
+                sql,
+                formulario.getNome(),
+                formulario.getCpf(),
+                formulario.getDataNascimento(),
+                id
+        );
+    }
+
+    public int excluir(Integer id) {
+        String sql = """
+                DELETE FROM Paciente
+                WHERE id_paciente = ?
+                """;
+
+        return jdbc.update(sql, id);
     }
 }
