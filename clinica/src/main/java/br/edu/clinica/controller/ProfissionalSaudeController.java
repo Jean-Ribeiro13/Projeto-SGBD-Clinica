@@ -33,34 +33,6 @@ public class ProfissionalSaudeController {
         return "profissionais";
     }
 
-    @GetMapping("/profissionais/novo")
-    public String novoProfissional(Model model) {
-        model.addAttribute("formulario", new ProfissionalFormulario());
-        model.addAttribute("tipo", "profissional");
-        model.addAttribute("titulo", "Profissional de Saúde");
-        return "profissional-formulario";
-    }
-
-    @PostMapping("/profissionais")
-    public String criarProfissional(@Valid @ModelAttribute("formulario") ProfissionalFormulario formulario, BindingResult resultado, Model model, RedirectAttributes flash) {
-        if (resultado.hasErrors()) {
-            model.addAttribute("tipo", "profissional");
-            model.addAttribute("titulo", "Profissional de Saúde");
-            return "profissional-formulario";
-        }
-        try {
-            repository.criar(formulario, "profissional");
-            flash.addFlashAttribute("sucesso", "Profissional cadastrado com sucesso.");
-        } catch (DuplicateKeyException e) {
-            model.addAttribute("tipo", "profissional");
-            model.addAttribute("titulo", "Profissional de Saúde");
-            model.addAttribute("erro", "CPF já cadastrado.");
-
-            return "profissional-formulario";
-        }
-        return "redirect:/profissionais";
-    }
-
     @GetMapping("/profissionais/{id}/editar")
     public String editarProfissional(@PathVariable Integer id, Model model) {
         ProfissionalSaude p = obter(id);
@@ -206,18 +178,6 @@ public class ProfissionalSaudeController {
             );
 
             return "profissional-formulario";
-        }
-        return "redirect:/" + tipo + "s";
-    }
-
-    @PostMapping("/{tipo:medico|enfermeiro}/{id}/excluir")
-    public String excluir(@PathVariable String tipo, @PathVariable Integer id, RedirectAttributes flash) {
-        validarTipo(tipo);
-        try {
-            int n = repository.excluirEspecializacao(id, tipo);
-            flash.addFlashAttribute(n == 0 ? "erro" : "sucesso", n == 0 ? "Registro não encontrado." : titulo(tipo) + " removido. O profissional de saúde foi mantido.");
-        } catch (DataIntegrityViolationException e) {
-            flash.addFlashAttribute("erro", "Não foi possível remover: existem registros vinculados a este profissional.");
         }
         return "redirect:/" + tipo + "s";
     }

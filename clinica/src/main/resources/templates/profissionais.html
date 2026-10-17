@@ -9,11 +9,15 @@
 
 <h1 th:text="${titulo}">Profissionais de saúde</h1>
 
-<a th:href="@{${tipo == 'profissional'
-        ? '/profissionais/novo'
-        : '/' + tipo + '/novo'}}">
+<a th:if="${tipo != 'profissional'}"
+   th:href="@{${'/' + tipo + '/novo'}}">
     Novo cadastro
 </a>
+
+<div th:if="${tipo == 'profissional'}">
+    <a th:href="@{/medico/novo}">Cadastrar médico</a>
+    <a th:href="@{/enfermeiro/novo}">Cadastrar enfermeiro</a>
+</div>
 
 <p th:if="${sucesso != null}"
    th:text="${sucesso}"
@@ -53,28 +57,9 @@
             + '/' + profissional.id() + '/editar'}}">
                 Editar
             </a>
-            <form th:if="${tipo == 'medico'}"
-                  th:action="@{/medico/{id}/excluir(id=${profissional.id()})}"
+            <form th:action="@{/profissionais/{id}/excluir(id=${profissional.id()})}"
                   method="post"
-                  onsubmit="return confirm('Remover o cadastro de médico? O cadastro de profissional de saúde será mantido.');">
-
-                <button type="submit">
-                    Remover como médico
-                </button>
-            </form>
-            <form th:if="${tipo == 'enfermeiro'}"
-                  th:action="@{/enfermeiro/{id}/excluir(id=${profissional.id()})}"
-                  method="post"
-                  onsubmit="return confirm('Remover o cadastro de enfermeiro? O cadastro de profissional de saúde será mantido.');">
-
-                <button type="submit">
-                    Remover como enfermeiro
-                </button>
-            </form>
-            <form th:if="${tipo == 'profissional'}"
-                  th:action="@{/profissionais/{id}/excluir(id=${profissional.id()})}"
-                  method="post"
-                  onsubmit="return confirm('Excluir o profissional de saúde? Os cadastros de médico ou enfermeiro associados também serão removidos, se a exclusão for permitida.');">
+                  onsubmit="return confirm('Excluir completamente este profissional e sua especialização? A operação será bloqueada se houver consultas ou evoluções clínicas vinculadas.');">
 
                 <button type="submit">
                     Excluir profissional

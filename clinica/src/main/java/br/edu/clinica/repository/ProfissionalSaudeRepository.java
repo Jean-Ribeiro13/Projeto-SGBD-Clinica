@@ -72,6 +72,12 @@ public class ProfissionalSaudeRepository {
 
     @Transactional
     public int criar(ProfissionalFormulario f, String tipo) {
+
+        if (!"medico".equals(tipo) && !"enfermeiro".equals(tipo)) {
+            throw new IllegalArgumentException(
+                    "O profissional deve ser cadastrado como médico ou enfermeiro."
+            );
+        }
         GeneratedKeyHolder key = new GeneratedKeyHolder();
         jdbc.update(c -> {
             var ps = c.prepareStatement("INSERT INTO Profissional_Saude(nome, cpf, data_nascimento) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -96,11 +102,6 @@ public class ProfissionalSaudeRepository {
         else if ("enfermeiro".equals(tipo))
             jdbc.update("UPDATE Enfermeiro SET coren=? WHERE id_profissional=?", f.getRegistro(), id);
         return n;
-    }
-
-    @Transactional
-    public int excluirEspecializacao(Integer id, String tipo) {
-        return jdbc.update("medico".equals(tipo) ? "DELETE FROM Medico WHERE id_profissional=?" : "DELETE FROM Enfermeiro WHERE id_profissional=?", id);
     }
 
     public int excluirProfissional(Integer id) {
