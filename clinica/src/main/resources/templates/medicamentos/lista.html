@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Medicamentos</title>
+</head>
+<body>
+
+<h1>Cadastro de Medicamentos</h1>
+
+<h2>Cadastrar medicamento</h2>
+
+<form th:action="@{/medicamentos}" method="post">
+    <label>Nome:</label>
+    <input type="text" name="nome" required maxlength="100">
+    <button type="submit">Cadastrar</button>
+</form>
+
+<h2>Medicamentos cadastrados</h2>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="medicamento : ${medicamentos}">
+        <td th:text="${medicamento.idMedicamento}"></td>
+        <td>
+            <form th:action="@{/medicamentos/{id}/editar(id=${medicamento.idMedicamento})}"
+                  method="post">
+                <input type="text" name="nome"
+                       th:value="${medicamento.nome}"
+                       required maxlength="100">
+                <button type="submit">Salvar alteração</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{/medicamentos/{id}/excluir(id=${medicamento.idMedicamento})}"
+                  method="post">
+                <button type="submit">Excluir</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
