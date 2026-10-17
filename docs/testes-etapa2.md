@@ -53,3 +53,52 @@ não é uma garantia fornecida isoladamente pelo nível REPEATABLE READ.
 ### Estado final do profissional
 
 ![Resultado final](evidencias/concorrencia-resultado-final.png)
+
+
+## Especialização de profissionais — total e exclusiva
+
+O MER define a especialização de Profissional_Saude em Medico e
+Enfermeiro como total e exclusiva: todo profissional deve possuir
+exatamente uma dessas especializações.
+
+### Totalidade na aplicação
+
+- O cadastro exige a escolha entre médico e enfermeiro.
+- O profissional base e sua especialização são inseridos na mesma
+  transação.
+- Uma falha na inserção da especialização provoca rollback.
+- A exclusão pela aplicação remove o profissional base e sua
+  especialização, respeitando os vínculos existentes.
+- Foram removidos os fluxos de cadastro sem especialização e de
+  exclusão isolada da especialização.
+
+### Exclusividade no banco
+
+- Gatilhos BEFORE INSERT rejeitam a inclusão de um profissional
+  em uma especialização quando ele já pertence à outra.
+- Gatilhos BEFORE UPDATE impedem alterações diretas do
+  id_profissional nas tabelas Medico e Enfermeiro.
+- As verificações de inserção utilizam leituras com bloqueio
+  para coordenar operações concorrentes.
+
+### Testes realizados
+
+- Diagnóstico dos dados sem violações após as correções.
+- Rejeição de dupla especialização.
+- Rejeição de alteração direta do ID de médico.
+- Rejeição de alteração direta do ID de enfermeiro.
+- Experimento com duas sessões: espera por bloqueio seguida de
+  rejeição da especialização incompatível.
+
+### Limites da solução
+
+A totalidade é mantida pelos fluxos da aplicação, não por uma
+restrição global do banco. Um usuário com permissões para executar
+SQL direto ainda pode criar um profissional sem especialização ou
+excluir somente sua especialização.
+
+Os gatilhos de atualização protegem alterações diretas nas tabelas
+de especialização; ações ON UPDATE CASCADE não acionam esses gatilhos.
+
+Esses gatilhos são de integridade e não substituem os gatilhos
+de auditoria exigidos pelo artefato B6.
