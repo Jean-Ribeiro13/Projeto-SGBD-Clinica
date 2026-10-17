@@ -1,12 +1,12 @@
 # Clínica Médica — Spring Boot e MySQL
 
-Projeto acadêmico de banco de dados para uma clínica médica, com aplicação web desenvolvida em Java e Spring Boot.
+Projeto acadêmico de banco de dados para uma clínica médica, com aplicação web desenvolvida em Java, Spring Boot e MySQL.
 
-Atualmente, a aplicação permite cadastrar, listar, editar e excluir pacientes. O banco também possui tabelas de profissionais de saúde, especialidades, consultas, prontuários, evoluções clínicas, medicamentos e prescrições, cujas interfaces ainda serão desenvolvidas.
+A aplicação possui CRUD de pacientes e cadastros de profissionais de saúde, médicos e enfermeiros. Os cadastros de médico e enfermeiro criam o respectivo registro base em `Profissional_Saude`; médicos também podem informar um supervisor. As demais entidades do banco ainda não possuem telas CRUD.
 
 ## Funcionalidades implementadas
 
-- Página inicial com acesso à listagem de pacientes.
+- Página inicial com acesso aos pacientes, profissionais de saúde, médicos e enfermeiros.
 - Listagem de pacientes em ordem alfabética.
 - Cadastro e edição de nome, CPF e data de nascimento.
 - Exclusão com confirmação.
@@ -15,6 +15,10 @@ Atualmente, a aplicação permite cadastrar, listar, editar e excluir pacientes.
 - Tratamento de CPF duplicado, mantendo os dados preenchidos no formulário.
 - Mensagens de sucesso após cadastro, edição e exclusão.
 - Tratamento de exclusões bloqueadas por registros vinculados.
+- Listagem, cadastro, edição e exclusão de profissionais de saúde.
+- Cadastro, listagem, edição e remoção da especialização de médico, com CRM e supervisor opcional.
+- Cadastro, listagem, edição e remoção da especialização de enfermeiro, com COREN.
+- Ao remover médico ou enfermeiro, o registro base do profissional é mantido.
 - Teste de conexão com o MySQL.
 
 A data de nascimento é opcional. A validação do CPF verifica o formato, mas não calcula os dígitos verificadores.
@@ -148,8 +152,11 @@ Endereços disponíveis:
 | Endereço | Função |
 | --- | --- |
 | `http://localhost:8080/` | Página inicial |
-| `http://localhost:8080/pacientes` | Listagem de pacientes |
-| `http://localhost:8080/pacientes/novo` | Formulário de cadastro |
+| `http://localhost:8080/pacientes` | Listagem e acesso ao CRUD de pacientes |
+| `http://localhost:8080/pacientes/novo` | Formulário de cadastro de paciente |
+| `http://localhost:8080/profissionais` | Listagem e CRUD de profissionais de saúde |
+| `http://localhost:8080/medicos` | Listagem e CRUD de médicos |
+| `http://localhost:8080/enfermeiros` | Listagem e CRUD de enfermeiros |
 | `http://localhost:8080/teste-banco` | Teste de conexão com o MySQL |
 
 A rota de teste executa apenas `SELECT 1`. Ela verifica a conexão, mas não confirma a existência das tabelas ou a carga dos dados.
@@ -163,6 +170,14 @@ O perfil padrão `sem-banco` permite abrir a página inicial sem configurar o My
 - **Model:** representa os registros consultados no banco.
 - **Repository:** executa os comandos SQL e transforma os resultados em objetos Java.
 - **Templates:** páginas HTML preenchidas pelo Thymeleaf.
+
+No CRUD de profissionais de saúde:
+
+- `ProfissionalSaude.java` representa o profissional e, quando aplicável, seus dados de médico ou enfermeiro.
+- `ProfissionalFormulario.java` recebe os campos do formulário e declara as regras de validação.
+- `ProfissionalSaudeRepository.java` executa as operações SQL para profissionais, médicos e enfermeiros.
+- `ProfissionalSaudeController.java` conecta essas operações às rotas e páginas.
+- `profissionais.html` exibe a listagem; `profissional-formulario.html` é usado para cadastro e edição.
 
 No CRUD de pacientes:
 
@@ -206,7 +221,7 @@ Esses fluxos foram testados manualmente durante o desenvolvimento. Ainda não h�
 
 ## Próximas etapas
 
-- Implementar os demais CRUDs.
+- Implementar CRUDs para especialidades, contatos de emergência, prontuários, consultas, evoluções clínicas, medicamentos e prescrições.
 - Criar consultas parametrizadas com filtros, junções e agregações.
 - Criar relatório baseado em uma visão do banco.
 - Implementar uma operação transacional envolvendo múltiplas tabelas.
