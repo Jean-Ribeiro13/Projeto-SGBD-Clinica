@@ -10,3 +10,34 @@
 | Remoção da especialização de enfermeiro | Profissional mantido no banco | |
 | Exclusão de profissional com evolução clínica | Operação bloqueada | |
 | CPF duplicado no cadastro e edição de profissional | Mensagem de erro e campos preservados | |
+
+
+## Concorrência — exclusividade de especialização
+
+**Objetivo:** verificar a espera por bloqueio e impedir que um
+profissional já cadastrado como médico seja inserido como enfermeiro.
+
+**Ambiente:**
+- MySQL com tabelas InnoDB.
+- Duas conexões independentes: sessões 10 e 74.
+- Isolamento REPEATABLE READ em ambas.
+
+**Procedimento:**
+1. O profissional 32 já estava cadastrado como médico.
+2. A sessão A iniciou uma transação e bloqueou seu registro em
+   Profissional_Saude com SELECT ... FOR UPDATE.
+3. A sessão B iniciou outra transação e tentou inserir o ID 32
+   em Enfermeiro.
+4. A inserção ficou aguardando.
+5. A sessão A executou COMMIT.
+6. A sessão B recebeu a mensagem:
+   "Este profissional ja esta cadastrado como medico."
+7. A sessão B foi encerrada com ROLLBACK.
+
+**Resultado observado:** houve espera por bloqueio, seguida da
+rejeição da especialização incompatível. Não foi observado deadlock
+neste experimento.
+
+**Interpretação:** as leituras com FOR UPDATE coordenaram o acesso
+ao registro do profissional. A rejeição foi feita pelo gatilho;
+não é uma garantia fornecida isoladamente pelo nível REPEATABLE READ.
