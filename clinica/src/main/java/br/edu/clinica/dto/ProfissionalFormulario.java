@@ -1,6 +1,7 @@
 package br.edu.clinica.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,15 +9,19 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 public class ProfissionalFormulario {
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "Informe o nome do profissional")
+    @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
     private String nome;
-    @NotBlank
+
+    @NotBlank (message = "Informe o CPF")
     @Pattern(regexp = "\\d{11}", message = "Informe os 11 números do CPF.")
     private String cpf;
+
+    @NotNull(message = "Informe a data de nascimento")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dataNascimento;
     private Integer supervisorId;
+
     @Size(max = 20)
     private String registro;
 

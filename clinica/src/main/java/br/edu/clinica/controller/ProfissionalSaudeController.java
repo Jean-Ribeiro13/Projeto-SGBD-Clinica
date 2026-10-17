@@ -52,8 +52,11 @@ public class ProfissionalSaudeController {
             repository.criar(formulario, "profissional");
             flash.addFlashAttribute("sucesso", "Profissional cadastrado com sucesso.");
         } catch (DuplicateKeyException e) {
-            flash.addFlashAttribute("erro", "CPF já cadastrado.");
-            return "redirect:/profissionais/novo";
+            model.addAttribute("tipo", "profissional");
+            model.addAttribute("titulo", "Profissional de Saúde");
+            model.addAttribute("erro", "CPF já cadastrado.");
+
+            return "profissional-formulario";
         }
         return "redirect:/profissionais";
     }
@@ -85,7 +88,12 @@ public class ProfissionalSaudeController {
             repository.atualizar(id, formulario, "profissional");
             flash.addFlashAttribute("sucesso", "Profissional atualizado com sucesso.");
         } catch (DuplicateKeyException e) {
-            flash.addFlashAttribute("erro", "CPF já cadastrado.");
+            model.addAttribute("tipo", "profissional");
+            model.addAttribute("titulo", "Profissional de Saúde");
+            model.addAttribute("id", id);
+            model.addAttribute("erro", "CPF já cadastrado.");
+
+            return "profissional-formulario";
         }
         return "redirect:/profissionais";
     }
@@ -128,8 +136,14 @@ public class ProfissionalSaudeController {
             repository.criar(formulario, tipo);
             flash.addFlashAttribute("sucesso", titulo(tipo) + " cadastrado com sucesso.");
         } catch (DuplicateKeyException e) {
-            flash.addFlashAttribute("erro", "CPF ou registro profissional já cadastrado.");
-            return "redirect:/" + tipo + "s/novo";
+            prepararFormulario(model, tipo, formulario);
+
+            model.addAttribute(
+                    "erro",
+                    "CPF ou registro de profissional já cadastrado"
+            );
+
+            return "profissional-formulario";
         }
         return "redirect:/" + tipo + "s";
     }
@@ -157,19 +171,40 @@ public class ProfissionalSaudeController {
                             Model model, RedirectAttributes flash) {
         validarTipo(tipo);
         obter(id);
+        boolean especializacaoExiste = "medico".equals(tipo)
+                ? repository.existeMedico(id)
+                : repository.existeEnfermeiro(id);
+
+        if (!especializacaoExiste) {
+            throw naoEncontrado();
+        }
         validarRegistro(tipo, formulario, resultado);
         if ("medico".equals(tipo) && formulario.getSupervisorId() != null && (!repository.existeMedico(formulario.getSupervisorId()) || formulario.getSupervisorId().equals(id)))
             resultado.rejectValue("supervisorId", "invalido", "Selecione outro médico supervisor válido.");
         if (resultado.hasErrors()) {
             prepararFormulario(model, tipo, formulario);
             model.addAttribute("id", id);
+            if ("medico".equals(tipo)) {
+                model.addAttribute(
+                        "supervisores",
+                        repository.listarMedicosSem(id)
+                );
+            }
             return "profissional-formulario";
         }
         try {
             repository.atualizar(id, formulario, tipo);
             flash.addFlashAttribute("sucesso", titulo(tipo) + " atualizado com sucesso.");
         } catch (DuplicateKeyException e) {
-            flash.addFlashAttribute("erro", "CPF ou registro profissional já cadastrado.");
+            prepararFormulario(model, tipo, formulario);
+            model.addAttribute("id", id);
+
+            model.addAttribute(
+                    "erro",
+                    "CPF ou registro profissional já cadastrado."
+            );
+
+            return "profissional-formulario";
         }
         return "redirect:/" + tipo + "s";
     }

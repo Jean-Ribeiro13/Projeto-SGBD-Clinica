@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}">Profissionais de saúde</title>
+</head>
+<body>
+<a th:href="@{/}">Voltar ao início</a>
+
+<h1 th:text="${titulo}">Profissionais de saúde</h1>
+
+<a th:href="@{${tipo == 'profissional'
+        ? '/profissionais/novo'
+        : '/' + tipo + '/novo'}}">
+    Novo cadastro
+</a>
+
+<p th:if="${sucesso != null}"
+   th:text="${sucesso}"
+   role="status">
+</p>
+
+<p th:if="${erro != null}"
+   th:text="${erro}"
+   role="alert">
+</p>
+
+<p th:if="${#lists.isEmpty(profissionais)}">
+    Nenhum profissional encontrado.
+</p>
+
+<table th:unless="${#lists.isEmpty(profissionais)}">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Nome</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">CRM / COREN</th>
+        <th scope="col">Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="profissional : ${profissionais}">
+        <td th:text="${profissional.id()}"></td>
+        <td th:text="${profissional.nome()}"></td>
+        <td th:text="${profissional.tipo()}"></td>
+        <td th:text="${profissional.registro() != null
+                    ? profissional.registro() : 'Não informado'}"></td>
+        <td>
+            <a th:href="@{${(tipo == 'profissional'
+            ? '/profissionais'
+            : '/' + tipo)
+            + '/' + profissional.id() + '/editar'}}">
+                Editar
+            </a>
+            <form th:if="${tipo == 'medico'}"
+                  th:action="@{/medico/{id}/excluir(id=${profissional.id()})}"
+                  method="post"
+                  onsubmit="return confirm('Remover o cadastro de médico? O cadastro de profissional de saúde será mantido.');">
+
+                <button type="submit">
+                    Remover como médico
+                </button>
+            </form>
+            <form th:if="${tipo == 'enfermeiro'}"
+                  th:action="@{/enfermeiro/{id}/excluir(id=${profissional.id()})}"
+                  method="post"
+                  onsubmit="return confirm('Remover o cadastro de enfermeiro? O cadastro de profissional de saúde será mantido.');">
+
+                <button type="submit">
+                    Remover como enfermeiro
+                </button>
+            </form>
+            <form th:if="${tipo == 'profissional'}"
+                  th:action="@{/profissionais/{id}/excluir(id=${profissional.id()})}"
+                  method="post"
+                  onsubmit="return confirm('Excluir o profissional de saúde? Os cadastros de médico ou enfermeiro associados também serão removidos, se a exclusão for permitida.');">
+
+                <button type="submit">
+                    Excluir profissional
+                </button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
