@@ -209,7 +209,8 @@ No CRUD de profissionais de saúde:
 - `ProfissionalFormulario.java` recebe os campos do formulário e declara as regras de validação.
 - `ProfissionalSaudeRepository.java` executa as operações SQL para profissionais, médicos e enfermeiros.
 - `ProfissionalSaudeController.java` conecta essas operações às rotas e páginas.
-- `profissionais.html` exibe a listagem; `profissional-formulario.html` é usado para cadastro e edição.
+- `profissionais.html` exibe a listagem;
+- `profissional-formulario.html` é usado para cadastro e edição.
 
 No CRUD de pacientes:
 
