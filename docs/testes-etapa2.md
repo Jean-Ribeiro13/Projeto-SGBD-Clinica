@@ -10,6 +10,7 @@
 | Exclusão completa de profissional de teste | Profissional e sua especialização removidos; ausência conferida nas duas listagens | |
 | Exclusão de profissional com evolução clínica | Operação bloqueada |[Ver evidência](evidencias/exclusão-de-profissional-com-evolução-clinica.png) |
 | CPF duplicado no cadastro e edição de profissional | Mensagem de erro e campos preservados |[Ver evidência](evidencias/CPF-duplicado-no-cadastro-de-profissional.png) |
+| Filtro de supervisor na edição de médico | O próprio médico não aparece nas opções de supervisor ao abrir a edição nem após erro de CRM duplicado | |
 
 > Durante o desenvolvimento, foi testada a remoção isolada da
 > especialização, mantendo o profissional base. Esse comportamento
