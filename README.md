@@ -2,11 +2,11 @@
 
 Projeto acadêmico de banco de dados para uma clínica médica, com aplicação web desenvolvida em Java, Spring Boot e MySQL.
 
-A aplicação possui CRUD de pacientes e cadastros de profissionais de saúde, médicos e enfermeiros. Os cadastros de médico e enfermeiro criam o respectivo registro base em `Profissional_Saude`; médicos também podem informar um supervisor. As demais entidades do banco ainda não possuem telas CRUD.
+A aplicação possui CRUD de pacientes e cadastros de profissionais de saúde, médicos e enfermeiros. Os cadastros de médico e enfermeiro criam o respectivo registro base em `Profissional_Saude`; médicos também podem informar um supervisor. O CRUD de medicamentos foi implementado, enquanto as demais entidades do banco ainda não possuem telas CRUD.
 
 ## Funcionalidades implementadas
 
-- Página inicial com acesso aos pacientes, profissionais de saúde, médicos e enfermeiros.
+- Página inicial com acesso aos pacientes, profissionais de saúde, médicos, enfermeiros e medicamentos.
 - Listagem de pacientes em ordem alfabética.
 - Cadastro e edição de nome, CPF e data de nascimento.
 - Exclusão com confirmação.
@@ -188,6 +188,7 @@ Endereços disponíveis:
 | `http://localhost:8080/medico/novo` | Cadastro de médico, com criação do profissional base |
 | `http://localhost:8080/enfermeiro/novo` | Cadastro de enfermeiro, com criação do profissional base |
 | `http://localhost:8080/teste-banco` | Teste de conexão com o MySQL |
+| `http://localhost:8080/medicamentos` | Listagem e acesso ao CRUD de medicamentos |
 
 As listagens usam `/medicos` e `/enfermeiros`, mas as rotas de cadastro e edição das especializações usam `/medico` e `/enfermeiro`, no singular. Utilize os links das páginas para navegar.
 
@@ -222,6 +223,13 @@ No CRUD de pacientes:
 - `paciente-formulario.html` apresenta o cadastro.
 - `paciente-edicao.html` apresenta a edição.
 
+  No CRUD de medicamentos:
+
+- `Medicamento.java` representa um medicamento.
+- `MedicamentoRepository.java` executa as operações no banco de dados.
+- `MedicamentoController.java` controla as rotas de listagem, cadastro, edição e exclusão.
+- `templates/medicamentos/lista.html` contém o formulário e a tabela de medicamentos.
+
 ## Verificação manual
 
 Para conferir a aplicação em outro computador:
@@ -244,6 +252,10 @@ Para conferir a aplicação em outro computador:
 16. Cadastre e edite um enfermeiro fictício, verificando nome e COREN. Remova sua especialização e confira a permanência do profissional base.
 17. Cadastre e edite um profissional sem especialização. Verifique o tratamento de CPF duplicado e a preservação dos campos no formulário.
 18. Exclua um profissional de teste sem vínculos impeditivos. Depois, tente excluir outro com evolução clínica e confira o bloqueio.
+19. Acesse `/medicamentos` e confira a listagem de medicamentos.
+20. Cadastre um medicamento fictício e confira se ele aparece na listagem.
+21. Edite o nome do medicamento e confira a alteração.
+22. Exclua o medicamento de teste e confira se ele deixou de aparecer na listagem.
 
 Os resultados desses fluxos foram confirmados manualmente durante o desenvolvimento. Ainda não há uma suíte de testes automatizados. Utilize dados fictícios para reproduzir os testes.
 
@@ -270,7 +282,7 @@ Está em preparação a tela **Resumo de consultas por médico e período**. A c
 
 Os totais dessa consulta representam os valores registrados nas consultas, não pagamentos recebidos. O modelo não registra pagamentos nem status de realização da consulta.
 
-O CRUD de medicamentos está atribuído a outro integrante; sua conclusão e integração ainda não foram verificadas neste estágio.
+O CRUD de medicamentos foi implementado com funcionalidades de listagem, cadastro, edição e exclusão. A integração final com as demais funcionalidades do projeto ainda deve ser verificada.
 
 ## Integrantes
 
