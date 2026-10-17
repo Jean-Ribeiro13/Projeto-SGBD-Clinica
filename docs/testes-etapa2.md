@@ -41,3 +41,15 @@ neste experimento.
 **Interpretação:** as leituras com FOR UPDATE coordenaram o acesso
 ao registro do profissional. A rejeição foi feita pelo gatilho;
 não é uma garantia fornecida isoladamente pelo nível REPEATABLE READ.
+
+### Sessão A — bloqueio e liberação
+
+![Sessão A](evidencias/concorrencia-sessao-a-bloqueio.png)
+
+### Sessão B — rejeição da dupla especialização
+
+![Sessão B](evidencias/concorrencia-sessao-b-rejeicao.png)
+
+### Estado final do profissional
+
+![Resultado final](evidencias/concorrencia-resultado-final.png)
