@@ -68,6 +68,7 @@ public class ProfissionalSaudeController {
         f.setNome(p.nome());
         f.setCpf(p.cpf());
         f.setDataNascimento(p.dataNascimento());
+
         model.addAttribute("formulario", f);
         model.addAttribute("tipo", "profissional");
         model.addAttribute("titulo", "Profissional de Saúde");
