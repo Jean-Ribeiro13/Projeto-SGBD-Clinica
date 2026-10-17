@@ -267,7 +267,11 @@ VALUES
 (33, 'A+'),
 (34, NULL),
 (35, 'O+'),
-(36, 'B+');
+(36, 'B+'),
+(37, 'O-'),
+(38, 'A+'),
+(39, 'B+'),
+(40, 'AB+');
 
 -- EVOLUCOES CLINICAS
 
@@ -275,149 +279,204 @@ INSERT INTO Evolucao_Clinica
 (id_prontuario, id_profissional, data_ocorrencia, descricao)
 VALUES
 -- PRONTUARIO 1
-(1, 1, '2024-02-10 09:15:00', 'Paciente apresentou pressao arterial elevada durante avaliacao inicial.'),
-(1, 15, '2024-06-18 14:20:00', 'Paciente orientado sobre controle de pressao arterial e acompanhamento regular.'),
-(1, 1, '2025-01-22 10:10:00', 'Pressão arterial apresentou melhora apos acompanhamento clinico.'),
+(1, 1, '2026-01-05 09:15:00', 'Paciente apresentou pressao arterial elevada durante avaliacao inicial.'),
+(1, 15, '2026-01-12 14:20:00', 'Paciente orientado sobre controle de pressao arterial e acompanhamento regular.'),
+(1, 1, '2026-01-26 10:10:00', 'Pressão arterial apresentou melhora apos acompanhamento clinico.'),
+
 -- PRONTUARIO 2
-(2, 2, '2024-01-12 08:30:00', 'Paciente apresentou quadro de febre e dor de garganta.'),
-(2, 16, '2024-01-15 11:40:00', 'Paciente relatou reducao da febre e melhora do estado geral.'),
-(2, 2, '2024-01-20 09:25:00', 'Quadro infeccioso resolvido sem intercorrencias.'),
+(2, 2, '2026-01-05 08:30:00', 'Paciente apresentou quadro de febre e dor de garganta.'),
+(2, 16, '2026-01-12 11:40:00', 'Paciente relatou reducao da febre e melhora do estado geral.'),
+(2, 2, '2026-01-26 09:25:00', 'Quadro infeccioso resolvido sem intercorrencias.'),
+
 -- PRONTUARIO 3
-(3, 3, '2024-03-05 13:10:00', 'Paciente apresentou lesoes avermelhadas na pele com prurido.'),
-(3, 17, '2024-03-12 15:45:00', 'Paciente relatou diminuicao do prurido apos inicio do tratamento.'),
-(3, 3, '2024-03-28 10:30:00', 'Lesões cutaneas apresentaram regressao significativa.'),
+(3, 3, '2026-01-06 13:10:00', 'Paciente apresentou lesoes avermelhadas na pele com prurido.'),
+(3, 17, '2026-01-13 15:45:00', 'Paciente relatou diminuicao do prurido apos inicio do tratamento.'),
+(3, 3, '2026-01-27 10:30:00', 'Lesões cutaneas apresentaram regressao significativa.'),
+
 -- PRONTUARIO 4
-(4, 4, '2024-04-11 09:00:00', 'Paciente relatou episodios recorrentes de dor de cabeca.'),
-(4, 18, '2024-04-20 16:15:00', 'Paciente manteve registro da frequencia das cefaleias conforme orientacao.'),
-(4, 4, '2024-05-03 08:50:00', 'Paciente relatou reducao da frequencia das cefaleias.'),
+(4, 4, '2026-01-07 09:00:00', 'Paciente relatou episodios recorrentes de dor de cabeca.'),
+(4, 18, '2026-01-14 16:15:00', 'Paciente manteve registro da frequencia das cefaleias conforme orientacao.'),
+(4, 4, '2026-01-28 08:50:00', 'Paciente relatou reducao da frequencia das cefaleias.'),
+
 -- PRONTUARIO 5
-(5, 5, '2024-05-14 10:40:00', 'Paciente apresentou dor no joelho direito apos atividade fisica.'),
-(5, 19, '2024-05-22 13:35:00', 'Paciente apresentou melhora parcial da dor e da mobilidade.'),
-(5, 5, '2024-06-04 09:20:00', 'Paciente apresentou recuperacao funcional satisfatoria do joelho.'),
+(5, 5, '2026-01-08 10:40:00', 'Paciente apresentou dor no joelho direito apos atividade fisica.'),
+(5, 19, '2026-01-15 13:35:00', 'Paciente apresentou melhora parcial da dor e da mobilidade.'),
+(5, 5, '2026-01-29 09:20:00', 'Paciente apresentou recuperacao funcional satisfatoria do joelho.'),
+
 -- PRONTUARIO 6
-(6, 6, '2024-06-03 14:00:00', 'Paciente relatou ansiedade frequente e dificuldade para dormir.'),
-(6, 20, '2024-06-17 10:15:00', 'Paciente relatou melhora discreta na qualidade do sono.'),
-(6, 6, '2024-07-08 15:30:00', 'Paciente apresentou reducao dos sintomas de ansiedade.'),
+(6, 6, '2026-01-09 14:00:00', 'Paciente relatou ansiedade frequente e dificuldade para dormir.'),
+(6, 20, '2026-01-16 10:15:00', 'Paciente relatou melhora discreta na qualidade do sono.'),
+(6, 6, '2026-01-30 15:30:00', 'Paciente apresentou reducao dos sintomas de ansiedade.'),
+
 -- PRONTUARIO 7
-(7, 7, '2024-07-02 09:40:00', 'Paciente compareceu para avaliacão ginecologica de rotina.'),
-(7, 15, '2024-07-10 11:25:00', 'Paciente orientada sobre exames preventivos periodicos.'),
-(7, 7, '2024-07-25 08:45:00', 'Resultados dos exames analisados sem alteracoes relevantes.'),
+(7, 7, '2026-01-12 09:40:00', 'Paciente compareceu para avaliacão ginecologica de rotina.'),
+(7, 15, '2026-01-19 11:25:00', 'Paciente orientada sobre exames preventivos periodicos.'),
+(7, 7, '2026-02-02 08:45:00', 'Resultados dos exames analisados sem alteracoes relevantes.'),
+
 -- PRONTUARIO 8
-(8, 8, '2024-08-06 13:20:00', 'Paciente apresentou alteracao glicemica em exame de rotina.'),
-(8, 16, '2024-08-15 09:35:00', 'Paciente recebeu orientacoes sobre alimentacao e controle glicemico.'),
-(8, 8, '2024-09-10 14:10:00', 'Exames demonstraram melhora nos niveis glicemicos.'),
+(8, 8, '2026-01-13 13:20:00', 'Paciente apresentou alteracao glicemica em exame de rotina.'),
+(8, 16, '2026-01-20 09:35:00', 'Paciente recebeu orientacoes sobre alimentacao e controle glicemico.'),
+(8, 8, '2026-02-03 14:10:00', 'Exames demonstraram melhora nos niveis glicemicos.'),
+
 -- PRONTUARIO 9
-(9, 9, '2024-09-04 10:00:00', 'Paciente relatou dificuldade de visao para objetos distantes.'),
-(9, 17, '2024-09-12 15:05:00', 'Paciente realizou avaliacao visual complementar.'),
-(9, 9, '2024-09-26 11:30:00', 'Paciente adaptado a correcao visual prescrita.'),
+(9, 9, '2026-01-14 10:00:00', 'Paciente relatou dificuldade de visao para objetos distantes.'),
+(9, 17, '2026-01-21 15:05:00', 'Paciente realizou avaliacao visual complementar.'),
+(9, 9, '2026-02-04 11:30:00', 'Paciente adaptado a correcao visual prescrita.'),
+
 -- PRONTUARIO 10
-(10, 10, '2024-10-01 08:20:00', 'Paciente apresentou sintomas gripais leves.'),
-(10, 18, '2024-10-05 13:45:00', 'Paciente relatou melhora da congestao nasal e da tosse.'),
-(10, 10, '2024-10-12 09:10:00', 'Paciente encontra-se sem sintomas respiratorios.'),
+(10, 10, '2026-01-15 08:20:00', 'Paciente apresentou sintomas gripais leves.'),
+(10, 18, '2026-01-22 13:45:00', 'Paciente relatou melhora da congestao nasal e da tosse.'),
+(10, 10, '2026-02-05 09:10:00', 'Paciente encontra-se sem sintomas respiratorios.'),
+
 -- PRONTUARIO 11
-(11, 1, '2024-11-07 10:25:00', 'Paciente apresentou palpitações ocasionais durante esforco fisico.'),
-(11, 19, '2024-11-14 14:30:00', 'Paciente permaneceu em observacao sem novas intercorrencias.'),
-(11, 1, '2024-12-03 11:00:00', 'Avaliacao cardiovascular apresentou evolucao estavel.'),
+(11, 1, '2026-02-02 10:25:00', 'Paciente apresentou palpitações ocasionais durante esforco fisico.'),
+(11, 19, '2026-02-09 14:30:00', 'Paciente permaneceu em observacao sem novas intercorrencias.'),
+(11, 1, '2026-02-23 11:00:00', 'Avaliacao cardiovascular apresentou evolucao estavel.'),
+
 -- PRONTUARIO 12
-(12, 2, '2024-12-02 09:15:00', 'Paciente apresentou tosse persistente e febre baixa.'),
-(12, 20, '2024-12-06 15:20:00', 'Paciente relatou melhora parcial dos sintomas respiratorios.'),
-(12, 2, '2024-12-15 10:40:00', 'Paciente apresentou resolucao do quadro respiratorio.'),
+(12, 2, '2026-02-03 09:15:00', 'Paciente apresentou tosse persistente e febre baixa.'),
+(12, 20, '2026-02-10 15:20:00', 'Paciente relatou melhora parcial dos sintomas respiratorios.'),
+(12, 2, '2026-02-24 10:40:00', 'Paciente apresentou resolucao do quadro respiratorio.'),
+
 -- PRONTUARIO 13
-(13, 3, '2025-01-08 13:25:00', 'Paciente apresentou irritacao cutanea nos membros superiores.'),
-(13, 15, '2025-01-15 09:50:00', 'Irritacao apresentou melhora apos cuidados locais.'),
-(13, 3, '2025-01-29 14:35:00', 'Pele sem sinais de inflamacao ativa.'),
+(13, 3, '2026-02-04 13:25:00', 'Paciente apresentou irritacao cutanea nos membros superiores.'),
+(13, 15, '2026-02-11 09:50:00', 'Irritacao apresentou melhora apos cuidados locais.'),
+(13, 3, '2026-02-25 14:35:00', 'Pele sem sinais de inflamacao ativa.'),
+
 -- PRONTUARIO 14
-(14, 4, '2025-02-04 10:05:00', 'Paciente relatou episodios de tontura ao levantar-se rapidamente.'),
-(14, 16, '2025-02-11 15:30:00', 'Paciente orientado sobre hidratacao e mudancas posturais graduais.'),
-(14, 4, '2025-02-25 09:20:00', 'Paciente relatou reducao significativa dos episodios de tontura.'),
+(14, 4, '2026-02-05 10:05:00', 'Paciente relatou episodios de tontura ao levantar-se rapidamente.'),
+(14, 16, '2026-02-12 15:30:00', 'Paciente orientado sobre hidratacao e mudancas posturais graduais.'),
+(14, 4, '2026-02-26 09:20:00', 'Paciente relatou reducao significativa dos episodios de tontura.'),
+
 -- PRONTUARIO 15
-(15, 5, '2025-03-06 08:40:00', 'Paciente apresentou dor lombar apos esforco fisico intenso.'),
-(15, 17, '2025-03-13 13:15:00', 'Paciente relatou melhora da dor com medidas conservadoras.'),
-(15, 5, '2025-03-27 10:30:00', 'Mobilidade lombar recuperada sem limitacoes importantes.'),
+(15, 5, '2026-02-06 08:40:00', 'Paciente apresentou dor lombar apos esforco fisico intenso.'),
+(15, 17, '2026-02-13 13:15:00', 'Paciente relatou melhora da dor com medidas conservadoras.'),
+(15, 5, '2026-02-27 10:30:00', 'Mobilidade lombar recuperada sem limitacoes importantes.'),
+
 -- PRONTUARIO 16
-(16, 6, '2025-04-02 14:10:00', 'Paciente relatou alteracoes de humor e dificuldade de concentracao.'),
-(16, 18, '2025-04-16 09:45:00', 'Paciente relatou melhora gradual da rotina de sono.'),
-(16, 6, '2025-05-07 15:20:00', 'Paciente apresentou melhora dos sintomas relatados inicialmente.'),
+(16, 6, '2026-02-09 14:10:00', 'Paciente relatou alteracoes de humor e dificuldade de concentracao.'),
+(16, 18, '2026-02-16 09:45:00', 'Paciente relatou melhora gradual da rotina de sono.'),
+(16, 6, '2026-03-02 15:20:00', 'Paciente apresentou melhora dos sintomas relatados inicialmente.'),
+
 -- PRONTUARIO 17
-(17, 7, '2025-05-05 10:20:00', 'Paciente realizou acompanhamento ginecologico preventivo.'),
-(17, 19, '2025-05-12 14:05:00', 'Paciente realizou exames laboratoriais solicitados.'),
-(17, 7, '2025-05-26 09:30:00', 'Exames analisados sem alteracoes clinicas significativas.'),
+(17, 7, '2026-02-10 10:20:00', 'Paciente realizou acompanhamento ginecologico preventivo.'),
+(17, 19, '2026-02-17 14:05:00', 'Paciente realizou exames laboratoriais solicitados.'),
+(17, 7, '2026-03-03 09:30:00', 'Exames analisados sem alteracoes clinicas significativas.'),
+
 -- PRONTUARIO 18
-(18, 8, '2025-06-03 08:50:00', 'Paciente apresentou aumento discreto da glicemia em jejum.'),
-(18, 20, '2025-06-17 13:40:00', 'Paciente relatou adesao as orientacoes alimentares.'),
-(18, 8, '2025-07-01 10:15:00', 'Controle glicemico apresentou evolucao favoravel.'),
+(18, 8, '2026-02-11 08:50:00', 'Paciente apresentou aumento discreto da glicemia em jejum.'),
+(18, 20, '2026-02-18 13:40:00', 'Paciente relatou adesao as orientacoes alimentares.'),
+(18, 8, '2026-03-04 10:15:00', 'Controle glicemico apresentou evolucao favoravel.'),
+
 -- PRONTUARIO 19
-(19, 9, '2025-07-07 14:30:00', 'Paciente apresentou ardencia ocular e sensibilidade a luz.'),
-(19, 15, '2025-07-14 09:55:00', 'Paciente relatou reducao da irritacao ocular.'),
-(19, 9, '2025-07-28 11:20:00', 'Paciente sem sinais de irritacao ocular no retorno.'),
+(19, 9, '2026-02-12 14:30:00', 'Paciente apresentou ardencia ocular e sensibilidade a luz.'),
+(19, 15, '2026-02-19 09:55:00', 'Paciente relatou reducao da irritacao ocular.'),
+(19, 9, '2026-03-05 11:20:00', 'Paciente sem sinais de irritacao ocular no retorno.'),
+
 -- PRONTUARIO 20
-(20, 10, '2025-08-04 09:10:00', 'Paciente apresentou dor abdominal leve apos alimentacao.'),
-(20, 16, '2025-08-11 15:35:00', 'Paciente relatou melhora apos ajustes alimentares.'),
-(20, 10, '2025-08-25 10:45:00', 'Paciente encontra-se assintomatico no retorno.'),
+(20, 10, '2026-02-13 09:10:00', 'Paciente apresentou dor abdominal leve apos alimentacao.'),
+(20, 16, '2026-02-20 15:35:00', 'Paciente relatou melhora apos ajustes alimentares.'),
+(20, 10, '2026-03-06 10:45:00', 'Paciente encontra-se assintomatico no retorno.'),
+
 -- PRONTUARIO 21
-(21, 1, '2025-09-02 13:00:00', 'Paciente apresentou pressao arterial acima dos valores habituais.'),
-(21, 17, '2025-09-09 09:25:00', 'Pressao arterial monitorada durante acompanhamento.'),
-(21, 1, '2025-09-23 14:40:00', 'Paciente apresentou estabilizacao dos niveis pressoricos.'),
+(21, 1, '2026-03-02 13:00:00', 'Paciente apresentou pressao arterial acima dos valores habituais.'),
+(21, 17, '2026-03-09 09:25:00', 'Pressao arterial monitorada durante acompanhamento.'),
+(21, 1, '2026-03-23 14:40:00', 'Paciente apresentou estabilizacao dos niveis pressoricos.'),
+
 -- PRONTUARIO 22
-(22, 2, '2025-10-06 08:30:00', 'Paciente apresentou febre, congestao nasal e mal-estar.'),
-(22, 18, '2025-10-10 13:50:00', 'Paciente relatou melhora progressiva dos sintomas.'),
-(22, 2, '2025-10-17 09:15:00', 'Quadro infeccioso resolvido.'),
+(22, 2, '2026-03-03 08:30:00', 'Paciente apresentou febre, congestao nasal e mal-estar.'),
+(22, 18, '2026-03-10 13:50:00', 'Paciente relatou melhora progressiva dos sintomas.'),
+(22, 2, '2026-03-24 09:15:00', 'Quadro infeccioso resolvido.'),
+
 -- PRONTUARIO 23
-(23, 3, '2025-11-03 10:20:00', 'Paciente apresentou ressecamento e descamacao da pele.'),
-(23, 19, '2025-11-10 15:10:00', 'Paciente relatou melhora da hidratacao cutanea.'),
-(23, 3, '2025-11-24 11:40:00', 'Pele apresentou aspecto normal no retorno.'),
+(23, 3, '2026-03-04 10:20:00', 'Paciente apresentou ressecamento e descamacao da pele.'),
+(23, 19, '2026-03-11 15:10:00', 'Paciente relatou melhora da hidratacao cutanea.'),
+(23, 3, '2026-03-25 11:40:00', 'Pele apresentou aspecto normal no retorno.'),
+
 -- PRONTUARIO 24
-(24, 4, '2025-12-01 09:35:00', 'Paciente apresentou dormencia ocasional nas extremidades.'),
-(24, 20, '2025-12-08 14:25:00', 'Paciente permaneceu sem piora dos sintomas.'),
-(24, 4, '2025-12-22 10:05:00', 'Sintomas apresentaram reducao durante acompanhamento.'),
+(24, 4, '2026-03-05 09:35:00', 'Paciente apresentou dormencia ocasional nas extremidades.'),
+(24, 20, '2026-03-12 14:25:00', 'Paciente permaneceu sem piora dos sintomas.'),
+(24, 4, '2026-03-26 10:05:00', 'Sintomas apresentaram reducao durante acompanhamento.'),
+
 -- PRONTUARIO 25
-(25, 5, '2026-01-05 08:45:00', 'Paciente apresentou dor no ombro direito associada a movimento.'),
-(25, 15, '2026-01-12 13:30:00', 'Paciente relatou melhora parcial da mobilidade.'),
-(25, 5, '2026-01-26 09:55:00', 'Paciente recuperou amplitude de movimento satisfatoria.'),
+(25, 5, '2026-03-06 08:45:00', 'Paciente apresentou dor no ombro direito associada a movimento.'),
+(25, 15, '2026-03-13 13:30:00', 'Paciente relatou melhora parcial da mobilidade.'),
+(25, 5, '2026-03-27 09:55:00', 'Paciente recuperou amplitude de movimento satisfatoria.'),
+
 -- PRONTUARIO 26
-(26, 6, '2026-02-02 14:15:00', 'Paciente relatou dificuldade para iniciar o sono e preocupacao excessiva.'),
-(26, 16, '2026-02-16 10:30:00', 'Paciente relatou melhora parcial do padrao de sono.'),
-(26, 6, '2026-03-02 15:05:00', 'Sintomas de ansiedade apresentaram reducao.'),
+(26, 6, '2026-03-09 14:15:00', 'Paciente relatou dificuldade para iniciar o sono e preocupacao excessiva.'),
+(26, 16, '2026-03-16 10:30:00', 'Paciente relatou melhora parcial do padrao de sono.'),
+(26, 6, '2026-03-30 15:05:00', 'Sintomas de ansiedade apresentaram reducao.'),
+
 -- PRONTUARIO 27
-(27, 7, '2026-03-04 09:20:00', 'Paciente compareceu para acompanhamento preventivo ginecologico.'),
-(27, 17, '2026-03-11 14:00:00', 'Exames preventivos realizados conforme orientacao.'),
-(27, 7, '2026-03-25 10:25:00', 'Resultados avaliados sem alteracoes relevantes.'),
+(27, 7, '2026-03-10 09:20:00', 'Paciente compareceu para acompanhamento preventivo ginecologico.'),
+(27, 17, '2026-03-17 14:00:00', 'Exames preventivos realizados conforme orientacao.'),
+(27, 7, '2026-03-31 10:25:00', 'Resultados avaliados sem alteracoes relevantes.'),
+
 -- PRONTUARIO 28
-(28, 8, '2026-04-06 08:35:00', 'Paciente apresentou alteracao em exames de funcao metabolica.'),
-(28, 18, '2026-04-13 13:20:00', 'Paciente recebeu orientacoes para mudancas alimentares.'),
-(28, 8, '2026-04-27 09:45:00', 'Exames de controle apresentaram melhora.'),
+(28, 8, '2026-03-11 08:35:00', 'Paciente apresentou alteracao em exames de funcao metabolica.'),
+(28, 18, '2026-03-18 13:20:00', 'Paciente recebeu orientacoes para mudancas alimentares.'),
+(28, 8, '2026-04-01 09:45:00', 'Exames de controle apresentaram melhora.'),
+
 -- PRONTUARIO 29
-(29, 9, '2026-05-04 14:05:00', 'Paciente apresentou dificuldade de leitura em curtas distancias.'),
-(29, 19, '2026-05-11 10:40:00', 'Paciente realizou avaliacao oftalmologica complementar.'),
-(29, 9, '2026-05-25 15:15:00', 'Paciente apresentou boa adaptacao a correcao visual.'),
+(29, 9, '2026-03-12 14:05:00', 'Paciente apresentou dificuldade de leitura em curtas distancias.'),
+(29, 19, '2026-03-19 10:40:00', 'Paciente realizou avaliacao oftalmologica complementar.'),
+(29, 9, '2026-04-02 15:15:00', 'Paciente apresentou boa adaptacao a correcao visual.'),
+
 -- PRONTUARIO 30
-(30, 10, '2026-06-01 09:00:00', 'Paciente apresentou quadro de indisposicao gastrointestinal leve.'),
-(30, 20, '2026-06-05 14:30:00', 'Paciente relatou melhora apos hidratacao e dieta leve.'),
-(30, 10, '2026-06-12 10:20:00', 'Paciente encontra-se sem sintomas gastrointestinais.'),
+(30, 10, '2026-03-13 09:00:00', 'Paciente apresentou quadro de indisposicao gastrointestinal leve.'),
+(30, 20, '2026-03-20 14:30:00', 'Paciente relatou melhora apos hidratacao e dieta leve.'),
+(30, 10, '2026-04-03 10:20:00', 'Paciente encontra-se sem sintomas gastrointestinais.'),
+
 -- PRONTUARIO 31
-(31, 1, '2026-06-08 08:40:00', 'Paciente relatou cansaco ao realizar esforcos moderados.'),
-(31, 15, '2026-06-15 13:55:00', 'Paciente realizou acompanhamento dos sinais vitais.'),
-(31, 1, '2026-06-29 09:30:00', 'Paciente apresentou melhora do condicionamento geral.'),
+(31, 1, '2026-04-06 08:40:00', 'Paciente relatou cansaco ao realizar esforcos moderados.'),
+(31, 15, '2026-04-13 13:55:00', 'Paciente realizou acompanhamento dos sinais vitais.'),
+(31, 1, '2026-04-27 09:30:00', 'Paciente apresentou melhora do condicionamento geral.'),
+
 -- PRONTUARIO 32
-(32, 2, '2026-07-01 10:10:00', 'Paciente apresentou sintomas respiratorios leves.'),
-(32, 16, '2026-07-06 15:25:00', 'Paciente relatou reducao da tosse e congestao.'),
-(32, 2, '2026-07-13 11:05:00', 'Paciente encontra-se recuperado do quadro respiratorio.'),
+(32, 2, '2026-04-07 10:10:00', 'Paciente apresentou sintomas respiratorios leves.'),
+(32, 16, '2026-04-14 15:25:00', 'Paciente relatou reducao da tosse e congestao.'),
+(32, 2, '2026-04-28 11:05:00', 'Paciente encontra-se recuperado do quadro respiratorio.'),
+
 -- PRONTUARIO 33
-(33, 3, '2026-07-08 09:50:00', 'Paciente apresentou coceira e vermelhidao em regiao cervical.'),
-(33, 17, '2026-07-15 14:35:00', 'Paciente relatou reducao da irritacao cutanea.'),
-(33, 3, '2026-07-29 10:15:00', 'Lesao cutanea resolvida sem complicacoes.'),
+(33, 3, '2026-04-08 09:50:00', 'Paciente apresentou coceira e vermelhidao em regiao cervical.'),
+(33, 17, '2026-04-15 14:35:00', 'Paciente relatou reducao da irritacao cutanea.'),
+(33, 3, '2026-04-29 10:15:00', 'Lesao cutanea resolvida sem complicacoes.'),
+
 -- PRONTUARIO 34
-(34, 4, '2026-08-03 08:30:00', 'Paciente relatou dor de cabeca acompanhada de sensibilidade a luz.'),
-(34, 18, '2026-08-10 13:45:00', 'Paciente relatou menor intensidade das crises.'),
-(34, 4, '2026-08-24 09:40:00', 'Paciente apresentou evolucao clinica favoravel.'),
+(34, 4, '2026-04-09 08:30:00', 'Paciente relatou dor de cabeca acompanhada de sensibilidade a luz.'),
+(34, 18, '2026-04-16 13:45:00', 'Paciente relatou menor intensidade das crises.'),
+(34, 4, '2026-04-30 09:40:00', 'Paciente apresentou evolucao clinica favoravel.'),
+
 -- PRONTUARIO 35
-(35, 5, '2026-08-05 10:35:00', 'Paciente apresentou dor no tornozelo apos atividade esportiva.'),
-(35, 19, '2026-08-12 15:10:00', 'Paciente apresentou reducao do edema e da dor.'),
-(35, 5, '2026-08-26 11:25:00', 'Paciente recuperou mobilidade sem limitacao significativa.'),
+(35, 5, '2026-04-10 10:35:00', 'Paciente apresentou dor no tornozelo apos atividade esportiva.'),
+(35, 19, '2026-04-17 15:10:00', 'Paciente apresentou reducao do edema e da dor.'),
+(35, 5, '2026-05-01 11:25:00', 'Paciente recuperou mobilidade sem limitacao significativa.'),
+
 -- PRONTUARIO 36
-(36, 6, '2026-08-07 09:05:00', 'Paciente relatou aumento recente dos niveis de estresse.'),
-(36, 20, '2026-08-14 14:20:00', 'Paciente relatou melhora do sono apos orientacoes.'),
-(36, 6, '2026-08-28 10:50:00', 'Paciente apresentou melhora geral dos sintomas relatados.');
+(36, 6, '2026-04-13 09:05:00', 'Paciente relatou aumento recente dos niveis de estresse.'),
+(36, 20, '2026-04-20 14:20:00', 'Paciente relatou melhora do sono apos orientacoes.'),
+(36, 6, '2026-05-04 10:50:00', 'Paciente apresentou melhora geral dos sintomas relatados.'),
+
+-- PRONTUARIO 37
+(37, 9, '2026-04-14 09:45:00', 'Paciente apresentou coceira ocular e lacrimejamento associados a alergia sazonal.'),
+(37, 18, '2026-04-21 14:10:00', 'Paciente relatou reducao do prurido e da hiperemia ocular.'),
+(37, 9, '2026-05-05 10:20:00', 'Paciente sem sinais de irritacao ocular no retorno.'),
+
+-- PRONTUARIO 38
+(38, 10, '2026-04-15 10:50:00', 'Paciente relatou dor epigastrica e queimacao apos as refeicoes.'),
+(38, 19, '2026-04-22 13:25:00', 'Paciente relatou melhora da queimacao apos ajustes alimentares.'),
+(38, 10, '2026-05-06 09:35:00', 'Paciente encontra-se assintomatico no retorno.'),
+
+-- PRONTUARIO 39
+(39, 11, '2026-04-16 13:50:00', 'Paciente apresentou febre, tosse produtiva e mal-estar.'),
+(39, 20, '2026-04-23 15:00:00', 'Paciente relatou reducao da febre e melhora da tosse.'),
+(39, 11, '2026-05-07 11:15:00', 'Paciente apresentou resolucao do quadro infeccioso respiratorio.'),
+
+-- PRONTUARIO 40
+(40, 12, '2026-04-17 15:50:00', 'Paciente relatou dor de garganta intensa e dificuldade para engolir.'),
+(40, 15, '2026-04-24 09:40:00', 'Paciente relatou melhora da dor e adesao ao tratamento prescrito.'),
+(40, 12, '2026-05-08 14:30:00', 'Quadro infeccioso resolvido sem intercorrencias.');
 
 -- CONSULTAS
 
