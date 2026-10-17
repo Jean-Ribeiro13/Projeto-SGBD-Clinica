@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}">Especialidades</title>
+</head>
+<body>
+<p><a th:href="@{/}">&larr; Início</a></p>
+<h1 th:text="${titulo}">Especialidades</h1>
+
+<p th:if="${sucesso}" th:text="${sucesso}" style="color:green"></p>
+<p th:if="${erro}" th:text="${erro}" style="color:red"></p>
+
+<p><a th:href="@{/especialidades/novo}">Nova especialidade</a></p>
+
+<table border="1" cellpadding="6">
+    <thead>
+    <tr><th>ID</th><th>Nome</th><th>Médicos</th><th>Ações</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="e : ${especialidades}">
+        <td th:text="${e.id}"></td>
+        <td th:text="${e.nome}"></td>
+        <td th:text="${e.qtdMedicos}"></td>
+        <td>
+            <a th:href="@{/especialidades/{id}/editar(id=${e.id})}">Editar</a>
+            <form th:action="@{/especialidades/{id}/excluir(id=${e.id})}" method="post"
+                  style="display:inline" onsubmit="return confirm('Excluir esta especialidade?');">
+                <button type="submit">Excluir</button>
+            </form>
+        </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(especialidades)}">
+        <td colspan="4">Nenhuma especialidade cadastrada.</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
