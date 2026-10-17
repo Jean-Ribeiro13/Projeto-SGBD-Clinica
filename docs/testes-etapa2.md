@@ -2,15 +2,19 @@
 
 | Teste | Resultado observado | Evidência |
 | --- | --- | --- |
-| Cadastro de médico | Profissional e médico cadastrados com o mesmo ID | |
+| Cadastro de médico | Profissional e médico cadastrados com o mesmo ID |[Ver evidência](evidencias/Cadastro-de-medico.png) |
 | Cadastro com CRM duplicado | Mensagem de erro e rollback do novo profissional | |
-| Edição com CRM duplicado | Nome e CRM originais preservados no banco | |
-| Exclusão de médico com consulta | Operação bloqueada com mensagem na interface | |
-| Cadastro e edição de enfermeiro | Dados gravados e recuperados corretamente | |
-| Remoção da especialização de enfermeiro | Profissional mantido no banco | |
-| Exclusão de profissional com evolução clínica | Operação bloqueada | |
-| CPF duplicado no cadastro e edição de profissional | Mensagem de erro e campos preservados | |
+| Edição com CRM duplicado | Nome e CRM originais preservados no banco |[Ver evidência](evidencias/Profissional-e-medico-com-o-mesmo-ID.png) |
+| Exclusão de médico com consulta | Operação bloqueada com mensagem na interface |[Ver evidência](evidencias/exclusão-de-medico-com-consulta.png) |
+| Cadastro e edição de enfermeiro | Dados gravados e recuperados corretamente |[Ver evidência](evidencias/cadastro-de-enfermeiro.png) |
+| Exclusão completa de profissional de teste | Profissional e sua especialização removidos; ausência conferida nas duas listagens | |
+| Exclusão de profissional com evolução clínica | Operação bloqueada |[Ver evidência](evidencias/exclusão-de-profissional-com-evolução-clinica.png) |
+| CPF duplicado no cadastro e edição de profissional | Mensagem de erro e campos preservados |[Ver evidência](evidencias/CPF-duplicado-no-cadastro-de-profissional.png) |
 
+> Durante o desenvolvimento, foi testada a remoção isolada da
+> especialização, mantendo o profissional base. Esse comportamento
+> foi posteriormente removido para respeitar a especialização total
+> e exclusiva definida no MER. Não representa o funcionamento atual.
 
 ## Concorrência — exclusividade de especialização
 
