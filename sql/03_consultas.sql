@@ -27,7 +27,7 @@ WHERE valor BETWEEN 150.00 AND 200.00 -- Filtra valores entre 150 e 200 (inclusi
 ORDER BY data_hora; -- Ordena por data
  
  
--- 4. Pergunta: Quais medicamentos de uso contínuo estão cadastrados na farmácia da clínica?
+-- 4. Quais medicamentos cadastrados possuem um dos nomes da lista informada?
 -- Relaciona-se com RN19: "Todo medicamento cadastrado deve possuir nome obrigatório"
 SELECT id_medicamento, nome
 FROM Medicamento -- Seleciona identificador e nome da tabela Medicamento
