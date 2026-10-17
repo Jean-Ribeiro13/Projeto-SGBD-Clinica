@@ -263,19 +263,6 @@ Registre os resultados em [testes da Etapa 2](docs/testes-etapa2.md) e mantenha 
 | IntelliJ não reconhece a tabela no editor | A conexão usada pela inspeção SQL da IDE pode não estar configurada, mesmo que a aplicação funcione. |
 | `ClinicaApplication` não encontrada no módulo | Abra a pasta `clinica`, importe o `pom.xml` como projeto Maven e crie a execução pelo método `main`. Reconfigure o perfil e as variáveis locais se necessário. |
 
-## Andamento dos artefatos da Etapa 2
-
-| Artefato | Situação atual e trabalho restante |
-| --- | --- |
-| **B1 — Aplicação com interface** | Fluxos de pacientes, profissionais de saúde, médicos e enfermeiros implementados e testados manualmente, com tratamento de erros. Operação multitabela implementada. Faltam concluir as duas telas parametrizadas com junção e agregação e o relatório alimentado por uma visão. |
-| **B2 — Acesso a dados** | SQL explícito com parâmetros nas operações que recebem entradas e credenciais por variáveis de ambiente. Falta documentar a tentativa de injeção de SQL e o resultado obtido. |
-| **B3 — Transações e concorrência** | Sucesso e rollback de operações multitabela verificados com médicos. Falta consolidar a descrição da transação e as evidências, executar o experimento com duas sessões e justificar o isolamento adotado. |
-| **B4 — Otimização** | Pendente: analisar três consultas com `EXPLAIN`, justificar índices e comparar planos e tempos, informando o volume de dados. |
-| **B5 — Segurança e acesso** | Pendente: três perfis com `GRANT` e `REVOKE`, visão de acesso restrito, senhas da aplicação com hash e sal e documentação dos cuidados com dados pessoais. A aplicação ainda não possui login. |
-| **B6 — Auditoria** | Pendente: dois gatilhos registrando autor, data e valores anteriores e posteriores, com justificativa do que auditar. |
-| **B7 — Projeto físico** | Pendente: revisão dos tipos, estimativa de crescimento para dois anos, plano de backup e restauração e avaliação de particionamento ou arquivamento quando aplicável. |
-| **B8 — Relatório e apresentação** | Organização dos testes e evidências iniciada. Faltam consolidar o relatório com a Etapa 1 revisada, declarar o uso de IA e preparar a demonstração ao vivo. |
-
 ### Próxima funcionalidade
 
 Está em preparação a tela **Resumo de consultas por médico e período**. A consulta SQL com junções, contagem de consultas e soma dos valores já foi conferida no Workbench. A integração com filtros, repository, controller e HTML ainda está pendente; a tela não está disponível na aplicação.
