@@ -114,7 +114,8 @@ CREATE TABLE Paciente (
     CONSTRAINT uq_paciente_cpf -- Impede que dois pacientes sejam cadastrados com o mesmo CPF
         UNIQUE (cpf),
 	CONSTRAINT ck_paciente_cpf
-		CHECK (cpf REGEXP '^[0-9]{11}$');
+		CHECK (cpf REGEXP '^[0-9]{11}$')
+
 );
 
 -- =============================================================================================================================

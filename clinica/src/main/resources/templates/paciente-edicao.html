@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar paciente</title>
+
+</head>
+<body>
+<h1>Editar paciente</h1>
+
+<form th:object="${formulario}"
+      th:action="@{/pacientes/{id}/editar(id=${idPaciente})}"
+      method="post">
+
+    <p th:if="${erro != null}"
+       th:text="${erro}"
+       role="alert">
+    </p>
+
+    <div>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" th:field="*{nome}"
+               maxlength="100" required>
+        <p th:if="${#fields.hasErrors('nome')}"
+           th:errors="*{nome}">
+        </p>
+    </div>
+
+    <div>
+        <label for="cpf">CPF:</label>
+        <input type="text" id="cpf" th:field="*{cpf}"
+               maxlength="11" required>
+        <p th:if="${#fields.hasErrors('cpf')}"
+           th:errors="*{cpf}">
+        </p>
+    </div>
+
+    <div>
+        <label for="dataNascimento">Data de nascimento:</label>
+        <input type="date" id="dataNascimento"
+               th:field="*{dataNascimento}">
+    </div>
+
+    <button type="submit">Salvar alterações</button>
+</form>
+
+<a th:href="@{/pacientes}">Voltar à listagem</a>
+</body>
+</html>

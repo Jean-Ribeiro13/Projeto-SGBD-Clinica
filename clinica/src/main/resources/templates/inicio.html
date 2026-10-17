@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Clínica Médica</title>
+</head>
+<body>
+    <h1>Clínica Médica</h1>
+    <p>Selecione um cadastro para consultar e gerenciar os registros.</p>
+    <nav aria-label="Cadastros">
+        <ul>
+            <li>
+                <a th:href="@{/pacientes}">Pacientes</a>
+            </li>
+            <li>
+                <a th:href="@{/profissionais}">Profissionais de saúde</a>
+            </li>
+            <li>
+                <a th:href="@{/medicos}">Médicos</a>
+            </li>
+            <li>
+                <a th:href="@{/enfermeiros}">Enfermeiros</a>
+            </li>
+        </ul>
+    </nav>
+</body>
+</html>
