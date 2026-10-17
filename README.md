@@ -2,7 +2,7 @@
 
 Projeto acadêmico de banco de dados para uma clínica médica, com aplicação web desenvolvida em Java, Spring Boot e MySQL.
 
-A aplicação possui CRUD de pacientes e cadastros de profissionais de saúde, médicos e enfermeiros. Os cadastros de médico e enfermeiro criam o respectivo registro base em `Profissional_Saude`; médicos também podem informar um supervisor. O CRUD de medicamentos foi implementado, enquanto as demais entidades do banco ainda não possuem telas CRUD.
+A aplicação possui CRUD de pacientes e cadastros de profissionais de saúde, médicos e enfermeiros. Os cadastros de médico e enfermeiro criam o respectivo registro base em `Profissional_Saude`; médicos também podem informar um supervisor. Os CRUDs de medicamentos e especialidades foram implementado, enquanto as demais entidades do banco ainda não possuem telas CRUD.
 
 ## Funcionalidades implementadas
 
@@ -19,6 +19,9 @@ A aplicação possui CRUD de pacientes e cadastros de profissionais de saúde, m
 - Cadastro, listagem, edição e remoção da especialização de médico, com CRM e supervisor opcional.
 - Cadastro, listagem, edição e remoção da especialização de enfermeiro, com COREN.
 - Ao remover médico ou enfermeiro, o registro base do profissional é mantido.
+- Cadastro, edição e exclusão de especialidades.
+- Tratamento de nome duplicado, mantendo o dado preenchido no formulário.
+- Tratamento de exclusão bloqueada quando há médicos vinculados à especialidade.
 - Teste de conexão com o MySQL.
 
 A data de nascimento é opcional para pacientes e obrigatória para profissionais de saúde, médicos e enfermeiros. A validação do CPF verifica o formato, mas não calcula os dígitos verificadores. A unicidade do CPF é verificada separadamente nas tabelas de pacientes e profissionais de saúde.
@@ -172,7 +175,7 @@ Mantenha **Store as project file** desmarcado na configuração de execução. A
 2. Execute o método `main` pelo botão **Run**.
 3. Aguarde a mensagem `Started ClinicaApplication` no console.
 4. Acesse [a página inicial](http://localhost:8080).
-5. Selecione **Pacientes**, **Profissionais de saúde**, **Médicos** ou **Enfermeiros**.
+5. Selecione **Pacientes**, **Profissionais de saúde**, **Médicos**, **Enfermeiros**, **Medicamentos**, **Especialidades**.
 
 Endereços disponíveis:
 
@@ -189,6 +192,8 @@ Endereços disponíveis:
 | `http://localhost:8080/enfermeiro/novo` | Cadastro de enfermeiro, com criação do profissional base |
 | `http://localhost:8080/teste-banco` | Teste de conexão com o MySQL |
 | `http://localhost:8080/medicamentos` | Listagem e acesso ao CRUD de medicamentos |
+| `http://localhost:8080/especialidades` | Listagem e CRUD de especialidades |
+| `http://localhost:8080/especialidades/novo` | Formulário de cadastro de especialidade |
 
 As listagens usam `/medicos` e `/enfermeiros`, mas as rotas de cadastro e edição das especializações usam `/medico` e `/enfermeiro`, no singular. Utilize os links das páginas para navegar.
 
@@ -223,12 +228,21 @@ No CRUD de pacientes:
 - `paciente-formulario.html` apresenta o cadastro.
 - `paciente-edicao.html` apresenta a edição.
 
-  No CRUD de medicamentos:
+No CRUD de medicamentos:
 
 - `Medicamento.java` representa um medicamento.
 - `MedicamentoRepository.java` executa as operações no banco de dados.
 - `MedicamentoController.java` controla as rotas de listagem, cadastro, edição e exclusão.
 - `templates/medicamentos/lista.html` contém o formulário e a tabela de medicamentos.
+
+No CRUD de especialidades:
+
+-`Especialidade.java` representa uma especialidade e a quantidade de médicos vinculados.
+-`EspecialidadeFormulario.java` recebe o nome e declara as regras de validação.
+-`EspecialidadeRepository.java` executa as operações SQL, incluindo a listagem com junção e contagem.
+-`EspecialidadeController.java` conecta as operações às rotas e páginas.
+-`especialidades.html` exibe a listagem.
+-`especialidade-formulario.html` é usado para cadastro e edição.
 
 ## Verificação manual
 
@@ -256,6 +270,14 @@ Para conferir a aplicação em outro computador:
 20. Cadastre um medicamento fictício e confira se ele aparece na listagem.
 21. Edite o nome do medicamento e confira a alteração.
 22. Exclua o medicamento de teste e confira se ele deixou de aparecer na listagem.
+23. Acesse `/especialidades` e confira a listagem e a contagem de médicos por especialidade.
+24. Cadastre uma especialidade fictícia e confira se ela aparece na listagem.
+25. Tente cadastrar outra com o mesmo nome e confira a mensagem de erro e a preservação do campo.
+26. Tente enviar um nome composto apenas por espaços.
+27. Edite o nome da especialidade e confira a alteração.
+28. Tente editar para um nome já existente e confira o bloqueio.
+29. Exclua a especialidade de teste, sem médicos vinculados, e confira que ela saiu da listagem.
+30. Tente excluir uma especialidade com médico vinculado e confira a mensagem de bloqueio.
 
 Os resultados desses fluxos foram confirmados manualmente durante o desenvolvimento. Ainda não há uma suíte de testes automatizados. Utilize dados fictícios para reproduzir os testes.
 
@@ -275,6 +297,7 @@ Registre os resultados em [testes da Etapa 2](docs/testes-etapa2.md) e mantenha 
 | Tabela não encontrada durante a execução | Confira a execução do DDL e o banco selecionado na conexão. |
 | IntelliJ não reconhece a tabela no editor | A conexão usada pela inspeção SQL da IDE pode não estar configurada, mesmo que a aplicação funcione. |
 | `ClinicaApplication` não encontrada no módulo | Abra a pasta `clinica`, importe o `pom.xml` como projeto Maven e crie a execução pelo método `main`. Reconfigure o perfil e as variáveis locais se necessário. |
+| Rota `/especialidades` retorna 404 | Confira se o perfil mysql está ativo e reinicie a aplicação. |
 
 ### Próxima funcionalidade
 
@@ -282,7 +305,7 @@ Está em preparação a tela **Resumo de consultas por médico e período**. A c
 
 Os totais dessa consulta representam os valores registrados nas consultas, não pagamentos recebidos. O modelo não registra pagamentos nem status de realização da consulta.
 
-O CRUD de medicamentos foi implementado com funcionalidades de listagem, cadastro, edição e exclusão. A integração final com as demais funcionalidades do projeto ainda deve ser verificada.
+Os CRUDs de medicamentos e especialidades form implementados com funcionalidades de listagem, cadastro, edição e exclusão. A integração final com as demais funcionalidades do projeto ainda deve ser verificada.
 
 ## Integrantes
 
