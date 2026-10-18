@@ -167,3 +167,29 @@ A sessão A bloqueou o registro base com `SELECT ... FOR UPDATE`. A tentativa de
 - [Resultado final — experimento anterior](evidencias/concorrencia-resultado-final.png)
 
 Esse registro é separado do experimento de 18/10: usa outro profissional, outras conexões e liberação por COMMIT. O isolamento informado para as sessões 10 e 74 não é atribuído às sessões 43 e 45.
+
+## B4 — Otimização de Consultas
+
+Este tópico apresenta o estudo de desempenho de três consultas do sistema da clínica, escolhidas entre as quinze do arquivo `03_consultas.sql`. Para cada uma foi seguido o mesmo procedimento:
+
+1. Obter o plano de execução com `EXPLAIN` antes de qualquer intervenção e interpretá-lo em texto.
+2. Medir o tempo real de execução com `EXPLAIN ANALYZE`.
+3. Criar um índice, justificando a escolha das colunas e a ordem delas.
+4. Obter o plano e o tempo depois da intervenção.
+5. Comparar os resultados, informando o volume de dados, e discutir com honestidade o que aconteceu, inclusive quando o índice não trouxe ganho.
+
+Como o tempo foi medido: cada `EXPLAIN ANALYZE` foi executado 5 vezes. A primeira execução foi descartada (cache frio) e foi usada a mediana das quatro seguintes. O valor registrado é o tempo até a última linha do primeiro nó do plano (`actual time=a..b`, valor `b`, em milissegundos). Antes de cada medição foi executado ANALYZE TABLE para atualizar as estatísticas do otimizador.
+
+### Ambiente e volume de dados
+
+### Comportamento observado
+
+| Item | Valor |
+| --- | --- |
+| Versão do MySQL | 8.0.46 |  
+| Linhas em Consulta | 60 |
+| Linhas em Medico | 14 |
+| Linhas em Profissional_Saude | 20 |
+
+<img width="557" height="326" alt="image" src="https://github.com/user-attachments/assets/ebc3653e-92f8-48bf-a6e3-2b53b37aa12f" />
+
