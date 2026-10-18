@@ -30,7 +30,7 @@ CREATE TRIGGER trg_auditoria_paciente_update
 AFTER UPDATE ON Paciente
 FOR EACH ROW
 BEGIN
-    INSERT INTO Auditoria_Log (tabela_afetada, operacao, usuario, data_hora, dados_antigos, dados_novos)
+    INSERT INTO Auditoria_Log (tabela_afetada, operacao, usuario_db, data_hora, dados_antigos, dados_novos)
     VALUES (
         'Paciente',
         'UPDATE',
