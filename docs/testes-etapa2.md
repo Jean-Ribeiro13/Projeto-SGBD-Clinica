@@ -180,7 +180,7 @@ Este tópico apresenta o estudo de desempenho de três consultas do sistema da c
 
 Como o tempo foi medido: cada `EXPLAIN ANALYZE` foi executado 5 vezes. A primeira execução foi descartada (cache frio) e foi usada a mediana das quatro seguintes. O valor registrado é o tempo até a última linha do primeiro nó do plano (`actual time=a..b`, valor `b`, em milissegundos). Antes de cada medição foi executado ANALYZE TABLE para atualizar as estatísticas do otimizador.
 
-### Ambiente e volume de dados
+## Ambiente e volume de dados
 
 ### Comportamento observado
 
@@ -215,7 +215,7 @@ Como o tempo foi medido: cada `EXPLAIN ANALYZE` foi executado 5 vezes. A primeir
 Observação: a tabela `Consulta` já possui a chave primária e a restrição UNIQUE `(id_medico, data_hora)`, criada para a regra RN16, além do índice criado pelo MySQL para a chave estrangeira de paciente.
 
 
-### Estudo das consultas
+## Estudo das consultas
 
 Consulta 1: médicos cadastrados em ordem alfabética
 Pergunta de negócio: quais médicos estão cadastrados, com seu CRM, em ordem alfabética? (relacionada à RN02).
