@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Especialidades dos médicos | Clínica Médica</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 32px auto; padding: 0 16px; color: #243247; }
+        a { color: #155e75; }
+        label { display: block; margin: 12px 0 5px; }
+        input, select { padding: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #d1d5db; }
+        th { background: #f1f5f9; }
+        .mensagem { padding: 12px; margin: 12px 0; }
+        .sucesso { background: #ecfdf5; color: #166534; }
+        .erro { background: #fff1f2; color: #9f1239; }
+        .acoes { display: flex; align-items: center; gap: 8px; }
+        form { margin: 0; }
+    </style>
+</head>
+<body>
+<nav><a th:href="@{/}">Início</a> · <a th:href="@{/medicos}">Médicos</a></nav>
+<main>
+    <h1>Especialidades dos médicos</h1>
+    <p>Gerencie o vínculo e a data em que cada médico obteve a especialidade.</p>
+
+    <p class="mensagem sucesso" th:if="${sucesso != null}" th:text="${sucesso}" role="status"></p>
+    <p class="mensagem erro" th:if="${erro != null}" th:text="${erro}" role="alert"></p>
+
+    <section>
+        <h2>Vincular especialidade</h2>
+        <p th:if="${#lists.isEmpty(medicos)}">Cadastre pelo menos um médico antes de criar vínculos.</p>
+        <p th:if="${#lists.isEmpty(especialidades)}">Não há especialidades cadastradas. Execute o script sql/02_dml.sql ou cadastre especialidades no banco.</p>
+        <form th:action="@{/medico-especialidades}" th:object="${formulario}" method="post"
+              th:if="${!#lists.isEmpty(medicos) and !#lists.isEmpty(especialidades)}">
+            <label for="idMedico">Médico</label>
+            <select id="idMedico" th:field="*{idMedico}" required>
+                <option value="">Selecione um médico</option>
+                <option th:each="medico : ${medicos}" th:value="${medico.id()}"
+                        th:text="|${medico.nome()} (${medico.registro()})|"></option>
+            </select>
+            <p class="erro" th:if="${#fields.hasErrors('idMedico')}" th:errors="*{idMedico}"></p>
+
+            <label for="idEspecialidade">Especialidade</label>
+            <select id="idEspecialidade" th:field="*{idEspecialidade}" required>
+                <option value="">Selecione uma especialidade</option>
+                <option th:each="especialidade : ${especialidades}" th:value="${especialidade.id()}"
+                        th:text="${especialidade.nome()}"></option>
+            </select>
+            <p class="erro" th:if="${#fields.hasErrors('idEspecialidade')}" th:errors="*{idEspecialidade}"></p>
+
+            <label for="dataObtencao">Data de obtenção</label>
+            <input id="dataObtencao" type="date" th:field="*{dataObtencao}" required>
+            <p class="erro" th:if="${#fields.hasErrors('dataObtencao')}" th:errors="*{dataObtencao}"></p>
+
+            <button type="submit">Vincular</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Vínculos cadastrados</h2>
+        <p th:if="${#lists.isEmpty(vinculos)}">Nenhum vínculo cadastrado.</p>
+        <table th:unless="${#lists.isEmpty(vinculos)}">
+            <thead>
+            <tr><th>Médico</th><th>CRM</th><th>Especialidade</th><th>Data de obtenção</th><th>Ações</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="vinculo : ${vinculos}">
+                <td th:text="${vinculo.nomeMedico()}"></td>
+                <td th:text="${vinculo.crm()}"></td>
+                <td th:text="${vinculo.nomeEspecialidade()}"></td>
+                <td th:text="${#temporals.format(vinculo.dataObtencao(), 'dd/MM/yyyy')}"></td>
+                <td>
+                    <div class="acoes">
+                        <form th:action="@{/medico-especialidades/{medico}/{especialidade}/editar(medico=${vinculo.idMedico()}, especialidade=${vinculo.idEspecialidade()})}"
+                              method="post">
+                            <input type="date" name="dataObtencao" th:value="${vinculo.dataObtencao()}" required>
+                            <button type="submit">Atualizar data</button>
+                        </form>
+                        <form th:action="@{/medico-especialidades/{medico}/{especialidade}/excluir(medico=${vinculo.idMedico()}, especialidade=${vinculo.idEspecialidade()})}"
+                              method="post" onsubmit="return confirm('Remover este vínculo médico–especialidade?');">
+                            <button type="submit">Excluir vínculo</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

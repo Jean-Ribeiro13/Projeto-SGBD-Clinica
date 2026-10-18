@@ -1,82 +1,95 @@
 # Clínica Médica — Spring Boot e MySQL
 
-Projeto acadêmico de banco de dados para uma clínica médica, com aplicação web desenvolvida em Java, Spring Boot e MySQL.
+Projeto acadêmico de banco de dados com aplicação web em Java, Spring Boot e MySQL. Possui telas de cadastro, listagem, edição e exclusão de pacientes, médicos, enfermeiros, medicamentos e especialidades, além de uma listagem geral de profissionais de saúde.
 
-A aplicação possui CRUD de pacientes e cadastros de profissionais de saúde, médicos e enfermeiros. Os cadastros de médico e enfermeiro criam o respectivo registro base em `Profissional_Saude`; médicos também podem informar um supervisor. Os CRUDs de medicamentos e especialidades foram implementado, enquanto as demais entidades do banco ainda não possuem telas CRUD.
+As demais entidades do banco ainda não possuem telas CRUD. O modelo não registra pagamentos nem status de realização das consultas.
 
 ## Funcionalidades implementadas
 
-- Página inicial com acesso aos pacientes, profissionais de saúde, médicos, enfermeiros e medicamentos.
-- Listagem de pacientes em ordem alfabética.
-- Cadastro e edição de nome, CPF e data de nascimento.
-- Exclusão com confirmação.
-- Validação de nome obrigatório, com até 100 caracteres.
-- Validação do formato do CPF: exatamente 11 dígitos, sem pontuação.
-- Tratamento de CPF duplicado, mantendo os dados preenchidos no formulário.
-- Mensagens de sucesso após cadastro, edição e exclusão.
-- Tratamento de exclusões bloqueadas por registros vinculados.
-- Listagem, cadastro, edição e exclusão de profissionais de saúde.
-- Cadastro, listagem, edição e remoção da especialização de médico, com CRM e supervisor opcional.
-- Cadastro, listagem, edição e remoção da especialização de enfermeiro, com COREN.
-- Ao remover médico ou enfermeiro, o registro base do profissional é mantido.
-- Cadastro, edição e exclusão de especialidades.
-- Tratamento de nome duplicado, mantendo o dado preenchido no formulário.
-- Tratamento de exclusão bloqueada quando há médicos vinculados à especialidade.
-- Teste de conexão com o MySQL.
+### Pacientes
 
-A data de nascimento é opcional para pacientes e obrigatória para profissionais de saúde, médicos e enfermeiros. A validação do CPF verifica o formato, mas não calcula os dígitos verificadores. A unicidade do CPF é verificada separadamente nas tabelas de pacientes e profissionais de saúde.
+- Listagem em ordem alfabética e cadastro e edição de nome, CPF e data de nascimento.
+- Nome obrigatório, com até 100 caracteres; CPF com exatamente 11 dígitos; data de nascimento opcional.
+- Tratamento de CPF duplicado, preservando os dados preenchidos.
+- Exclusão com confirmação e mensagens de sucesso ou bloqueio.
+- Consultas ou prontuário vinculados impedem a exclusão. Quando permitida, os contatos de emergência são removidos em cascata.
 
-CRM e COREN são obrigatórios nos respectivos cadastros e únicos em suas tabelas. O supervisor de um médico é opcional e precisa ser outro médico existente. Na edição, o próprio médico não aparece na lista de supervisores.
+### Profissionais de saúde, médicos e enfermeiros
 
-O banco impede a exclusão de pacientes com consultas ou prontuário vinculado. Quando a exclusão é permitida, os contatos de emergência associados são removidos em cascata.
+- Cadastro de médico com CRM e supervisor opcional, ou de enfermeiro com COREN.
+- Cada cadastro cria um profissional e sua especialização com o mesmo ID, em uma única transação.
+- Listagem geral de profissionais, listagens por especialização e edição dos dados.
+- Nome, CPF e data de nascimento obrigatórios. CRM e COREN são obrigatórios nos respectivos formulários e únicos em suas tabelas.
+- O supervisor deve ser outro médico existente. O próprio médico é excluído das opções ao abrir a edição e ao retornar com erro; a escolha também é validada no servidor.
+- Exclusão completa do profissional e de sua especialização, quando não existem vínculos impeditivos. Consultas e evoluções clínicas podem bloquear a operação.
+- Mensagens de duplicidade de CPF ou registro profissional e preservação dos campos do formulário.
 
-### Profissionais e especializações
+Não há cadastro de profissional sem especialização nem operação de exclusão apenas da especialização. Também não há fluxo para converter médico em enfermeiro ou vice-versa.
 
-- Cadastrar um médico ou enfermeiro cria um novo registro em `Profissional_Saude` e outro em `Medico` ou `Enfermeiro`, utilizando o mesmo ID.
-- Cadastrar apenas um profissional não cria uma especialização automaticamente. Ainda não há fluxo para adicionar uma especialização a um profissional já existente.
-- Remover como médico ou enfermeiro exclui somente a especialização e mantém o profissional base.
-- Excluir o profissional base também remove suas especializações em cascata, quando as demais restrições permitem a operação.
-- Consultas vinculadas impedem remover o médico; evoluções clínicas vinculadas impedem excluir o profissional base.
-- Remover somente a especialização de enfermeiro mantém as evoluções vinculadas ao profissional base.
+A validação do CPF verifica o formato, sem calcular os dígitos verificadores. Sua unicidade é verificada separadamente nas tabelas de pacientes e profissionais. CRM e COREN têm limite de 20 caracteres; a aplicação ainda não valida um padrão específico de formato desses registros.
 
-### Transações implementadas
+### Especialidades
 
-Os métodos de criação e atualização de `ProfissionalSaudeRepository` utilizam `@Transactional`. No cadastro e na edição de médicos ou enfermeiros, as alterações no profissional e na especialização fazem parte da mesma transação.
+- Cadastro, edição, listagem e exclusão.
+- Listagem com a quantidade de médicos vinculados a cada especialidade.
+- Validação do nome e tratamento de nomes duplicados, preservando o campo preenchido.
+- Bloqueio de exclusão quando existem médicos vinculados.
 
-Foram verificados manualmente dois cenários de falha com médicos:
+A contagem da listagem não substitui as duas telas com filtros, junções e agregações exigidas na Etapa 2.
 
-1. **Cadastro com CPF novo e CRM duplicado:** a falha ao inserir em `Medico` desfaz também a inserção em `Profissional_Saude`.
-2. **Edição do nome e uso de CRM pertencente a outro médico:** a falha na especialização desfaz a alteração do nome, preservando os valores originais no banco.
+### Medicamentos
 
-Esses testes demonstram o rollback da operação multitabela. O experimento de concorrência e a justificativa do nível de isolamento ainda estão pendentes.
+- Listagem, cadastro, edição e exclusão na mesma página.
+- Validações no servidor e tratamento de erros estão em revisão por um integrante da equipe; a conclusão desses ajustes ainda precisa ser conferida.
+
+## Integridade e transações
+
+Os métodos de criação e atualização de `ProfissionalSaudeRepository` usam `@Transactional`. Para médicos e enfermeiros, as alterações em `Profissional_Saude` e na tabela da especialização pertencem à mesma transação.
+
+O script `04_integridade_especializacao.sql` instala quatro triggers:
+
+- Duas impedem inserir um profissional como médico se já for enfermeiro, e vice-versa. Utilizam bloqueio do registro base com `FOR UPDATE`.
+- Duas impedem alterar diretamente o identificador nas tabelas `Medico` e `Enfermeiro` por `UPDATE`.
+
+A totalidade da especialização depende dos fluxos da aplicação: ela cria o profissional junto com sua especialização e exclui o conjunto. Os triggers não impedem, por si só, que uma operação SQL direta crie um profissional sem especialização ou remova somente a especialização. Os triggers de `UPDATE` também não interceptam atualizações propagadas por cascata de chave estrangeira.
+
+Esses triggers são de integridade, não de auditoria.
+
+### Verificações realizadas e limites
+
+- Na edição de médica, a tentativa de alterar o nome e usar um CRM existente foi rejeitada. Ao reabrir, nome e CRM originais estavam preservados, evidenciando o rollback da edição multitabela.
+- Na edição de enfermeiro, um CPF pertencente a outro profissional foi rejeitado e o CPF original permaneceu ao reabrir o formulário.
+- O filtro de supervisor foi verificado ao abrir a edição e após erro de CRM duplicado.
+- Foram testadas as rejeições de dupla especialização e de alteração direta do ID da especialização.
+- No experimento de concorrência, duas sessões InnoDB em `REPEATABLE-READ` foram utilizadas. A sessão A bloqueou com `SELECT ... FOR UPDATE` o registro base de um profissional já cadastrado como médico. A sessão B tentou inseri-lo como enfermeiro: aguardou a liberação do bloqueio e depois recebeu a rejeição do trigger, seguida de `ROLLBACK`. O resultado final manteve somente a especialização de médico.
+
+Esse experimento demonstra espera por bloqueio e posterior rejeição; não corresponde a duas criações simultâneas de especialização. Ainda falta verificar e justificar o nível de isolamento efetivamente utilizado pela conexão da aplicação.
+
+A complementação das evidências do cadastro com CRM duplicado e da exclusão completa de um profissional de teste ficou pendente. O histórico de resultados e as capturas devem ser mantidos em [testes da Etapa 2](docs/testes-etapa2.md) e `docs/evidencias/`. Não há suíte de testes automatizados documentada.
 
 ## Tecnologias
 
-- Java — JDK 25
-- Spring Boot 4.1.1
-- Maven
-- Spring Web MVC
-- Thymeleaf
-- Spring JDBC
-- Bean Validation
-- MySQL Connector/J
-- MySQL 8.0.16 ou superior
+- JDK 25 e Spring Boot 4.1.1.
+- Maven, Spring Web MVC e Thymeleaf.
+- Spring JDBC, Bean Validation e MySQL Connector/J.
+- MySQL 8.0.16 ou superior, com tabelas InnoDB.
 
-O acesso ao banco utiliza SQL explícito e parâmetros nas operações que recebem dados do usuário. As tabelas são criadas pelos scripts SQL.
+O projeto utiliza SQL explícito e parâmetros nas operações que recebem dados do usuário. A estrutura do banco é criada pelos scripts SQL.
 
 ## Estrutura do repositório
 
 ```text
 repositorio/
-├── .gitignore
 ├── README.md
+├── .gitignore
 ├── docs/
 │   ├── testes-etapa2.md
 │   └── evidencias/
 ├── sql/
 │   ├── 01_ddl.sql
 │   ├── 02_dml.sql
-│   └── 03_consultas.sql
+│   ├── 03_consultas.sql
+│   └── 04_integridade_especializacao.sql
 └── clinica/
     ├── pom.xml
     └── src/main/
@@ -97,215 +110,148 @@ repositorio/
 
 ### 1. Preparar o ambiente
 
-Instale:
+Instale o JDK 25, o MySQL Server, o IntelliJ IDEA e o MySQL Workbench ou outro cliente SQL. É possível usar o Maven integrado ao IntelliJ; a primeira abertura precisa de internet para baixar as dependências.
 
-- JDK 25.
-- MySQL Server.
-- IntelliJ IDEA.
-- MySQL Workbench ou outro cliente para executar os scripts.
+Clone o repositório ou extraia o ZIP antes de abrir o projeto.
 
-O Maven integrado ao IntelliJ pode ser utilizado. É necessário acesso à internet para baixar as dependências na primeira abertura.
+### 2. Preparar o banco
 
-### 2. Criar e preencher o banco
+Para uma instalação nova, abra os arquivos no Workbench e execute nesta ordem, conferindo os erros entre cada etapa:
 
-Abra uma conexão com o MySQL e execute os arquivos da pasta `sql` nesta ordem:
+1. `sql/01_ddl.sql`: cria o banco `clinica_medica`, as tabelas e as restrições.
+2. `sql/02_dml.sql`: insere os dados de exemplo.
+3. `sql/04_integridade_especializacao.sql`: instala os quatro triggers de integridade. Execute o arquivo completo, incluindo os comandos `DELIMITER`, com um usuário autorizado a criar triggers.
+4. Opcionalmente, `sql/03_consultas.sql`: executa consultas de leitura para explorar os dados; não é necessário para iniciar a aplicação.
 
-1. `01_ddl.sql`: cria o banco `clinica_medica`, as tabelas e suas restrições.
-2. `02_dml.sql`: insere os dados de exemplo.
-3. `03_consultas.sql`: executa as consultas de leitura para explorar os dados.
+O DDL e a carga destinam-se a uma base nova. Não repita esses arquivos em um banco preenchido: `CREATE DATABASE IF NOT EXISTS` não torna toda a instalação reexecutável. O script de triggers também usa `CREATE TRIGGER` e não deve ser repetido se os triggers já existem.
 
-Confira se cada arquivo terminou sem erros antes de executar o seguinte.
+Em uma base existente, confira a estrutura, os dados e os triggers antes de aplicar alterações. A criação dos triggers não corrige registros inconsistentes que já estavam no banco.
 
-Os scripts de criação e carga devem ser executados em uma base nova. Eles não foram preparados para reexecução sobre um banco já preenchido.
-
-Para conferir a carga inicial:
+Para conferir a instalação:
 
 ```sql
 USE clinica_medica;
 
-SELECT COUNT(*) AS total_pacientes
-FROM Paciente;
+SELECT COUNT(*) AS total_pacientes FROM Paciente;
+SHOW TRIGGERS FROM clinica_medica;
 ```
 
-Após a carga original, o resultado esperado é 40 pacientes. Esse total pode mudar conforme a aplicação for utilizada.
+A carga original contém 40 pacientes; esse total muda com o uso da aplicação. Na instalação nova, a segunda consulta deve mostrar os quatro triggers definidos no script 04.
 
-Os scripts reproduzem a estrutura e os dados de exemplo. Eles não incluem automaticamente alterações feitas posteriormente pela aplicação.
+Os scripts reproduzem a estrutura e os dados de exemplo, não as alterações feitas posteriormente pela aplicação.
 
-### 3. Abrir o projeto no IntelliJ
+### 3. Abrir no IntelliJ
 
-1. Clone o repositório ou baixe e extraia o ZIP.
-2. No IntelliJ, escolha **Open**.
-3. Selecione a pasta `clinica`, que contém o arquivo `pom.xml`.
-4. Abra como projeto Maven, se solicitado.
-5. Aguarde o carregamento das dependências.
-6. Em **File > Project Structure > Project**, selecione o JDK 25.
-7. Confira se a importação e a execução do Maven também utilizam o JDK 25.
+1. Escolha **Open** e selecione a pasta `clinica`, que contém `pom.xml`.
+2. Importe como projeto Maven, se solicitado, e aguarde as dependências.
+3. Em **File > Project Structure > Project**, selecione o JDK 25.
+4. Confira se o Maven e a configuração de execução também utilizam o JDK 25.
+5. Se necessário, adicione a pasta de instalação do JDK do seu computador.
 
-Caso o JDK não apareça na lista, adicione a pasta onde ele foi instalado no seu computador.
+### 4. Configurar a conexão
 
-### 4. Configurar a conexão com o banco
+Abra `ClinicaApplication.java` e crie a configuração de execução pelo botão junto ao método `main`, caso ela ainda não exista. Em **Run > Edit Configurations**, selecione essa configuração.
 
-Abra a configuração de execução de `ClinicaApplication` em **Run > Edit Configurations**.
-
-No campo **Active profiles**, informe:
-
-```text
-mysql
-```
-
-Se esse campo não estiver disponível, adicione a variável de ambiente `SPRING_PROFILES_ACTIVE` com o valor `mysql`.
+Em **Active profiles**, informe `mysql`. Como alternativa, use a variável de ambiente `SPRING_PROFILES_ACTIVE=mysql`.
 
 Em **Environment variables**, configure:
 
 | Variável | Valor |
 | --- | --- |
-| `DB_USER` | Seu usuário do MySQL |
-| `DB_PASSWORD` | A senha desse usuário |
+| `DB_USER` | Usuário do MySQL |
+| `DB_PASSWORD` | Senha desse usuário |
 | `DB_URL` | `jdbc:mysql://localhost:3306/clinica_medica` |
 
-Ajuste o host e a porta caso sua instalação utilize valores diferentes.
+Ajuste host e porta conforme a conexão local. Se o campo não aparecer, procure **Environment variables** em **Modify options**.
 
-As credenciais devem ser configuradas localmente por cada pessoa. Não coloque senhas nos arquivos versionados nem compartilhe configurações de execução que contenham credenciais.
+Cada integrante configura suas credenciais localmente. Não versione senhas ou configurações de execução contendo credenciais. Mantenha **Store as project file** desmarcado e `.idea/` fora do versionamento.
 
-Mantenha **Store as project file** desmarcado na configuração de execução. As configurações pessoais do IntelliJ em `.idea/` devem permanecer fora do versionamento.
+### 5. Iniciar e acessar
 
-### 5. Iniciar a aplicação
+Execute `ClinicaApplication`, aguarde `Started ClinicaApplication` no console e abra [a página inicial](http://localhost:8080).
 
-1. Abra `ClinicaApplication.java`.
-2. Execute o método `main` pelo botão **Run**.
-3. Aguarde a mensagem `Started ClinicaApplication` no console.
-4. Acesse [a página inicial](http://localhost:8080).
-5. Selecione **Pacientes**, **Profissionais de saúde**, **Médicos**, **Enfermeiros**, **Medicamentos**, **Especialidades**.
-
-Endereços disponíveis:
-
-| Endereço | Função |
+| Rota | Função |
 | --- | --- |
-| `http://localhost:8080/` | Página inicial |
-| `http://localhost:8080/pacientes` | Listagem e acesso ao CRUD de pacientes |
-| `http://localhost:8080/pacientes/novo` | Formulário de cadastro de paciente |
-| `http://localhost:8080/profissionais` | Listagem e CRUD de profissionais de saúde |
-| `http://localhost:8080/medicos` | Listagem e CRUD de médicos |
-| `http://localhost:8080/enfermeiros` | Listagem e CRUD de enfermeiros |
-| `http://localhost:8080/profissionais/novo` | Cadastro de profissional sem especialização |
-| `http://localhost:8080/medico/novo` | Cadastro de médico, com criação do profissional base |
-| `http://localhost:8080/enfermeiro/novo` | Cadastro de enfermeiro, com criação do profissional base |
-| `http://localhost:8080/teste-banco` | Teste de conexão com o MySQL |
-| `http://localhost:8080/medicamentos` | Listagem e acesso ao CRUD de medicamentos |
-| `http://localhost:8080/especialidades` | Listagem e CRUD de especialidades |
-| `http://localhost:8080/especialidades/novo` | Formulário de cadastro de especialidade |
+| `/` | Página inicial |
+| `/pacientes` | Listagem e acesso às operações de pacientes |
+| `/pacientes/novo` | Cadastro de paciente |
+| `/profissionais` | Listagem geral, edição dos dados básicos e exclusão completa |
+| `/medicos` | Listagem e acesso às operações de médicos |
+| `/enfermeiros` | Listagem e acesso às operações de enfermeiros |
+| `/medico/novo` | Cadastro de médico e seu profissional base |
+| `/enfermeiro/novo` | Cadastro de enfermeiro e seu profissional base |
+| `/medicamentos` | Listagem, cadastro, edição e exclusão de medicamentos |
+| `/especialidades` | Listagem e acesso às operações de especialidades |
+| `/especialidades/novo` | Cadastro de especialidade |
+| `/teste-banco` | Teste de conexão com `SELECT 1` |
 
-As listagens usam `/medicos` e `/enfermeiros`, mas as rotas de cadastro e edição das especializações usam `/medico` e `/enfermeiro`, no singular. Utilize os links das páginas para navegar.
+As rotas de cadastro e edição de médicos e enfermeiros utilizam o singular, enquanto as listagens utilizam o plural. Navegue pelos links da aplicação.
 
-A rota de teste executa apenas `SELECT 1`. Ela verifica a conexão, mas não confirma a existência das tabelas ou a carga dos dados.
+O teste de conexão não comprova a existência das tabelas, da carga ou dos triggers. O perfil padrão `sem-banco` permite abrir a página inicial; para utilizar os CRUDs, ative `mysql`.
 
-O perfil padrão `sem-banco` permite abrir a página inicial sem configurar o MySQL. Para utilizar o CRUD, ative o perfil `mysql`.
+## Papel dos arquivos
 
-## Organização do código
+- `pom.xml`: define a versão do Java, o Spring Boot e as dependências baixadas pelo Maven.
+- `ClinicaApplication.java`: inicia a aplicação e o servidor web.
+- `controller/`: recebe as requisições e coordena a validação, as chamadas ao repository, as mensagens e o retorno das páginas.
+- `dto/`: recebe os dados dos formulários e declara regras de validação nos fluxos que utilizam esses objetos.
+- `model/`: representa os registros retornados pelo banco.
+- `repository/`: executa SQL, transforma resultados em objetos e delimita as transações indicadas com `@Transactional`.
+- `templates/`: contém as páginas Thymeleaf. Os formulários enviam os dados aos controllers; as listagens exibem os resultados dos repositories.
+- `application.properties`: reúne configurações comuns.
+- `application-mysql.properties`: configura a conexão a partir das variáveis de ambiente.
+- `application-sem-banco.properties`: permite a execução inicial sem conexão ao banco.
 
-- **Controller:** recebe as requisições, valida os dados recebidos e define a página ou o redirecionamento.
-- **DTO:** transporta os dados dos formulários e declara as regras de validação.
-- **Model:** representa os registros consultados no banco.
-- **Repository:** executa os comandos SQL e transforma os resultados em objetos Java.
-- **Templates:** páginas HTML preenchidas pelo Thymeleaf.
+O conjunto `ProfissionalSaudeController`, `ProfissionalFormulario`, `ProfissionalSaude` e `ProfissionalSaudeRepository` atende profissionais, médicos e enfermeiros. As páginas correspondentes são `profissionais.html` e `profissional-formulario.html`.
 
-No CRUD de profissionais de saúde:
+Pacientes utilizam `PacienteController`, `PacienteFormulario`, `Paciente` e `PacienteRepository`, com páginas de listagem, cadastro e edição. Especialidades seguem a mesma organização com o prefixo `Especialidade`; sua listagem inclui a contagem de médicos. Medicamentos utilizam `MedicamentoController`, `Medicamento` e `MedicamentoRepository`, com a página `templates/medicamentos/lista.html`; a integração das validações desse fluxo está em revisão.
 
-- `ProfissionalSaude.java` representa o profissional e, quando aplicável, seus dados de médico ou enfermeiro.
-- `ProfissionalFormulario.java` recebe os campos do formulário e declara as regras de validação.
-- `ProfissionalSaudeRepository.java` executa as operações SQL para profissionais, médicos e enfermeiros.
-- `ProfissionalSaudeController.java` conecta essas operações às rotas e páginas.
-- `profissionais.html` exibe a listagem;
-- `profissional-formulario.html` é usado para cadastro e edição.
+## Roteiro de verificação manual
 
-No CRUD de pacientes:
+Use dados fictícios. Este roteiro descreve o que conferir; não afirma que todas as evidências já foram anexadas.
 
-- `Paciente.java` representa um paciente.
-- `PacienteFormulario.java` recebe os campos de cadastro e edição.
-- `PacienteRepository.java` executa consultas, inserções, atualizações e exclusões.
-- `PacienteController.java` conecta as operações às páginas.
-- `pacientes.html` apresenta a listagem.
-- `paciente-formulario.html` apresenta o cadastro.
-- `paciente-edicao.html` apresenta a edição.
+1. Cadastre e edite um paciente. Confira nome obrigatório, CPF com 11 dígitos e rejeição de CPF duplicado.
+2. Cancele uma exclusão e confira que o registro permanece. Exclua um paciente de teste sem vínculos; tente excluir outro com consulta ou prontuário e confira o bloqueio.
+3. Cadastre médico e enfermeiro e confira o mesmo ID entre o profissional base e sua especialização.
+4. Tente cadastrar médico com CPF novo e CRM existente. Confira a rejeição e a ausência do novo profissional no banco.
+5. Edite nome e CRM de um médico usando CRM existente. Reabra o registro e confira os valores originais.
+6. Verifique que o próprio médico não aparece nas opções de supervisor, inclusive após erro de validação ou duplicidade.
+7. Tente editar um enfermeiro com CPF de outro profissional. Reabra e confira o CPF original.
+8. Exclua completamente um profissional de teste sem vínculos impeditivos. Consulte as tabelas base e de especialização para confirmar a ausência em ambas.
+9. Tente excluir médico com consulta e profissional com evolução clínica; confira as mensagens de bloqueio.
+10. Cadastre, edite e exclua medicamento de teste sem prescrições. Após a conclusão dos ajustes desse CRUD, confira também nome inválido e exclusão de medicamento vinculado a prescrição.
+11. Cadastre e edite especialidade, teste nome vazio e duplicado, confira a contagem de médicos e a exclusão bloqueada quando houver vínculos.
 
-No CRUD de medicamentos:
-
-- `Medicamento.java` representa um medicamento.
-- `MedicamentoRepository.java` executa as operações no banco de dados.
-- `MedicamentoController.java` controla as rotas de listagem, cadastro, edição e exclusão.
-- `templates/medicamentos/lista.html` contém o formulário e a tabela de medicamentos.
-
-No CRUD de especialidades:
-
--`Especialidade.java` representa uma especialidade e a quantidade de médicos vinculados.
--`EspecialidadeFormulario.java` recebe o nome e declara as regras de validação.
--`EspecialidadeRepository.java` executa as operações SQL, incluindo a listagem com junção e contagem.
--`EspecialidadeController.java` conecta as operações às rotas e páginas.
--`especialidades.html` exibe a listagem.
--`especialidade-formulario.html` é usado para cadastro e edição.
-
-## Verificação manual
-
-Para conferir a aplicação em outro computador:
-
-1. Abra a listagem e confira os pacientes da carga.
-2. Cadastre um paciente fictício.
-3. Edite seu nome e confira a alteração.
-4. Tente cadastrar um CPF já existente.
-5. Tente enviar um nome composto apenas por espaços.
-6. Tente enviar um CPF com menos de 11 dígitos.
-7. Cancele uma exclusão e confira que o registro permanece.
-8. Exclua um paciente de teste sem consultas ou prontuário.
-9. Tente excluir um paciente com consulta vinculada e confira a mensagem de bloqueio.
-10. Cadastre um médico fictício e confira o mesmo ID nas tabelas `Profissional_Saude` e `Medico`.
-11. Tente cadastrar outro médico com CPF novo e CRM existente. Confira a mensagem de erro, a preservação dos campos e a ausência do novo CPF no banco após o rollback.
-12. Edite um médico, alterando nome e CRM para um CRM já utilizado por outro. Reabra o registro e confira se o nome e o CRM originais foram preservados.
-13. Confira se o próprio médico não aparece na seleção de supervisores da edição.
-14. Remova a especialização de um médico de teste sem consultas. Confira se ele continua na listagem geral como profissional.
-15. Tente remover um médico com consulta vinculada e confira o bloqueio.
-16. Cadastre e edite um enfermeiro fictício, verificando nome e COREN. Remova sua especialização e confira a permanência do profissional base.
-17. Cadastre e edite um profissional sem especialização. Verifique o tratamento de CPF duplicado e a preservação dos campos no formulário.
-18. Exclua um profissional de teste sem vínculos impeditivos. Depois, tente excluir outro com evolução clínica e confira o bloqueio.
-19. Acesse `/medicamentos` e confira a listagem de medicamentos.
-20. Cadastre um medicamento fictício e confira se ele aparece na listagem.
-21. Edite o nome do medicamento e confira a alteração.
-22. Exclua o medicamento de teste e confira se ele deixou de aparecer na listagem.
-23. Acesse `/especialidades` e confira a listagem e a contagem de médicos por especialidade.
-24. Cadastre uma especialidade fictícia e confira se ela aparece na listagem.
-25. Tente cadastrar outra com o mesmo nome e confira a mensagem de erro e a preservação do campo.
-26. Tente enviar um nome composto apenas por espaços.
-27. Edite o nome da especialidade e confira a alteração.
-28. Tente editar para um nome já existente e confira o bloqueio.
-29. Exclua a especialidade de teste, sem médicos vinculados, e confira que ela saiu da listagem.
-30. Tente excluir uma especialidade com médico vinculado e confira a mensagem de bloqueio.
-
-Os resultados desses fluxos foram confirmados manualmente durante o desenvolvimento. Ainda não há uma suíte de testes automatizados. Utilize dados fictícios para reproduzir os testes.
-
-Registre os resultados em [testes da Etapa 2](docs/testes-etapa2.md) e mantenha as capturas na pasta `docs/evidencias/`. Uma mensagem de erro na tela não comprova, sozinha, o rollback: confira também os registros no banco após a operação.
+Registre os resultados em [testes da Etapa 2](docs/testes-etapa2.md). Uma mensagem de erro isolada não comprova rollback: confira também os dados persistidos após a operação.
 
 ## Problemas comuns
 
 | Sintoma | O que verificar |
 | --- | --- |
-| Java incompatível | Confira o JDK do projeto, do Maven e da execução. O projeto utiliza Java 25. |
-| Imports do Spring em vermelho | Aguarde o Maven ou recarregue o projeto Maven. |
-| Porta 8080 ocupada | Pare a outra execução ou altere `server.port` e utilize a nova porta no navegador. |
-| `Access denied` | Confira usuário, senha e permissões no MySQL. |
-| `Communications link failure` | Confira se o MySQL está iniciado e se host e porta estão corretos. |
-| `Unknown database` | Confira se `clinica_medica` existe no servidor configurado. |
-| Rota de pacientes retorna 404 | Confira se o perfil `mysql` está ativo e reinicie a aplicação. |
-| Tabela não encontrada durante a execução | Confira a execução do DDL e o banco selecionado na conexão. |
-| IntelliJ não reconhece a tabela no editor | A conexão usada pela inspeção SQL da IDE pode não estar configurada, mesmo que a aplicação funcione. |
-| `ClinicaApplication` não encontrada no módulo | Abra a pasta `clinica`, importe o `pom.xml` como projeto Maven e crie a execução pelo método `main`. Reconfigure o perfil e as variáveis locais se necessário. |
-| Rota `/especialidades` retorna 404 | Confira se o perfil mysql está ativo e reinicie a aplicação. |
+| Java incompatível | JDK do projeto, do Maven e da execução: todos devem usar Java 25. |
+| Imports do Spring em vermelho | Aguarde as dependências ou recarregue o projeto Maven. |
+| Porta 8080 ocupada | Pare a outra execução ou altere `server.port` e use a nova porta. |
+| `Access denied` | Usuário, senha e permissões no MySQL. |
+| `Communications link failure` | MySQL iniciado, host e porta corretos. |
+| `Unknown database` | Existência de `clinica_medica` no servidor configurado. |
+| Rotas dos CRUDs retornam 404 | Perfil `mysql` ativo e aplicação reiniciada. |
+| Tabela não encontrada | Execução do DDL e banco selecionado na conexão. |
+| IDE não reconhece tabelas no editor | A inspeção SQL do IntelliJ tem configuração própria; isso não comprova falha na conexão da aplicação. |
+| `ClinicaApplication` não encontrada no módulo | Abra `clinica`, importe `pom.xml` e recrie a execução pelo `main`; reconfigure perfil e variáveis. |
+| Trigger já existe | Verifique `SHOW TRIGGERS`; não repita o script 04 em uma instalação já configurada. |
 
-### Próxima funcionalidade
+## Pendências da Etapa 2
 
-Está em preparação a tela **Resumo de consultas por médico e período**. A consulta SQL com junções, contagem de consultas e soma dos valores já foi conferida no Workbench. A integração com filtros, repository, controller e HTML ainda está pendente; a tela não está disponível na aplicação.
-
-Os totais dessa consulta representam os valores registrados nas consultas, não pagamentos recebidos. O modelo não registra pagamentos nem status de realização da consulta.
-
-Os CRUDs de medicamentos e especialidades form implementados com funcionalidades de listagem, cadastro, edição e exclusão. A integração final com as demais funcionalidades do projeto ainda deve ser verificada.
+- Concluir e verificar os ajustes de validação e erros de medicamentos.
+- Completar as evidências pendentes e manter os links do documento de testes atualizados.
+- Implementar duas telas parametrizadas com filtros, junções e agregações. A proposta de resumo de consultas por médico e período ainda não está disponível na aplicação.
+- Implementar relatório baseado em VIEW. Somas dos valores de consultas representam valores registrados, não pagamentos recebidos.
+- Documentar o teste de resistência à injeção SQL e completar a documentação transacional e a justificativa do isolamento da aplicação.
+- Analisar três consultas com EXPLAIN antes e depois dos índices, tempos e volume de dados.
+- Implementar e documentar perfis de acesso, privilégios mínimos, VIEW restritiva e os requisitos de autenticação e proteção de dados.
+- Implementar os triggers de auditoria exigidos; os triggers de integridade existentes não substituem esse requisito.
+- Documentar crescimento, backup, retenção e teste de restauração, além das demais decisões de armazenamento exigidas.
+- Consolidar o relatório final e preparar a demonstração.
 
 ## Integrantes
 
