@@ -193,3 +193,118 @@ Como o tempo foi medido: cada `EXPLAIN ANALYZE` foi executado 5 vezes. A primeir
 
 <img width="557" height="326" alt="image" src="https://github.com/user-attachments/assets/ebc3653e-92f8-48bf-a6e3-2b53b37aa12f" />
 
+<img width="508" height="323" alt="image" src="https://github.com/user-attachments/assets/facc19f0-6235-4e8a-9088-8b1133eec1be" />
+
+<img width="542" height="323" alt="image" src="https://github.com/user-attachments/assets/91893672-095a-467f-aaa9-d493174cbede" />
+
+<img width="527" height="338" alt="image" src="https://github.com/user-attachments/assets/9be1dff5-6b8b-4f1c-b371-474c669e079c" />
+
+Índices que já existiam antes da intervenção (importante para entender o ganho dos índices novos).
+
+<img width="1093" height="218" alt="image" src="https://github.com/user-attachments/assets/deb4bc16-3291-4bcf-a124-6ea5f1f0a1b4" />
+
+<img width="1173" height="204" alt="image" src="https://github.com/user-attachments/assets/9f21cb83-172c-4475-ac4d-2488fb078cdb" />
+
+<img width="1155" height="167" alt="image" src="https://github.com/user-attachments/assets/8e2283c5-f35e-435d-8366-66cdc7049a5c" />
+
+Observação: a tabela `Consulta` já possui a chave primária e a restrição UNIQUE `(id_medico, data_hora)`, criada para a regra RN16, além do índice criado pelo MySQL para a chave estrangeira de paciente.
+
+### Estudo das consultas
+
+Consulta 1: médicos cadastrados em ordem alfabética
+Pergunta de negócio: quais médicos estão cadastrados, com seu CRM, em ordem alfabética? (relacionada à RN02).
+
+### Plano antes da intervenção
+
+<img width="1084" height="212" alt="image" src="https://github.com/user-attachments/assets/a0fb78ba-e39b-4b2e-8e6e-18ab9243c4f7" />
+
+| Tabela | type | key | rows | Extra |
+| --- | --- | --- | --- | --- | 
+| Medico | index | uq_medico_crm | 14 | Using index; Using temporary; Using filesort |
+| Profissional_Saude | eq_ref | PRIMARY | 1 | NULL |
+
+
+<img width="1374" height="282" alt="image" src="https://github.com/user-attachments/assets/4ab6173b-b423-43d2-9807-2a9cc4380cfd" />
+
+
+O MySQL lê a tabela Medico por 0,0813  ms e, para cada médico, busca o nome em Profissional_Saude pela chave primária. Como o resultado precisa sair ordenado por nome e nenhuma estrutura entrega os nomes já ordenados, o resultado passa por uma etapa de ordenação.
+
+### Índice criado
+
+```sql 
+CREATE INDEX idx_profissional_nome ON Profissional_Saude (nome);
+```
+
+Justificativa das colunas e da ordem: o `ORDER BY` usa apenas `nome`, então o índice tem uma única coluna. Um índice guarda as chaves já ordenadas: percorrê-lo em ordem entrega os nomes sem precisar de nova ordenação. No InnoDB todo índice secundário carrega a chave primária (id_profissional), então ele também cobre a coluna usada na junção e a tabela Profissional_Saude não precisa ser lida. O crm continua sendo lido na tabela Medico.
+
+### Plano depois da intervenção
+
+<img width="1024" height="211" alt="image" src="https://github.com/user-attachments/assets/33239b51-b11e-4be5-aa28-7c9a3d18f239" />
+
+| Tabela | type | key | rows | Extra |
+| --- | --- | --- | --- | --- | 
+| Medico | index | uq_medico_crm | 14 | Using index; Using temporary; Using filesort |
+| Profissional_Saude | eq_ref | PRIMARY | 1 | NULL |
+
+<img width="1386" height="274" alt="image" src="https://github.com/user-attachments/assets/631cd0af-3f24-4a61-9615-ddc8001324ba" />
+
+| Execução | Antes(ms) | Depois(ms) |
+| --- | --- | --- |
+| 2ª | 0.0793 | 0.0998 |
+| 3ª | 0.0859 | 0.109 |
+| 4ª | 0.0823 | 0.079 |
+| 5ª | 0.0803 | 0.0841 |
+| Mediana | 0.0813| 0.09195 |
+
+### Discussão
+
+Após a criação do índice secundário `idx_profissional_nome`, o plano de execução indicou que o otimizador optou por ignorá-lo, mantendo o uso da Chave Primária (`PRIMARY`). Com apenas 20 registros na tabela, o custo computacional de consultar a estrutura de uma árvore B-Tree de índice secundário e realizar o lookup torna-se superior ao acesso direto via Chave Primária  O resultado demonstra que índices em tabelas de pequeno porte não geram impacto imediato. O índice estrutural permanece válido e passará a ser acionado pelo otimizador conforme a tabela escalar em volume real de produção.
+
+Consulta 3: consultas com valor entre R$150,00 e R$200,00
+Pergunta de negócio: quais consultas tiveram valor entre R$150,00 e R$200,00?
+
+### Plano antes da intervenção
+
+<img width="776" height="199" alt="image" src="https://github.com/user-attachments/assets/1ba945ec-5cb8-4f34-8166-eb09064edd5a" />
+
+| Tabela | type | key | rows | Extra |
+| --- | --- | --- | --- | --- | 
+| Consulta | ALL | NULL | 60 | Using where; Using filesort |
+
+<img width="1180" height="308" alt="image" src="https://github.com/user-attachments/assets/86fbd6fc-d253-4c40-8293-9ab619458ba5" />
+
+Não existe índice que comece por valor, então o MySQL lê a tabela Consulta inteira , aplica o filtro BETWEEN linha a linha (Using where) e depois ordena as linhas que passaram por data_hora.
+
+### Índice criado
+
+```sql 
+CREATE INDEX idx_consulta_valor_data ON Consulta (valor, data_hora);
+```
+
+Justificativa das colunas e da ordem: o filtro é uma faixa (`BETWEEN`) em valor, por isso valor vem primeiro: o índice permite ir direto à faixa de 150 a 200 sem ler o restante. data_hora vem em segundo para que o índice contenha todas as colunas do SELECT (`id_consulta` já vem embutida, por ser a chave primária), tornando a consulta coberta pelo índice, sem acessar a tabela. Como a faixa está em valor, a ordem por data_hora não é aproveitada e a ordenação das linhas filtradas tende a continuar. A ordem inversa, (`data_hora, valor`), evitaria a ordenação, mas obrigaria a percorrer todo o índice; escolhemos valor primeiro porque reduz as linhas lidas.
+
+### Plano depois da intervenção
+
+<img width="964" height="216" alt="image" src="https://github.com/user-attachments/assets/e4f81b4e-eb49-49e0-b270-047942482d18" />
+
+| Tabela | type | key | rows | Extra |
+| --- | --- | --- | --- | --- | 
+| Consulta | range | idx_consulta_valor_data | 17 | Using where; Using filesort |
+
+<img width="1112" height="258" alt="image" src="https://github.com/user-attachments/assets/67e7fd77-afb6-4e01-a9f2-d0d40291a83c" />
+
+Comparação de tempo (volume: 17 linhas em Consulta)
+
+| Execução | Antes(ms) | Depois(ms) |
+| --- | --- | --- |
+| 2ª | 0.0457 | 0.0178 |
+| 3ª | 0.0437 | 0.0256 |
+| 4ª | 0.0447 | 0.0278 |
+| 5ª | 0.0469 | 0.0188 |
+| Mediana | 0.452| 0.0222 |
+
+### Discussão 
+
+O otimizador passou a usar idx_consulta_valor_data conforme a print (`key = idx_consulta_valor_data`), com `type` mudando de ALL para RANGE e `rows` de 60 para 17. O tempo mediano foi de 0.452 ms para 0.0222 ms.
+
+
