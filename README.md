@@ -93,10 +93,13 @@ repositorio/
 │   └── evidencias/
 ├── sql/
 │   ├── 01_ddl.sql
-│   ├── 02_dml.sql
+│   ├── 02_carga.sql
 │   ├── 03_consultas.sql
 │   ├── 04_integridade_especializacao.sql
-│   └── 07_vw_relatorio_consolidado.sql
+│   ├── 05_triggers.sql
+│   ├── 06_seguranca_e_controle_de_acesso.sql
+│   ├── 07_vw_relatorio_consolidado.sql
+│   ├── 08_otimizacao_consulta.sql
 └── clinica/
     ├── pom.xml
     └── src/main/
@@ -126,10 +129,12 @@ Clone o repositório ou extraia o ZIP antes de abrir o projeto.
 Para uma instalação nova, abra os arquivos no Workbench e execute nesta ordem, conferindo os erros entre cada etapa:
 
 1. `sql/01_ddl.sql`: cria o banco `clinica_medica`, as tabelas e as restrições.
-2. `sql/02_dml.sql`: insere os dados de exemplo.
+2. `sql/02_carga.sql`: insere os dados de exemplo.
 3. `sql/04_integridade_especializacao.sql`: instala os quatro triggers de integridade. Execute o arquivo completo, incluindo os comandos `DELIMITER`, com um usuário autorizado a criar triggers.
-4. `sql/07_vw_relatorio_consolidado.sql`: cria ou atualiza a visão usada pelo relatório consolidado.
-5. Opcionalmente, `sql/03_consultas.sql`: executa consultas de leitura para explorar os dados; não é necessário para iniciar a aplicação.
+4. `sql/05_triggers.sql`: cria os objetos relacionados ao registro de alterações.
+5. `sql/06_seguranca_e_controle_de_acesso.sql`: cria os perfis, usuários e permissões mínimas do banco.
+6. `sql/07_vw_relatorio_consolidado.sql`: cria ou atualiza a visão usada pelo relatório consolidado.
+7. Opcionalmente, `sql/03_consultas.sql`: executa consultas de leitura para explorar os dados; não é necessário para iniciar a aplicação.
 
 O DDL e a carga destinam-se a uma base nova. Não repita esses arquivos em um banco preenchido: `CREATE DATABASE IF NOT EXISTS` não torna toda a instalação reexecutável. O script de triggers também usa `CREATE TRIGGER` e não deve ser repetido se os triggers já existem.
 
