@@ -180,6 +180,9 @@ Este tópico apresenta o estudo de desempenho de três consultas do sistema da c
 
 Como o tempo foi medido: cada `EXPLAIN ANALYZE` foi executado 5 vezes. A primeira execução foi descartada (cache frio) e foi usada a mediana das quatro seguintes. O valor registrado é o tempo até a última linha do primeiro nó do plano (`actual time=a..b`, valor `b`, em milissegundos). Antes de cada medição foi executado ANALYZE TABLE para atualizar as estatísticas do otimizador.
 
+Os estudos foram executados sequencialmente. Antes de cada intervenção, foram registrados os índices existentes. Na Consulta 9, o índice idx_profissional_nome, criado no estudo anterior, ainda estava presente, embora o plano apresentado tenha utilizado a chave primária de Profissional_Saude. Esse índice foi removido ao final do conjunto de experimentos.
+
+
 ## Ambiente e volume de dados
 
 ### Comportamento observado
@@ -218,6 +221,7 @@ Observação: a tabela `Consulta` já possui a chave primária e a restrição U
 ## Estudo das consultas
 
 Consulta 1: médicos cadastrados em ordem alfabética
+
 Pergunta de negócio: quais médicos estão cadastrados, com seu CRM, em ordem alfabética? (relacionada à RN02).
 
 ### Plano antes da intervenção
@@ -234,7 +238,8 @@ Pergunta de negócio: quais médicos estão cadastrados, com seu CRM, em ordem a
 <img width="1374" height="282" alt="image" src="https://github.com/user-attachments/assets/4ab6173b-b423-43d2-9807-2a9cc4380cfd" />
 
 
-O MySQL lê a tabela Medico por 0,0813  ms e, para cada médico, busca o nome em Profissional_Saude pela chave primária. Como o resultado precisa sair ordenado por nome e nenhuma estrutura entrega os nomes já ordenados, o resultado passa por uma etapa de ordenação.
+Antes da intervenção, o plano percorreu o índice uq_medico_crm de Medico e, para cada médico, buscou o registro correspondente em Profissional_Saude pela chave primária. O resultado passou por uma etapa de ordenação por nome. A mediana do tempo observado no nó raiz do plano foi de 0,0813 ms.
+
 
 ### Índice criado
 
@@ -242,7 +247,7 @@ O MySQL lê a tabela Medico por 0,0813  ms e, para cada médico, busca o nome em
 CREATE INDEX idx_profissional_nome ON Profissional_Saude (nome);
 ```
 
-Justificativa das colunas e da ordem: o `ORDER BY` usa apenas `nome`, então o índice tem uma única coluna. Um índice guarda as chaves já ordenadas: percorrê-lo em ordem entrega os nomes sem precisar de nova ordenação. No InnoDB todo índice secundário carrega a chave primária (id_profissional), então ele também cobre a coluna usada na junção e a tabela Profissional_Saude não precisa ser lida. O crm continua sendo lido na tabela Medico.
+Justificativa das colunas e da ordem: o índice foi criado sobre nome por ser a coluna utilizada no ORDER BY. Como existe apenas uma coluna explicitamente indexada, não há uma ordem entre múltiplas colunas a justificar. No InnoDB, o índice secundário também contém a chave primária id_profissional, podendo fornecer as colunas dessa tabela necessárias à consulta. O objetivo era possibilitar uma leitura ordenada por nome e reduzir a necessidade de ordenação adicional. Entretanto, esse benefício depende do plano de execução e da ordem de acesso às tabelas. No experimento, o otimizador não utilizou o índice criado e manteve a ordenação.
 
 ### Plano depois da intervenção
 
@@ -271,9 +276,10 @@ Justificativa das colunas e da ordem: o `ORDER BY` usa apenas `nome`, então o �
 
 ### Discussão
 
-Após a criação do índice secundário `idx_profissional_nome`, o plano de execução indicou que o otimizador optou por ignorá-lo, mantendo o uso da Chave Primária (`PRIMARY`). Com apenas 20 registros na tabela, o custo computacional de consultar a estrutura de uma árvore B-Tree de índice secundário e realizar o lookup torna-se superior ao acesso direto via Chave Primária  O resultado demonstra que índices em tabelas de pequeno porte não geram impacto imediato. O índice estrutural permanece válido e passará a ser acionado pelo otimizador conforme a tabela escalar em volume real de produção.
+Após a criação de idx_profissional_nome, o otimizador manteve o plano anterior e não utilizou o novo índice. Permaneceram a leitura de Medico pelo índice uq_medico_crm, a busca em Profissional_Saude pela chave primária e a ordenação por nome. A mediana passou de 0,0813 ms para 0,09195 ms, portanto não houve ganho demonstrado neste experimento. Como o plano permaneceu igual e os tempos são muito pequenos, essa diferença não permite atribuir a piora diretamente ao índice criado. O baixo volume de dados e a ordem de acesso às tabelas são fatores relevantes, mas o uso futuro do índice dependerá de novas avaliações.
 
 Consulta 3: consultas com valor entre R$150,00 e R$200,00
+
 Pergunta de negócio: quais consultas tiveram valor entre R$150,00 e R$200,00?
 
 ### Plano antes da intervenção
@@ -319,7 +325,7 @@ Justificativa das colunas e da ordem: o filtro é uma faixa (`BETWEEN`) em valor
 
 
 
-Comparação de tempo (volume: 17 linhas em Consulta)
+Comparação de tempo (volume da tabela Consulta: 60 registros; resultado do filtro: 17 registros.)
 
 
 | Execução | Antes(ms) | Depois(ms) |
@@ -327,16 +333,16 @@ Comparação de tempo (volume: 17 linhas em Consulta)
 | 2ª | 0.0457 | 0.0178 |
 | 3ª | 0.0437 | 0.0256 |
 | 4ª | 0.0447 | 0.0278 |
-| 5ª | 0.0469 | 0.0188 |
-| Mediana | 0.452| 0.0222 |
+| 5ª | 0.0836 | 0.0475 |
+| Mediana | 0.452| 0.217 |
 
 
 ### Discussão 
 
-O otimizador passou a usar idx_consulta_valor_data conforme a print (`key = idx_consulta_valor_data`), com `type` mudando de ALL para RANGE e `rows` de 60 para 17. O tempo mediano foi de 0.452 ms para 0.0222 ms.
-
+O otimizador passou a utilizar idx_consulta_valor_data, com o tipo de acesso mudando de ALL para range e a estimativa de linhas examinadas passando de 60 para 17. O plano indica leitura coberta pelo índice, mas mantém a ordenação por data_hora. Os tempos registrados apresentaram mediana de 0,442 ms antes e 0,217 ms depois. Os tempos apresentaram variação entre as execuções, com valores menores na quinta medição de ambos os cenários. Assim, a redução da mediana deve ser interpretada em conjunto com a mudança do plano de execução, sem atribuir toda a diferença exclusivamente ao índice. O experimento não permite identificar a causa dessa oscilação.
 
 Consulta 9: faturamento total por médico
+
 Pergunta de negócio: qual o faturamento total gerado por cada médico?
 
 ### Plano antes da intervenção
@@ -354,7 +360,7 @@ Pergunta de negócio: qual o faturamento total gerado por cada médico?
 <img width="586" height="260" alt="image" src="https://github.com/user-attachments/assets/b02bdf1d-7a1a-48a0-bb92-ec89478338e0" />
 
 
-o MySQL percorre Consulta , lê o valor de cada consulta na tabela, junta com Medico e Profissional_Saude pela chave primária, agrupa por nome do médico e ordena o resultado pelo total.
+O plano inicia pela leitura de Medico pelo índice fk_medico_supervisor. Para cada médico, busca o profissional correspondente pela chave primária e acessa suas consultas pelo índice uq_medico_data_hora. Como esse índice não contém valor, é necessário acessar os registros de Consulta para obter a coluna utilizada na soma. O plano também indica tabela temporária e ordenação para produzir o resultado agregado.
 
 ### Índice criado
 
@@ -380,7 +386,7 @@ Justificativa das colunas e da ordem: a junção e o agrupamento são por médic
 <img width="1357" height="334" alt="image" src="https://github.com/user-attachments/assets/e69217d1-c8d3-413e-a588-9d4a29290b92" />
 
 
-Comparação de tempo (volume: 4.29 linhas em Consulta)
+Comparação de tempo (volume da tabela Consulta: 60 registros; volume da tabela Medico: 14 registros.)
 
 
 | Execução | Antes(ms) | Depois(ms) |
@@ -394,19 +400,19 @@ Comparação de tempo (volume: 4.29 linhas em Consulta)
 
 ### Discussão 
 
-O otimizador passou a usar `idx_consulta_medico_valor`. O tempo mediano foi de 0,2255 ms para 0,0343 ms . O `Using temporary` e o `Using filesort` permaneceram, porque o agrupamento é por nome e a ordenação é pelo total, passos que o índice não resolve. Uma reescrita para `GROUP BY prof.id_profissional, prof.nome` poderia reduzir a tabela temporária.
+O otimizador passou a usar idx_consulta_medico_valor. O tempo mediano foi de 0,2255 ms para 0,0343 ms . O Using temporary e o Using filesort permaneceram, porque o agrupamento é por nome e a ordenação é pelo total, passos que o índice não resolve. Como melhoria de correção semântica, o agrupamento poderia incluir prof.id_profissional e prof.nome, evitando reunir médicos homônimos. O efeito dessa alteração no desempenho precisaria ser medido em um novo experimento.
 
 
 ## Custo dos índices e decisão final
 
 Índices não são de graça: cada índice adicional ocupa espaço em disco e precisa ser atualizado a cada INSERT, UPDATE ou DELETE na tabela. Em Consulta, que é a tabela de maior movimento do sistema (agendamento contínuo), dois índices novos significam duas estruturas a mais para manter em cada nova consulta. Por isso a decisão de manter ou remover cada índice considerou o benefício medido contra esse custo.
 
-• idx_profissional_nome: Mantido. Embora o volume atual de dados tenha feito o otimizador ignorá-lo em favor da chave primária, ele garante a integridade estrutural e ordenação eficiente para quando a tabela de profissionais escalar em produção.
+• idx_profissional_nome: Removido após a conclusão dos testes. O otimizador não utilizou o índice na Consulta 1, e não houve ganho demonstrado na carga avaliada. Por esse motivo, optou-se por não manter essa estrutura adicional. Seu eventual uso futuro deverá ser reavaliado com novas medições.
 
-• idx_consulta_valor_data: Mantido. Apresentou ganho real de desempenho e mudança no tipo de busca de ALL para range, otimizando de forma direta as consultas filtradas por faixa de valores e datas.
+• idx_consulta_valor_data: Mantido. Na consulta avaliada, possibilitou acesso por faixa em valor e leitura coberta pelo índice, mantendo a ordenação por data_hora. Sua manutenção foi considerada adequada para essa consulta, com base na mudança de plano e nos tempos registrados.
 
-• idx_consulta_medico_valor: Mantido. Auxiliou na leitura relacional das chaves de agendamento e agrupamento por médico, justificando o custo de manutenção devido ao valor estratégico para relatórios financeiros da clínica.
+• idx_consulta_medico_valor: Mantido. O plano posterior informado utiliza o índice para localizar as consultas por médico e obter valor no próprio índice, reduzindo a necessidade de acessar os registros de Consulta. A manutenção foi considerada adequada para o relatório de faturamento estudado.
 
 ## Conclusão
 
-O estudo mostrou que o ganho de um índice depende do volume de dados e da forma da consulta. Observamos que em tabelas menores o otimizador preferiu varreduras via chave primária, enquanto em tabelas de maior movimento o uso de índices compostos reduziu o escopo de busca de forma perceptível. Isso nos ensina que a indexação deve ser projetada com base nas consultas críticas reais e no crescimento esperado do sistema. Com o volume atual da base (60 linhas em Consulta), as diferenças de tempo são da ordem de frações de ms; com o crescimento previsto da tabela, a tendência é de que os índices passem a fazer diferença maior e essencial para a performance.
+Na carga avaliada, o índice da Consulta 1 não foi escolhido pelo otimizador e não apresentou ganho demonstrado. Na Consulta 3, houve mudança de varredura completa para busca por faixa com índice de cobertura. Na Consulta 9, o índice proposto busca reduzir o acesso aos registros de Consulta ao incluir a coluna valor. As comparações de tempo devem ser interpretadas considerando o pequeno volume da base e foram analisadas em conjunto com os planos de execução e os registros de medição apresentados. Não foram realizados testes de escalabilidade, portanto os resultados não permitem garantir o comportamento em produção.
