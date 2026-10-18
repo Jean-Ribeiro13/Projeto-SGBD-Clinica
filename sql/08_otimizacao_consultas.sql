@@ -108,4 +108,10 @@ FROM Consulta c
 JOIN Medico m ON m.id_profissional = c.id_medico
 JOIN Profissional_Saude prof ON prof.id_profissional = m.id_profissional
 GROUP BY prof.nome
-ORDER BY faturamento_total DESC;                
+ORDER BY faturamento_total DESC;
+
+-- =============================================================================================================================
+-- Decisão final: remoção do índice sem ganho demonstrado
+-- =============================================================================================================================
+
+DROP INDEX idx_profissional_nome ON Profissional_Saude;
