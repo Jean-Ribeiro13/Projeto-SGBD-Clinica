@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Relatório consolidado</title>
+</head>
+<body>
+<a th:href="@{/}">Voltar ao início</a>
+<h1>Relatório consolidado de consultas por médico</h1>
+<p>Os dados são consultados na visão <code>vw_relatorio_consolidado</code>.</p>
+
+<form th:action="@{/relatorios/consolidado/pesquisar}" th:object="${filtro}" method="get">
+    <div>
+        <label for="idMedico">Médico:</label>
+        <select id="idMedico" th:field="*{idMedico}">
+            <option value="">Todos os médicos</option>
+            <option th:each="medico : ${medicos}" th:value="${medico.id()}"
+                    th:text="|${medico.nome()} — ${medico.registro()}|"></option>
+        </select>
+        <p th:if="${#fields.hasErrors('idMedico')}" th:errors="*{idMedico}" role="alert"></p>
+    </div>
+    <div>
+        <label for="dataInicial">Data inicial:</label>
+        <input type="date" id="dataInicial" th:field="*{dataInicial}" required>
+        <p th:if="${#fields.hasErrors('dataInicial')}" th:errors="*{dataInicial}" role="alert"></p>
+    </div>
+    <div>
+        <label for="dataFinal">Data final:</label>
+        <input type="date" id="dataFinal" th:field="*{dataFinal}" required>
+        <p th:if="${#fields.hasErrors('dataFinal')}" th:errors="*{dataFinal}" role="alert"></p>
+    </div>
+    <button type="submit">Gerar relatório</button>
+</form>
+
+<section th:if="${pesquisado}">
+    <h2>Resultado por médico</h2>
+    <p>O valor total soma os valores cadastrados nas consultas; não representa pagamentos recebidos.</p>
+    <p th:if="${#lists.isEmpty(resumos)}">Nenhum médico encontrado para os filtros informados.</p>
+    <table th:unless="${#lists.isEmpty(resumos)}" border="1" cellpadding="6">
+        <thead>
+        <tr>
+            <th scope="col">Médico</th>
+            <th scope="col">CRM</th>
+            <th scope="col">Especialidades</th>
+            <th scope="col">Consultas</th>
+            <th scope="col">Pacientes distintos</th>
+            <th scope="col">Prescrições</th>
+            <th scope="col">Valor total (R$)</th>
+            <th scope="col">Média por consulta (R$)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="resumo : ${resumos}">
+            <td th:text="${resumo.nomeMedico()}"></td>
+            <td th:text="${resumo.crm()}"></td>
+            <td th:text="${resumo.especialidades() != null ? resumo.especialidades() : 'Sem especialidade cadastrada'}"></td>
+            <td th:text="${resumo.quantidadeConsultas()}"></td>
+            <td th:text="${resumo.quantidadePacientes()}"></td>
+            <td th:text="${resumo.quantidadePrescricoes()}"></td>
+            <td th:text="${#numbers.formatDecimal(resumo.valorTotal(), 1, 'POINT', 2, 'COMMA')}"></td>
+            <td th:text="${#numbers.formatDecimal(resumo.valorMedio(), 1, 'POINT', 2, 'COMMA')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</body>
+</html>
