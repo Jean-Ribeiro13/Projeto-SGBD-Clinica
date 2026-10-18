@@ -62,12 +62,23 @@ LEFT JOIN Prontuario pr ON pr.id_paciente = p.id_paciente -- Tenta unir cada pac
 WHERE pr.id_prontuario IS NULL; -- Filtra quem ficou sem prontuário na junção
  
  
--- 8. Existe algum paciente com mais de um prontuário cadastrado no sistema?
--- Relaciona-se com RN09: "Relação 1:1 entre Paciente e Prontuário"
-SELECT id_paciente, COUNT(*) AS qtd_prontuarios
-FROM Prontuario -- Conta quantos prontuários existem por paciente
-GROUP BY id_paciente -- Agrupa as linhas por paciente antes de contar
-HAVING COUNT(*) > 1; -- Mostra só quem tem mais de 1 prontuário (deve vir vazio)
+-- 8. Quais médicos realizaram mais de 2 consultas e quanto cada um faturou, por especialidade?
+-- Relaciona-se com RN17: "O valor cobrado por uma consulta não pode ser inferior a zero"
+-- Pergunta de negócio: ajuda a gestão a comparar produtividade e receita entre médicos da mesma especialidade.
+SELECT
+    esp.nome                 AS especialidade,
+    prof.nome                AS medico,
+    COUNT(c.id_consulta)     AS total_consultas,
+    SUM(c.valor)             AS faturamento_total,
+    ROUND(AVG(c.valor), 2)   AS valor_medio
+FROM Consulta c
+JOIN Medico m ON m.id_profissional = c.id_medico -- Liga a consulta ao médico responsável
+JOIN Profissional_Saude prof ON prof.id_profissional = m.id_profissional -- Busca o nome do médico
+JOIN Medico_Especialidade me ON me.id_medico = m.id_profissional -- Liga o médico às suas especialidades
+JOIN Especialidade esp ON esp.id_especialidade = me.id_especialidade -- Busca o nome da especialidade
+GROUP BY esp.id_especialidade, esp.nome, m.id_profissional, prof.nome -- Um grupo por especialidade e médico
+HAVING COUNT(c.id_consulta) > 2 -- Só médicos com mais de 2 consultas (filtro depois de contar)
+ORDER BY esp.nome, faturamento_total DESC; -- Por especialidade, do maior faturamento para o menor
  
  
 -- 9. Qual o faturamento total gerado por cada médico?
@@ -115,18 +126,26 @@ WHERE EXISTS (
 ); -- Mantém quem tem pelo menos um registro de evolução clínica assinado
  
  
--- 13. Existe algum médico com duas consultas marcadas na mesma data e horário?
-SELECT c.id_consulta, c.id_medico, c.data_hora
-FROM Consulta c -- Lista consultas
-WHERE EXISTS ( -- EXISTS funciona como um verdadeiro ou falso
+-- 13. Quais pacientes não têm nenhuma consulta nos últimos 6 meses e podem ser chamados para retorno?
+-- Pergunta de negócio: apoia a busca ativa de pacientes que sumiram da agenda da clínica.
+SELECT
+    p.id_paciente,
+    p.nome,
+    (
+        SELECT MAX(c2.data_hora)
+        FROM Consulta c2
+        WHERE c2.id_paciente = p.id_paciente
+    ) AS ultima_consulta -- Data da última consulta (vazio se nunca consultou)
+FROM Paciente p
+WHERE NOT EXISTS (
     SELECT 1
-    FROM Consulta c2
-    WHERE c2.id_medico = c.id_medico
-      AND c2.data_hora = c.data_hora
-      AND c2.id_consulta <> c.id_consulta
-); -- Testa se existe outra consulta (id_consulta diferente) do mesmo médico no mesmo horário
- 
- 
+    FROM Consulta c
+    WHERE c.id_paciente = p.id_paciente
+      AND c.data_hora >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+) -- Mantém só quem não tem consulta nos últimos 6 meses
+ORDER BY ultima_consulta; -- Do mais antigo para o mais recente
+
+
 -- 14. Quantos médicos cada supervisor esta responsável por supervisionar?
 SELECT sup.nome AS supervisor, COUNT(m.id_profissional) AS qtd_supervisionados
 FROM Medico m
@@ -158,4 +177,5 @@ JOIN Paciente pac ON pac.id_paciente = c.id_paciente -- Junta Consulta com Pacie
 GROUP BY pac.id_paciente, pac.nome -- Agrupa por paciente
 ORDER BY total_gasto DESC -- Ordena do que mais gastou para o que menos
 LIMIT 5; -- Somente os 5 primeiros
+
 
