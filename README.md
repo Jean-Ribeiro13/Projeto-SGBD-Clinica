@@ -2,7 +2,7 @@
 
 Projeto acadêmico de banco de dados com aplicação web em Java, Spring Boot e MySQL. Possui telas de cadastro, listagem, edição e exclusão de pacientes, médicos, enfermeiros, medicamentos e especialidades, além de uma listagem geral de profissionais de saúde.
 
-As demais entidades do banco ainda não possuem telas CRUD. O modelo não registra pagamentos nem status de realização das consultas.
+As demais entidades do banco ainda não possuem telas CRUD. A aplicação inclui resumos parametrizados e um relatório consolidado baseado em uma visão SQL. O modelo não registra pagamentos nem status de realização das consultas.
 
 ## Funcionalidades implementadas
 
@@ -35,7 +35,13 @@ A validação do CPF verifica o formato, sem calcular os dígitos verificadores.
 - Validação do nome e tratamento de nomes duplicados, preservando o campo preenchido.
 - Bloqueio de exclusão quando existem médicos vinculados.
 
-A contagem da listagem não substitui as duas telas com filtros, junções e agregações exigidas na Etapa 2.
+A contagem da listagem é complementar aos relatórios parametrizados com filtros, junções e agregações.
+
+### Relatório consolidado de consultas
+
+- A rota `/relatorios/consolidado` apresenta uma visão consolidada por médico, com filtro por período e médico.
+- O resultado mostra CRM, especialidades, consultas, pacientes distintos, prescrições, valor total registrado e valor médio por consulta.
+- A tela consulta a visão `vw_relatorio_consolidado`, criada por `sql/07_vw_relatorio_consolidado.sql`. O valor das consultas não representa pagamentos recebidos.
 
 ### Medicamentos
 
@@ -89,7 +95,8 @@ repositorio/
 │   ├── 01_ddl.sql
 │   ├── 02_dml.sql
 │   ├── 03_consultas.sql
-│   └── 04_integridade_especializacao.sql
+│   ├── 04_integridade_especializacao.sql
+│   └── 07_vw_relatorio_consolidado.sql
 └── clinica/
     ├── pom.xml
     └── src/main/
@@ -121,7 +128,8 @@ Para uma instalação nova, abra os arquivos no Workbench e execute nesta ordem,
 1. `sql/01_ddl.sql`: cria o banco `clinica_medica`, as tabelas e as restrições.
 2. `sql/02_dml.sql`: insere os dados de exemplo.
 3. `sql/04_integridade_especializacao.sql`: instala os quatro triggers de integridade. Execute o arquivo completo, incluindo os comandos `DELIMITER`, com um usuário autorizado a criar triggers.
-4. Opcionalmente, `sql/03_consultas.sql`: executa consultas de leitura para explorar os dados; não é necessário para iniciar a aplicação.
+4. `sql/07_vw_relatorio_consolidado.sql`: cria ou atualiza a visão usada pelo relatório consolidado.
+5. Opcionalmente, `sql/03_consultas.sql`: executa consultas de leitura para explorar os dados; não é necessário para iniciar a aplicação.
 
 O DDL e a carga destinam-se a uma base nova. Não repita esses arquivos em um banco preenchido: `CREATE DATABASE IF NOT EXISTS` não torna toda a instalação reexecutável. O script de triggers também usa `CREATE TRIGGER` e não deve ser repetido se os triggers já existem.
 
@@ -183,6 +191,7 @@ Execute `ClinicaApplication`, aguarde `Started ClinicaApplication` no console e 
 | `/medicamentos` | Listagem, cadastro, edição e exclusão de medicamentos |
 | `/especialidades` | Listagem e acesso às operações de especialidades |
 | `/especialidades/novo` | Cadastro de especialidade |
+| `/relatorios/consolidado` | Relatório consolidado de consultas por médico e período |
 | `/teste-banco` | Teste de conexão com `SELECT 1` |
 
 As rotas de cadastro e edição de médicos e enfermeiros utilizam o singular, enquanto as listagens utilizam o plural. Navegue pelos links da aplicação.
@@ -244,8 +253,7 @@ Registre os resultados em [testes da Etapa 2](docs/testes-etapa2.md). Uma mensag
 
 - Concluir e verificar os ajustes de validação e erros de medicamentos.
 - Completar as evidências pendentes e manter os links do documento de testes atualizados.
-- Implementar duas telas parametrizadas com filtros, junções e agregações. A proposta de resumo de consultas por médico e período ainda não está disponível na aplicação.
-- Implementar relatório baseado em VIEW. Somas dos valores de consultas representam valores registrados, não pagamentos recebidos.
+- Conferir manualmente os relatórios parametrizados e a leitura da visão consolidada. Os valores das consultas representam valores registrados, não pagamentos recebidos.
 - Documentar o teste de resistência à injeção SQL e completar a documentação transacional e a justificativa do isolamento da aplicação.
 - Analisar três consultas com EXPLAIN antes e depois dos índices, tempos e volume de dados.
 - Implementar e documentar perfis de acesso, privilégios mínimos, VIEW restritiva e os requisitos de autenticação e proteção de dados.
@@ -260,3 +268,6 @@ Registre os resultados em [testes da Etapa 2](docs/testes-etapa2.md). Uma mensag
 - Angelo Roberto
 - Yasmin Gomes
 - Lucas Pereira
+
+
+
