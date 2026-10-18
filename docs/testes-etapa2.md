@@ -17,6 +17,15 @@
 > foi posteriormente removido para respeitar a especialização total
 > e exclusiva definida no MER. Não representa o funcionamento atual.
 
+## Consulta parametrizada — resumo de consultas por médico
+
+| Teste | Resultado observado | Evidência |
+| --- | --- | --- |
+| Todos os médicos no período | Resultados conferidos com a consulta no Workbench | Pendente |
+| Filtro por Juliana Mendes | Retornou somente a médica selecionada, com os totais esperados | Pendente |
+| Período invertido | Exibiu mensagem de validação, sem apresentar resultados | Pendente |
+| Período sem consultas | Exibiu a médica com quantidade zero e valor total 0,00 | Pendente |
+
 ## Concorrência — exclusividade de especialização
 
 **Objetivo:** verificar a espera por bloqueio e impedir que um
