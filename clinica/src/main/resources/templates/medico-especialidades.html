@@ -20,7 +20,11 @@
     </style>
 </head>
 <body>
-<nav><a th:href="@{/}">Início</a> · <a th:href="@{/medicos}">Médicos</a></nav>
+<nav>
+    <a th:href="@{/}">Início</a> ·
+    <a th:href="@{/medicos}">Médicos</a> ·
+    <a th:href="@{/especialidades}">Especialidades</a>
+</nav>
 <main>
     <h1>Especialidades dos médicos</h1>
     <p>Gerencie o vínculo e a data em que cada médico obteve a especialidade.</p>
@@ -31,7 +35,10 @@
     <section>
         <h2>Vincular especialidade</h2>
         <p th:if="${#lists.isEmpty(medicos)}">Cadastre pelo menos um médico antes de criar vínculos.</p>
-        <p th:if="${#lists.isEmpty(especialidades)}">Não há especialidades cadastradas. Execute o script sql/02_dml.sql ou cadastre especialidades no banco.</p>
+        <p th:if="${#lists.isEmpty(especialidades)}">
+            Não há especialidades cadastradas.
+            <a th:href="@{/especialidades/novo}">Cadastrar especialidade</a>.
+        </p>
         <form th:action="@{/medico-especialidades}" th:object="${formulario}" method="post"
               th:if="${!#lists.isEmpty(medicos) and !#lists.isEmpty(especialidades)}">
             <label for="idMedico">Médico</label>

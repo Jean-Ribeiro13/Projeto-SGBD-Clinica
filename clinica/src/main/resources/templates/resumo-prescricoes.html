@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resumo de prescrições</title>
+</head>
+<body>
+
+<a th:href="@{/}">Voltar ao início</a>
+
+<h1>Resumo de prescrições por medicamento</h1>
+
+<p>O período considera a data da consulta associada à prescrição.</p>
+
+<form th:action="@{/prescricoes/resumo/pesquisar}"
+      th:object="${filtro}"
+      method="get">
+
+    <div>
+        <label for="idMedicamento">Medicamento:</label>
+        <select id="idMedicamento" th:field="*{idMedicamento}">
+            <option value="">Todos os medicamentos</option>
+            <option th:each="medicamento : ${medicamentos}"
+                    th:value="${medicamento.idMedicamento}"
+                    th:text="${medicamento.nome}">
+            </option>
+        </select>
+
+        <p th:if="${#fields.hasErrors('idMedicamento')}"
+           th:errors="*{idMedicamento}"
+           role="alert"></p>
+    </div>
+
+    <div>
+        <label for="dataInicial">Data inicial:</label>
+        <input type="date" id="dataInicial"
+               th:field="*{dataInicial}" required>
+
+        <p th:if="${#fields.hasErrors('dataInicial')}"
+           th:errors="*{dataInicial}"
+           role="alert"></p>
+    </div>
+
+    <div>
+        <label for="dataFinal">Data final:</label>
+        <input type="date" id="dataFinal"
+               th:field="*{dataFinal}" required>
+
+        <p th:if="${#fields.hasErrors('dataFinal')}"
+           th:errors="*{dataFinal}"
+           role="alert"></p>
+    </div>
+
+    <button type="submit">Pesquisar</button>
+</form>
+
+<section th:if="${pesquisado}">
+    <h2>Resultado</h2>
+
+    <p>Cada paciente é contado uma única vez por medicamento
+        no período selecionado.</p>
+
+    <p th:if="${#lists.isEmpty(resumos)}">
+        Nenhum medicamento encontrado para os filtros informados.
+    </p>
+
+    <table th:unless="${#lists.isEmpty(resumos)}">
+        <thead>
+        <tr>
+            <th scope="col">Medicamento</th>
+            <th scope="col">Quantidade de prescrições</th>
+            <th scope="col">Pacientes distintos</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="resumo : ${resumos}">
+            <td th:text="${resumo.nomeMedicamento()}"></td>
+            <td th:text="${resumo.quantidadePrescricoes()}"></td>
+            <td th:text="${resumo.quantidadePacientes()}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>

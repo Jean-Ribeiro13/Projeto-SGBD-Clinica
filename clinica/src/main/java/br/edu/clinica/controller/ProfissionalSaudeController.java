@@ -90,7 +90,7 @@ public class ProfissionalSaudeController {
     @GetMapping("/{tipo:medico|enfermeiro}/novo")
     public String novo(@PathVariable String tipo, Model model) {
         validarTipo(tipo);
-        prepararFormulario(model, tipo, new ProfissionalFormulario());
+        prepararFormulario(model, tipo, new ProfissionalFormulario(), null);
         return "profissional-formulario";
     }
 
@@ -102,14 +102,14 @@ public class ProfissionalSaudeController {
         if ("medico".equals(tipo) && formulario.getSupervisorId() != null && !repository.existeMedico(formulario.getSupervisorId()))
             resultado.rejectValue("supervisorId", "invalido", "Selecione um médico supervisor existente.");
         if (resultado.hasErrors()) {
-            prepararFormulario(model, tipo, formulario);
+            prepararFormulario(model, tipo, formulario, null);
             return "profissional-formulario";
         }
         try {
             repository.criar(formulario, tipo);
             flash.addFlashAttribute("sucesso", titulo(tipo) + " cadastrado com sucesso.");
         } catch (DuplicateKeyException e) {
-            prepararFormulario(model, tipo, formulario);
+            prepararFormulario(model, tipo, formulario, null);
 
             model.addAttribute(
                     "erro",
@@ -133,7 +133,7 @@ public class ProfissionalSaudeController {
         f.setDataNascimento(p.dataNascimento());
         f.setRegistro(p.registro());
         f.setSupervisorId(p.supervisorId());
-        prepararFormulario(model, tipo, f);
+        prepararFormulario(model, tipo, f, id);
         model.addAttribute("id", id);
         return "profissional-formulario";
     }
@@ -155,23 +155,14 @@ public class ProfissionalSaudeController {
         if ("medico".equals(tipo) && formulario.getSupervisorId() != null && (!repository.existeMedico(formulario.getSupervisorId()) || formulario.getSupervisorId().equals(id)))
             resultado.rejectValue("supervisorId", "invalido", "Selecione outro médico supervisor válido.");
         if (resultado.hasErrors()) {
-            prepararFormulario(model, tipo, formulario);
-            model.addAttribute("id", id);
-            if ("medico".equals(tipo)) {
-                model.addAttribute(
-                        "supervisores",
-                        repository.listarMedicosSem(id)
-                );
-            }
+            prepararFormulario(model, tipo, formulario, id);
             return "profissional-formulario";
         }
         try {
             repository.atualizar(id, formulario, tipo);
             flash.addFlashAttribute("sucesso", titulo(tipo) + " atualizado com sucesso.");
         } catch (DuplicateKeyException e) {
-            prepararFormulario(model, tipo, formulario);
-            model.addAttribute("id", id);
-
+            prepararFormulario(model, tipo, formulario, id);
             model.addAttribute(
                     "erro",
                     "CPF ou registro profissional já cadastrado."
@@ -200,11 +191,14 @@ public class ProfissionalSaudeController {
         return "profissionais";
     }
 
-    private void prepararFormulario(Model model, String tipo, ProfissionalFormulario f) {
+    private void prepararFormulario(Model model, String tipo, ProfissionalFormulario f, Integer id) {
         model.addAttribute("tipo", tipo);
         model.addAttribute("titulo", titulo(tipo));
         model.addAttribute("formulario", f);
-        if ("medico".equals(tipo)) model.addAttribute("supervisores", repository.listarMedicosSem(null));
+        model.addAttribute("id", id);
+        if ("medico".equals(tipo)) {
+            model.addAttribute("supervisores", repository.listarMedicosSem(id));
+        }
     }
 
     private ProfissionalSaude obter(Integer id) {
