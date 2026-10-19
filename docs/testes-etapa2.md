@@ -1,6 +1,6 @@
 # Testes realizados — Etapa 2
 
-Este documento registra os testes realizados de consulta parametrizada, integridade, transação e concorrência. As evidências estão na pasta `evidencias/`.
+Este documento reúne os testes, verificações e evidências realizados pela equipe durante a Etapa 2 do projeto da Clínica Médica. As evidências estão na pasta `evidencias/`.
 
 ## B1 — Consulta parametrizada por médico e período
 
@@ -93,7 +93,7 @@ O resultado informado foi `REPEATABLE-READ`. Os métodos transacionais não decl
 
 Leituras com `FOR UPDATE` são leituras com bloqueio e não equivalem às leituras comuns do snapshot. O resultado acima corresponde à conexão da aplicação e não identifica o isolamento das conexões do Workbench.
 
-## B3 — Experimento de concorrência de 18/10/2026
+## B3 - Experimento de concorrência de 18/10/2026
 
 **Objetivo:** observar a espera por bloqueio e a rejeição da tentativa de cadastrar como enfermeiro um profissional já cadastrado como médico.
 
@@ -156,7 +156,7 @@ WHERE p.id_profissional = 6;
 
 **Interpretação:** o bloqueio do registro base fez a tentativa da sessão B aguardar. Depois da liberação, o trigger rejeitou a especialização incompatível. O experimento não representa duas criações simultâneas de especialização. O ROLLBACK da sessão A encerrou o bloqueio; a demonstração de reversão de alterações multitabela está no teste de edição.
 
-## B3 — Registro do experimento anterior de concorrência
+## B3 - Registro do experimento anterior de concorrência
 
 No experimento anterior, foram utilizadas sessões 10 e 74 e o profissional de teste 32, já cadastrado como médico. A equipe informou `REPEATABLE-READ` nas duas sessões e tabelas InnoDB.
 
@@ -167,6 +167,109 @@ A sessão A bloqueou o registro base com `SELECT ... FOR UPDATE`. A tentativa de
 - [Resultado final — experimento anterior](evidencias/concorrencia-resultado-final.png)
 
 Esse registro é separado do experimento de 18/10: usa outro profissional, outras conexões e liberação por COMMIT. O isolamento informado para as sessões 10 e 74 não é atribuído às sessões 43 e 45.
+
+
+## B2 - Camada de Acesso a Dados
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## B4 — Otimização de Consultas
 
