@@ -382,23 +382,23 @@ Os estudos foram executados sequencialmente. Antes de cada intervenção, foram 
 | Linhas em Profissional_Saude | 20 |
 
 
-<img width="557" height="326" alt="image" src="https://github.com/user-attachments/assets/ebc3653e-92f8-48bf-a6e3-2b53b37aa12f" />
+![Ambiente e volume de dados](evidencias/versao-mysql-b4.png)
 
-<img width="508" height="323" alt="image" src="https://github.com/user-attachments/assets/facc19f0-6235-4e8a-9088-8b1133eec1be" />
+![Ambiente e volume de dados](evidencias/qtd-consultas-b4.png)
 
-<img width="542" height="323" alt="image" src="https://github.com/user-attachments/assets/91893672-095a-467f-aaa9-d493174cbede" />
+![Ambiente e volume de dados](evidencias/qtd-medicos-b4.png)
 
-<img width="527" height="338" alt="image" src="https://github.com/user-attachments/assets/9be1dff5-6b8b-4f1c-b371-474c669e079c" />
+![Ambiente e volume de dados](evidencias/qtd-prof-b4.png)
 
 
 Índices que já existiam antes da intervenção (importante para entender o ganho dos índices novos).
 
 
-<img width="1093" height="218" alt="image" src="https://github.com/user-attachments/assets/deb4bc16-3291-4bcf-a124-6ea5f1f0a1b4" />
+![Índices existentes](evidencias/idx-consulta-b4.png)
 
-<img width="1173" height="204" alt="image" src="https://github.com/user-attachments/assets/9f21cb83-172c-4475-ac4d-2488fb078cdb" />
+![Índices existentes](evidencias/idx-medico-b4.png)
 
-<img width="1155" height="167" alt="image" src="https://github.com/user-attachments/assets/8e2283c5-f35e-435d-8366-66cdc7049a5c" />
+![Índices existentes](evidencias/idx-prof-b4.png)
 
 
 Observação: a tabela `Consulta` já possui a chave primária e a restrição UNIQUE `(id_medico, data_hora)`, criada para a regra RN16, além do índice criado pelo MySQL para a chave estrangeira de paciente.
@@ -412,7 +412,7 @@ Pergunta de negócio: quais médicos estão cadastrados, com seu CRM, em ordem a
 
 ### Plano antes da intervenção
 
-<img width="1084" height="212" alt="image" src="https://github.com/user-attachments/assets/a0fb78ba-e39b-4b2e-8e6e-18ab9243c4f7" />
+![Consulta 1 antes](evidencias/b4-consulta1-antes1.png)
 
 
 | Tabela | type | key | rows | Extra |
@@ -421,7 +421,7 @@ Pergunta de negócio: quais médicos estão cadastrados, com seu CRM, em ordem a
 | Profissional_Saude | eq_ref | PRIMARY | 1 | NULL |
 
 
-<img width="1374" height="282" alt="image" src="https://github.com/user-attachments/assets/4ab6173b-b423-43d2-9807-2a9cc4380cfd" />
+![Consulta 1 antes](evidencias/b4-consulta1-antes2.png)
 
 
 Antes da intervenção, o plano percorreu o índice uq_medico_crm de Medico e, para cada médico, buscou o registro correspondente em Profissional_Saude pela chave primária. O resultado passou por uma etapa de ordenação por nome. A mediana do tempo observado no nó raiz do plano foi de 0,0813 ms.
@@ -437,7 +437,7 @@ Justificativa das colunas e da ordem: o índice foi criado sobre nome por ser a 
 
 ### Plano depois da intervenção
 
-<img width="1024" height="211" alt="image" src="https://github.com/user-attachments/assets/33239b51-b11e-4be5-aa28-7c9a3d18f239" />
+![Consulta 1 depois](evidencias/b4-consulta1-depois1.png)
 
 
 
@@ -447,7 +447,7 @@ Justificativa das colunas e da ordem: o índice foi criado sobre nome por ser a 
 | Profissional_Saude | eq_ref | PRIMARY | 1 | NULL |
 
 
-<img width="1386" height="274" alt="image" src="https://github.com/user-attachments/assets/631cd0af-3f24-4a61-9615-ddc8001324ba" />
+![Consulta 1 depois](evidencias/b4-consulta1-depois2.png)
 
 
 
@@ -471,7 +471,7 @@ Pergunta de negócio: quais consultas tiveram valor entre R$150,00 e R$200,00?
 ### Plano antes da intervenção
 
 
-<img width="776" height="199" alt="image" src="https://github.com/user-attachments/assets/1ba945ec-5cb8-4f34-8166-eb09064edd5a" />
+![Consulta 3 antes](evidencias/b4-consulta3-antes1.png)
 
 
 
@@ -481,7 +481,7 @@ Pergunta de negócio: quais consultas tiveram valor entre R$150,00 e R$200,00?
 
 
 
-<img width="1180" height="308" alt="image" src="https://github.com/user-attachments/assets/86fbd6fc-d253-4c40-8293-9ab619458ba5" />
+![Consulta 3 antes](evidencias/b4-consulta3-antes2.png)
 
 
 Não existe índice que comece por valor, então o MySQL lê a tabela Consulta inteira , aplica o filtro BETWEEN linha a linha (Using where) e depois ordena as linhas que passaram por data_hora.
@@ -497,7 +497,7 @@ Justificativa das colunas e da ordem: o filtro é uma faixa (`BETWEEN`) em valor
 ### Plano depois da intervenção
 
 
-<img width="964" height="216" alt="image" src="https://github.com/user-attachments/assets/e4f81b4e-eb49-49e0-b270-047942482d18" />
+![Consulta 3 depois](evidencias/b4-consulta3-depois1.png)
 
 
 
@@ -507,7 +507,7 @@ Justificativa das colunas e da ordem: o filtro é uma faixa (`BETWEEN`) em valor
 
 
 
-<img width="1112" height="258" alt="image" src="https://github.com/user-attachments/assets/67e7fd77-afb6-4e01-a9f2-d0d40291a83c" />
+![Consulta 3 depois](evidencias/b4-consulta3-depois2.png)
 
 
 
@@ -533,7 +533,7 @@ Pergunta de negócio: qual o faturamento total gerado por cada médico?
 
 ### Plano antes da intervenção
 
-<img width="1201" height="272" alt="image" src="https://github.com/user-attachments/assets/677a01c4-898a-4cb2-a536-dea6e04a5354" />
+![Consulta 9 antes](evidencias/b4-consulta9-antes1.png)
 
 
 | Tabela | type | key | rows | Extra |
@@ -543,7 +543,7 @@ Pergunta de negócio: qual o faturamento total gerado por cada médico?
 | Consulta | ref | uq_medico_data_hora | 4 | NULL |
 
 
-<img width="586" height="260" alt="image" src="https://github.com/user-attachments/assets/b02bdf1d-7a1a-48a0-bb92-ec89478338e0" />
+![Consulta 9 antes](evidencias/b4-consulta9-antes2.png)
 
 
 O plano inicia pela leitura de Medico pelo índice fk_medico_supervisor. Para cada médico, busca o profissional correspondente pela chave primária e acessa suas consultas pelo índice uq_medico_data_hora. Como esse índice não contém valor, é necessário acessar os registros de Consulta para obter a coluna utilizada na soma. O plano também indica tabela temporária e ordenação para produzir o resultado agregado.
@@ -559,7 +559,7 @@ Justificativa das colunas e da ordem: a junção e o agrupamento são por médic
 ### Plano depois da intervenção
 
 
-<img width="1302" height="318" alt="image" src="https://github.com/user-attachments/assets/4ac3ab14-7523-4440-88fb-d1e4a440cf2a" />
+![Consulta 9 depois](evidencias/b4-consulta9-depois1.png)
 
 
 | Tabela | type | key | rows | Extra |
@@ -569,7 +569,7 @@ Justificativa das colunas e da ordem: a junção e o agrupamento são por médic
 | Consulta | ref | idx_consulta_medico_valor | 4 | Using index |
 
 
-<img width="1357" height="334" alt="image" src="https://github.com/user-attachments/assets/e69217d1-c8d3-413e-a588-9d4a29290b92" />
+![Consulta 9 depois](evidencias/b4-consulta9-depois2.png)
 
 
 Comparação de tempo (volume da tabela Consulta: 60 registros; volume da tabela Medico: 14 registros.)
