@@ -181,7 +181,7 @@ As informações utilizadas para acessar o banco não ficam escritas diretamente
 <img width="773" height="221" alt="image" src="https://github.com/user-attachments/assets/6db2f866-a97a-482a-9185-20fe0e4d1408" />
 
 
-<img width="1035" height="168" alt="image" src="https://github.com/user-attachments/assets/a8fae4b1-5908-4e1c-a10d-e770e8621802" />
+<img width="1247" height="237" alt="image" src="https://github.com/user-attachments/assets/5a749480-4d91-4687-8c29-4bf9d92a19da" />
 
 
 <img width="1035" height="168" alt="image" src="https://github.com/user-attachments/assets/b63d79d3-78e5-4fcb-8a77-c5e1ff0c2886" />
