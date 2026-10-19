@@ -259,9 +259,7 @@ Registre os resultados em [testes da Etapa 2](docs/testes-etapa2.md). Uma mensag
 - Concluir e verificar os ajustes de validação e erros de medicamentos.
 - Completar as evidências pendentes e manter os links do documento de testes atualizados.
 - Conferir manualmente os relatórios parametrizados e a leitura da visão consolidada. Os valores das consultas representam valores registrados, não pagamentos recebidos.
-- Documentar o teste de resistência à injeção SQL e completar a documentação transacional e a justificativa do isolamento da aplicação.
 - Implementar e documentar perfis de acesso, privilégios mínimos, VIEW restritiva e os requisitos de autenticação e proteção de dados.
-- Documentar crescimento, backup, retenção e teste de restauração, além das demais decisões de armazenamento exigidas.
 - Consolidar o relatório final e preparar a demonstração.
 
 ## Integrantes
