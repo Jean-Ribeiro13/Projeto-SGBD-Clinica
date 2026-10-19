@@ -1,7 +1,10 @@
 package br.edu.clinica.repository;
 
 import br.edu.clinica.model.Medicamento;
+
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -28,6 +31,17 @@ public class MedicamentoRepository {
                         rs.getInt("id_medicamento"),
                         rs.getString("nome")
                 ));
+    }
+
+    public Optional<Medicamento> buscar(int id) {
+        String sql = """
+                SELECT id_medicamento, nome
+                FROM Medicamento
+                WHERE id_medicamento = ?
+                """;
+        return jdbc.query(sql, (rs, linha) -> new Medicamento(
+                        rs.getInt("id_medicamento"), rs.getString("nome")), id)
+                .stream().findFirst();
     }
 
     public void cadastrar(String nome) {

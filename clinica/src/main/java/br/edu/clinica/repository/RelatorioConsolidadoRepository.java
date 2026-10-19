@@ -25,36 +25,43 @@ public class RelatorioConsolidadoRepository {
             LocalDate dataFinal) {
 
         StringBuilder sql = new StringBuilder("""
-                SELECT id_medico,
-                       nome_medico,
-                       crm,
-                       especialidades,
-                       COUNT(DISTINCT id_consulta) AS quantidade_consultas,
-                       COUNT(DISTINCT id_paciente) AS quantidade_pacientes,
-                       COALESCE(SUM(quantidade_prescricoes), 0) AS quantidade_prescricoes,
-                       COALESCE(SUM(valor_consulta), 0) AS valor_total,
-                       COALESCE(AVG(valor_consulta), 0) AS valor_medio
-                FROM vw_relatorio_consolidado
-                WHERE 1 = 1
+                SELECT medico.id_medico,
+                       medico.nome_medico,
+                       medico.crm,
+                       medico.especialidades,
+                       COUNT(DISTINCT consulta.id_consulta) AS quantidade_consultas,
+                       COUNT(DISTINCT consulta.id_paciente) AS quantidade_pacientes,
+                       COALESCE(SUM(consulta.quantidade_prescricoes), 0) AS quantidade_prescricoes,
+                       COALESCE(SUM(consulta.valor_consulta), 0) AS valor_total,
+                       COALESCE(AVG(consulta.valor_consulta), 0) AS valor_medio
+                FROM (
+                    SELECT DISTINCT id_medico, nome_medico, crm, especialidades
+                    FROM vw_relatorio_consolidado
+                ) medico
+                LEFT JOIN vw_relatorio_consolidado consulta
+                       ON consulta.id_medico = medico.id_medico
+                      AND consulta.id_consulta IS NOT NULL
                 """);
         List<Object> parametros = new ArrayList<>();
 
+        // As datas ficam no ON do LEFT JOIN para o médico continuar aparecendo
+        // com totais zerados quando não houver consultas dentro do período.
         if (dataInicial != null) {
-            sql.append(" AND (data_hora IS NULL OR data_hora >= ?)");
+            sql.append(" AND consulta.data_hora >= ?");
             parametros.add(dataInicial.atStartOfDay());
         }
         if (dataFinal != null) {
-            sql.append(" AND (data_hora IS NULL OR data_hora < ?)");
+            sql.append(" AND consulta.data_hora < ?");
             parametros.add(dataFinal.plusDays(1).atStartOfDay());
         }
         if (idMedico != null) {
-            sql.append(" AND id_medico = ?");
+            sql.append(" WHERE medico.id_medico = ?");
             parametros.add(idMedico);
         }
 
         sql.append("""
-                 GROUP BY id_medico, nome_medico, crm, especialidades
-                 ORDER BY nome_medico
+                 GROUP BY medico.id_medico, medico.nome_medico, medico.crm, medico.especialidades
+                 ORDER BY medico.nome_medico
                 """);
 
         return jdbc.query(sql.toString(), (rs, linha) -> new RelatorioConsolidadoMedico(

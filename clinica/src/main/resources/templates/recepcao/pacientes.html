@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pacientes — Recepção</title>
+</head>
+<body>
+<main>
+    <p><a th:href="@{/}">Voltar ao início</a></p>
+    <h1>Pacientes — Recepção</h1>
+    <p>Esta consulta é somente para leitura e exibe o CPF mascarado.</p>
+    <table border="1">
+        <thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Nascimento</th></tr></thead>
+        <tbody>
+        <tr th:each="paciente : ${pacientes}">
+            <td th:text="${paciente.id}"></td>
+            <td th:text="${paciente.nome}"></td>
+            <td th:text="${paciente.cpfMascarado}"></td>
+            <td th:text="${paciente.dataNascimento}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(pacientes)}"><td colspan="4">Nenhum paciente cadastrado.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

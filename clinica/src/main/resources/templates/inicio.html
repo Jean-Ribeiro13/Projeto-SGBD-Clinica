@@ -6,11 +6,18 @@
     <title>Clínica Médica</title>
 </head>
 <body>
+
+<p><a th:href="@{/login}">Entrar</a></p>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Sair</button>
+</form>
     <h1>Clínica Médica</h1>
     <p>Selecione um cadastro para consultar e gerenciar os registros.</p>
     <nav aria-label="Cadastros">
         <ul>
+            <li th:if="${podeGerenciarUsuarios}"><a th:href="@{/usuarios/novo}">Cadastrar usuário do sistema</a></li>
             <li><a th:href="@{/pacientes}">Pacientes</a></li>
+            <li><a th:href="@{/recepcao/pacientes}">Consulta da recepção (CPF mascarado)</a></li>
             <li><a th:href="@{/profissionais}">Profissionais de saúde</a></li>
             <li><a th:href="@{/medicos}">Médicos</a></li>
             <li><a th:href="@{/enfermeiros}">Enfermeiros</a></li>

@@ -46,7 +46,8 @@ A contagem da listagem é complementar aos relatórios parametrizados com filtro
 ### Medicamentos
 
 - Listagem, cadastro, edição e exclusão na mesma página.
-- Validações no servidor e tratamento de erros estão em revisão por um integrante da equipe; a conclusão desses ajustes ainda precisa ser conferida.
+- Cadastro e edição validam o DTO no servidor: nome obrigatório e limite de 100 caracteres.
+- A exclusão vinculada a prescrições é recusada pelo banco e apresentada na tela com mensagem compreensível.
 
 ## Integridade e transações
 
@@ -99,18 +100,20 @@ repositorio/
 │   ├── 05_triggers.sql
 │   ├── 06_seguranca_e_controle_de_acesso.sql
 │   ├── 07_vw_relatorio_consolidado.sql
-│   ├── 08_otimizacao_consulta.sql
+│   ├── 08_otimizacao_consultas.sql
 └── clinica/
     ├── pom.xml
     └── src/main/
         ├── java/br/edu/clinica/
+        │   ├── config/        (cadeia de autenticação e autorização)
+        │   ├── security/      (validação de senha com sal)
         │   ├── controller/
         │   ├── dto/
         │   ├── model/
         │   ├── repository/
         │   └── ClinicaApplication.java
         └── resources/
-            ├── templates/
+            ├── templates/      (inclui login.html)
             ├── application.properties
             ├── application-mysql.properties
             └── application-sem-banco.properties
@@ -132,8 +135,9 @@ Para uma instalação nova, abra os arquivos no Workbench e execute nesta ordem,
 2. `sql/02_carga.sql`: insere os dados de exemplo.
 3. `sql/04_integridade_especializacao.sql`: instala os quatro triggers de integridade. Execute o arquivo completo, incluindo os comandos `DELIMITER`, com um usuário autorizado a criar triggers.
 4. `sql/05_triggers.sql`: cria os objetos relacionados ao registro de alterações.
-5. `sql/06_seguranca_e_controle_de_acesso.sql`: cria os perfis, usuários e permissões mínimas do banco.
+5. `sql/06_seguranca_e_controle_de_acesso.sql`: cria as roles MySQL, a visão de CPF mascarado e a tabela/procedure de usuários da aplicação. O script não cria contas MySQL com senhas fixas.
 6. `sql/07_vw_relatorio_consolidado.sql`: cria ou atualiza a visão usada pelo relatório consolidado.
+7. `sql/08_otimizacao_consultas.sql`: cria os índices usados nos experimentos de otimização documentados; execute para reproduzir a etapa B4.
 7. Opcionalmente, `sql/03_consultas.sql`: executa consultas de leitura para explorar os dados; não é necessário para iniciar a aplicação.
 
 O DDL e a carga destinam-se a uma base nova. Não repita esses arquivos em um banco preenchido: `CREATE DATABASE IF NOT EXISTS` não torna toda a instalação reexecutável. O script de triggers também usa `CREATE TRIGGER` e não deve ser repetido se os triggers já existem.
@@ -179,6 +183,16 @@ Ajuste host e porta conforme a conexão local. Se o campo não aparecer, procure
 
 Cada integrante configura suas credenciais localmente. Não versione senhas ou configurações de execução contendo credenciais. Mantenha **Store as project file** desmarcado e `.idea/` fora do versionamento.
 
+Depois de executar o script 06, crie um usuário da aplicação na sessão local do MySQL, definindo login e senha próprios. Exemplo de chamada (substitua os dois primeiros valores localmente; não grave a senha no repositório):
+
+```sql
+CALL sp_criar_usuario('<login-local>', '<senha-forte-local>', 'admin');
+```
+
+A aplicação apresenta o formulário em `/login` e autentica os dados na tabela `Usuario_App`. Os perfis `recepcao`, `medico` e `admin` limitam as rotas no Spring Security: recepção consulta somente a lista de pacientes com CPF mascarado; médico acessa pacientes, medicamentos e relatórios; administração mantém profissionais, especialidades e cadastros. Uma rota sem permissão retorna acesso negado. O formulário permite sair pelo endpoint `/logout`.
+
+As `role_recepcao`, `role_medico` e `role_admin_clinica` são permissões do MySQL para contas de banco criadas e configuradas localmente. Elas não atribuem automaticamente o mesmo perfil a uma sessão da aplicação. O usuário configurado em `DB_USER` e `DB_PASSWORD` é a conta técnica da conexão JDBC; as permissões de tela são aplicadas pelo login do Spring Security.
+
 ### 5. Iniciar e acessar
 
 Execute `ClinicaApplication`, aguarde `Started ClinicaApplication` no console e abra [a página inicial](http://localhost:8080).
@@ -186,6 +200,8 @@ Execute `ClinicaApplication`, aguarde `Started ClinicaApplication` no console e 
 | Rota | Função |
 | --- | --- |
 | `/` | Página inicial |
+| `/login` | Autenticação dos perfis da aplicação |
+| `/recepcao/pacientes` | Consulta somente de leitura com CPF mascarado, exclusiva da recepção |
 | `/pacientes` | Listagem e acesso às operações de pacientes |
 | `/pacientes/novo` | Cadastro de paciente |
 | `/profissionais` | Listagem geral, edição dos dados básicos e exclusão completa |
@@ -256,10 +272,10 @@ Registre os resultados em [testes da Etapa 2](docs/testes-etapa2.md). Uma mensag
 
 ## Pendências da Etapa 2
 
-- Concluir e verificar os ajustes de validação e erros de medicamentos.
+- Registrar evidências dos testes de validação de medicamentos e da exclusão bloqueada por prescrição.
 - Completar as evidências pendentes e manter os links do documento de testes atualizados.
 - Conferir manualmente os relatórios parametrizados e a leitura da visão consolidada. Os valores das consultas representam valores registrados, não pagamentos recebidos.
-- Implementar e documentar perfis de acesso, privilégios mínimos, VIEW restritiva e os requisitos de autenticação e proteção de dados.
+- Testar em ambiente MySQL o login, logout, bloqueios por perfil e a visão mascarada da recepção; documentar as evidências. O código de autenticação/autorização e os privilégios mínimos já foram incorporados.
 - Consolidar o relatório final e preparar a demonstração.
 
 ## Integrantes
@@ -272,3 +288,7 @@ Registre os resultados em [testes da Etapa 2](docs/testes-etapa2.md). Uma mensag
 
 
 
+
+## Revisão da Etapa 1
+
+O relatório revisado reúne descrição do domínio, rastreabilidade RN01–RN21, justificativas de chaves e diagrama lógico. A fonte editável do MER está em `docs/mer-conceitual-fonte.drawio`. A RN13 permanece explicitamente indicada como parcial: o esquema armazena evoluções datadas, mas ainda não bloqueia sua alteração ou exclusão direta.

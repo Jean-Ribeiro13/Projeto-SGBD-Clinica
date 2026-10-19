@@ -2,51 +2,55 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Medicamentos</title>
 </head>
 <body>
+<main>
+    <h1>Cadastro de medicamentos</h1>
+    <p th:if="${sucesso}" th:text="${sucesso}" role="status"></p>
+    <p th:if="${erro}" th:text="${erro}" role="alert"></p>
 
-<h1>Cadastro de Medicamentos</h1>
+    <h2>Cadastrar medicamento</h2>
+    <form th:action="@{/medicamentos}" th:object="${cadastroFormulario}" method="post">
+        <label for="novo-nome">Nome:</label>
+        <input id="novo-nome" type="text" th:field="*{nome}" maxlength="100">
+        <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" role="alert"></span>
+        <button type="submit">Cadastrar</button>
+    </form>
 
-<h2>Cadastrar medicamento</h2>
-
-<form th:action="@{/medicamentos}" method="post">
-    <label>Nome:</label>
-    <input type="text" name="nome" required maxlength="100">
-    <button type="submit">Cadastrar</button>
-</form>
-
-<h2>Medicamentos cadastrados</h2>
-
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Ações</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="medicamento : ${medicamentos}">
-        <td th:text="${medicamento.idMedicamento}"></td>
-        <td>
-            <form th:action="@{/medicamentos/{id}/editar(id=${medicamento.idMedicamento})}"
-                  method="post">
-                <input type="text" name="nome"
-                       th:value="${medicamento.nome}"
-                       required maxlength="100">
-                <button type="submit">Salvar alteração</button>
-            </form>
-        </td>
-        <td>
-            <form th:action="@{/medicamentos/{id}/excluir(id=${medicamento.idMedicamento})}"
-                  method="post">
-                <button type="submit">Excluir</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
+    <h2>Medicamentos cadastrados</h2>
+    <table border="1">
+        <thead>
+        <tr><th>ID</th><th>Nome</th><th>Ações</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="medicamento : ${medicamentos}">
+            <td th:text="${medicamento.idMedicamento}"></td>
+            <td>
+                <span th:if="${idEdicao == null or idEdicao != medicamento.idMedicamento}"
+                      th:text="${medicamento.nome}"></span>
+                <form th:if="${idEdicao != null and idEdicao == medicamento.idMedicamento}"
+                      th:action="@{/medicamentos/{id}/editar(id=${medicamento.idMedicamento})}"
+                      th:object="${edicaoFormulario}" method="post">
+                    <input type="text" th:field="*{nome}" maxlength="100">
+                    <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" role="alert"></span>
+                    <button type="submit">Salvar</button>
+                    <a th:href="@{/medicamentos}">Cancelar</a>
+                </form>
+            </td>
+            <td>
+                <a th:if="${idEdicao == null or idEdicao != medicamento.idMedicamento}"
+                   th:href="@{/medicamentos/{id}/editar(id=${medicamento.idMedicamento})}">Editar</a>
+                <form th:if="${idEdicao == null or idEdicao != medicamento.idMedicamento}"
+                      th:action="@{/medicamentos/{id}/excluir(id=${medicamento.idMedicamento})}" method="post">
+                    <button type="submit">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(medicamentos)}"><td colspan="3">Nenhum medicamento cadastrado.</td></tr>
+        </tbody>
+    </table>
+</main>
 </body>
 </html>
