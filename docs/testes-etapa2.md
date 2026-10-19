@@ -169,17 +169,42 @@ A sessão A bloqueou o registro base com `SELECT ... FOR UPDATE`. A tentativa de
 Esse registro é separado do experimento de 18/10: usa outro profissional, outras conexões e liberação por COMMIT. O isolamento informado para as sessões 10 e 74 não é atribuído às sessões 43 e 45.
 
 
-## B2 - Camada de Acesso a Dados
+### B2 - Camada de Acesso a Dados
+
+## Objetivo
+
+Nesta etapa, foi analisada a camada de acesso ao banco de dados da aplicação.
+
+Foram analisados os seguintes pontos:
+    - Utilização de consultas parametrizadas;
+    - Tratamento de entradas que poderiam causar injeção de SQL;
+    - Proteção contra comandos não autorizados;
+    - Armazenamento das credenciais fora do código-fonte;
+    - Ausência de senhas reais no repositório.
 
 
+## Verificação das consultas
+
+Foi feita uma revisão nos repositories para verificar se os dados recebidos dos formulários eram colocados diretamente nas consultas. Durante essa revisão, foram localizadas algumas concatenações entre partes do SQL. Após a análise, verificou-se que elas utilizavam somente trechos fixos definidos no código, como filtros e ordenações. Não foram encontrados valores digitados pelos usuários sendo inseridos diretamente no texto das consultas. Também não foram encontradas chamadas que montassem comandos SQL utilizando métodos considerados inseguros, como createStatement ou formatação de strings para inserir dados do usuário.
+
+## Resultado
+
+A revisão indicou que os valores recebidos da aplicação são enviados separadamente para o banco. Dessa forma, nomes, identificadores, CPFs e outros dados informados nos formulários não alteram a estrutura das consultas.
+
+## Evidência
 
 
+<img width="998" height="333" alt="image" src="https://github.com/user-attachments/assets/c1bb8998-120b-4664-a862-e15251a0d520" />
 
 
+## Preparação do teste
+
+Os testes foram realizados no cadastro de especialidades, utilizando o campo de nome. Essa funcionalidade foi escolhida porque permite que o usuário informe um texto que posteriormente é enviado ao banco. Para verificar uma possível tentativa de exclusão de dados, foi utilizada uma tabela de apoio criada somente para o experimento. Dessa maneira, nenhuma tabela principal do sistema foi colocada em risco.
+
+##Evidência
 
 
-
-
+<img width="514" height="258" alt="image" src="https://github.com/user-attachments/assets/e4d95d9a-dbee-4e31-a1a8-2171f2a103b5" />
 
 
 
