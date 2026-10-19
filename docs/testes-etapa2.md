@@ -49,10 +49,10 @@ A revisão indicou que os valores recebidos da aplicação são enviados separad
 ![Conferência dos repositorios](evidencias/b2-busca-repositories1.png)
 
 
-<img width="1183" height="392" alt="image" src="https://github.com/user-attachments/assets/fbce1f4a-dfc6-48ff-ae8c-18623baeffa4" />
+![Conferência dos repositories](evidencias/b2-busca-repositories2.png)
 
 
-<img width="1184" height="640" alt="image" src="https://github.com/user-attachments/assets/252810b3-0a78-408c-b333-f58546a52ec0" />
+![Conferência dos repositories](evidencias/b2-busca-repositories3.png)
 
 
 ## Preparação do teste
@@ -62,7 +62,7 @@ Os testes foram realizados no cadastro de especialidades, utilizando o campo de 
 ### Evidência
 
 
-<img width="514" height="258" alt="image" src="https://github.com/user-attachments/assets/e4d95d9a-dbee-4e31-a1a8-2171f2a103b5" />
+![Preparação do ambiente](evidencias/b2-preparacao-teste.png)
 
 
 ## Teste de alteração da lógica
@@ -80,10 +80,10 @@ A entrada foi tratada como texto normal e foi salva como parte do nome da especi
 ### Evidência
 
 
-<img width="328" height="211" alt="image" src="https://github.com/user-attachments/assets/b4050f1f-a45f-4e78-8ecf-19f1c697012d" />
+![Teste de alteração da lógica](evidencias/b2-teste-logica1.png)
 
 
-<img width="314" height="553" alt="image" src="https://github.com/user-attachments/assets/fd3b78fd-21fc-46eb-b5e7-c8a4d8c7436f" />
+![Teste de alteração da lógica](evidencias/b2-teste-logica2.png)
 
 
 ## Teste de tentativa de exclusão da tabela
@@ -101,10 +101,10 @@ A entrada foi salva como texto comum. A tabela de apoio continuou existindo e o 
 ### Evidência
 
 
-<img width="324" height="207" alt="image" src="https://github.com/user-attachments/assets/04534da1-034d-4590-b5ad-f348caf31ccf" />
+![Teste destrutivo](evidencias/b2-teste-destrutivo1.png)
 
  
-<img width="440" height="576" alt="image" src="https://github.com/user-attachments/assets/73ce7921-ecd0-4049-9b72-c02b1dd036aa" />
+![Teste destrutivo](evidencias/b2-teste-destrutivo2.png)
 
 
 ## Teste de valor inválido na rota
@@ -122,7 +122,7 @@ A aplicação rejeitou a requisição e retornou o erro HTTP 400. Nenhuma altera
 ### Evidência
 
 
-<img width="494" height="164" alt="image" src="https://github.com/user-attachments/assets/0470cd7b-e9c8-49dc-b05b-5b74678a7ad5" />
+![Teste de rota inválida](evidencias/b2-teste-rota-invalida.png)
 
 
 ##  Resumo dos resultados
@@ -152,13 +152,13 @@ A quantidade de especialidades após os testes foi de 12 registros. Os valores f
 
 ### Evidência
 
-<img width="728" height="286" alt="image" src="https://github.com/user-attachments/assets/10a83052-33a5-48cc-bf99-88128ae3f768" />
+![Conferência dos dados](evidencias/b2-conferencia-banco1.png)
 
 
-<img width="723" height="197" alt="image" src="https://github.com/user-attachments/assets/63b5958e-cd8e-4e37-a65d-9c4c6ca2ef15" />
+![Conferência dos dados](evidencias/b2-conferencia-banco2.png)
 
 
-<img width="757" height="199" alt="image" src="https://github.com/user-attachments/assets/81b74bb0-f192-4a76-993f-52e52c23e184" />
+![Conferência dos dados](evidencias/b2-conferencia-banco3.png)
 
 
 ## Limpeza do ambiente de teste
@@ -168,7 +168,7 @@ Depois que as verificações foram concluídas, os registros criados durante o e
 ### Evidência
 
 
-<img width="974" height="378" alt="AA" src="https://github.com/user-attachments/assets/7d8c714d-e404-4e34-905e-3dba20c305b1" />
+![Limpeza dos testes](evidencias/b2-limpeza.png)
 
 
 ## Proteção das credenciais
@@ -178,13 +178,13 @@ As informações utilizadas para acessar o banco não ficam escritas diretamente
 ### Evidência
 
 
-<img width="773" height="221" alt="image" src="https://github.com/user-attachments/assets/6db2f866-a97a-482a-9185-20fe0e4d1408" />
+![Configuração sem credenciais](evidencias/b2-configuracao-variaveis1.png)
 
 
-<img width="1247" height="237" alt="image" src="https://github.com/user-attachments/assets/5a749480-4d91-4687-8c29-4bf9d92a19da" />
+![Configuração sem credenciais](evidencias/b2-configuracao-variaveis2.png)
 
 
-<img width="1035" height="168" alt="image" src="https://github.com/user-attachments/assets/b63d79d3-78e5-4fcb-8a77-c5e1ff0c2886" />
+![Configuração sem credenciais](evidencias/b2-configuracao-variaveis3.png)
 
 
 ## Arquivos fora do versionamento
@@ -193,7 +193,7 @@ Também foi verificado o arquivo .gitignore. As configurações locais da IDE e 
 
 ### Evidência
 
-<img width="413" height="74" alt="image" src="https://github.com/user-attachments/assets/5857b5c6-b8a1-48a2-a922-265bfb58df49" />
+![Arquivo gitignore](evidencias/b2-gitignore.png)
 
 ## Busca por senhas no repositório
 
@@ -201,7 +201,7 @@ Foi realizada uma busca no repositório por termos relacionados a senhas, usuár
 
 ### Evidência
 
-<img width="559" height="262" alt="image" src="https://github.com/user-attachments/assets/845c72e6-6c27-48e6-abc3-0cc485035728" />
+![Busca por credenciais](evidencias/b2-busca-credenciais.png)
 
 ## Conclusão da B2
 
