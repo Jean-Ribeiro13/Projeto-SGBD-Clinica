@@ -21,6 +21,192 @@ A consulta foi executada no Workbench com filtro de período e medicamento opcio
 
 Foram testadas duas seleções: todos os medicamentos, com o parâmetro de medicamento igual a `NULL`, e um medicamento específico. A equipe confirmou que as contagens desse medicamento permaneceram iguais nas duas consultas. Este registro se refere ao teste SQL.
 
+## B2 - Camada de Acesso a Dados
+
+## Objetivo
+
+Nesta etapa, foi analisada a camada de acesso ao banco de dados da aplicação.
+
+Foram analisados os seguintes pontos:
+    - Utilização de consultas parametrizadas;
+    - Tratamento de entradas que poderiam causar injeção de SQL;
+    - Proteção contra comandos não autorizados;
+    - Armazenamento das credenciais fora do código-fonte;
+    - Ausência de senhas reais no repositório.
+
+
+## Verificação das consultas
+
+Foi feita uma revisão nos repositories para verificar se os dados recebidos dos formulários eram colocados diretamente nas consultas. Durante essa revisão, foram localizadas algumas concatenações entre partes do SQL. Após a análise, verificou-se que elas utilizavam somente trechos fixos definidos no código, como filtros e ordenações. Não foram encontrados valores digitados pelos usuários sendo inseridos diretamente no texto das consultas. Também não foram encontradas chamadas que montassem comandos SQL utilizando métodos considerados inseguros, como createStatement ou formatação de strings para inserir dados do usuário.
+
+### Resultado
+
+A revisão indicou que os valores recebidos da aplicação são enviados separadamente para o banco. Dessa forma, nomes, identificadores, CPFs e outros dados informados nos formulários não alteram a estrutura das consultas.
+
+### Evidência
+
+
+<img width="998" height="333" alt="image" src="https://github.com/user-attachments/assets/c1bb8998-120b-4664-a862-e15251a0d520" />
+
+
+<img width="1183" height="392" alt="image" src="https://github.com/user-attachments/assets/fbce1f4a-dfc6-48ff-ae8c-18623baeffa4" />
+
+
+<img width="1184" height="640" alt="image" src="https://github.com/user-attachments/assets/252810b3-0a78-408c-b333-f58546a52ec0" />
+
+
+## Preparação do teste
+
+Os testes foram realizados no cadastro de especialidades, utilizando o campo de nome. Essa funcionalidade foi escolhida porque permite que o usuário informe um texto que posteriormente é enviado ao banco. Para verificar uma possível tentativa de exclusão de dados, foi utilizada uma tabela de apoio criada somente para o experimento. Dessa maneira, nenhuma tabela principal do sistema foi colocada em risco.
+
+### Evidência
+
+
+<img width="514" height="258" alt="image" src="https://github.com/user-attachments/assets/e4d95d9a-dbee-4e31-a1a8-2171f2a103b5" />
+
+
+## Teste de alteração da lógica
+
+Entrada utilizada `x' OR '1'='1`
+
+### Objetivo
+
+Verificar se o valor informado conseguiria alterar a lógica da operação ou fazer a aplicação ignorar o conteúdo digitado no campo.
+
+### Resultado
+
+A entrada foi tratada como texto normal e foi salva como parte do nome da especialidade. A aplicação não retornou registros indevidos e a entrada não alterou o comportamento esperado da operação.
+
+### Evidência
+
+
+<img width="328" height="211" alt="image" src="https://github.com/user-attachments/assets/b4050f1f-a45f-4e78-8ecf-19f1c697012d" />
+
+
+<img width="314" height="553" alt="image" src="https://github.com/user-attachments/assets/fd3b78fd-21fc-46eb-b5e7-c8a4d8c7436f" />
+
+
+## Teste de tentativa de exclusão da tabela
+
+Entrada utilizada `'); DROP TABLE Tabela_Teste_Injecao; --`
+
+### Objetivo
+
+Verificar se a entrada conseguiria encerrar a operação original e executar uma segunda ação não autorizada. Nesse caso, o resultado esperado de uma aplicação vulnerável seria a exclusão da tabela de apoio.
+
+### Resultado
+
+A entrada foi salva como texto comum. A tabela de apoio continuou existindo e o registro criado antes do teste permaneceu disponível. Portanto, o conteúdo digitado não foi interpretado como um comando de banco de dados.
+
+### Evidência
+
+
+<img width="324" height="207" alt="image" src="https://github.com/user-attachments/assets/04534da1-034d-4590-b5ad-f348caf31ccf" />
+
+ 
+<img width="440" height="576" alt="image" src="https://github.com/user-attachments/assets/73ce7921-ecd0-4049-9b72-c02b1dd036aa" />
+
+
+## Teste de valor inválido na rota
+
+Também foi testado um valor textual no lugar do identificador numérico utilizado pela rota de edição de especialidades. Valor testado `http://localhost:8080/especialidades/1%20OR%201=1/editar`.
+
+### Objetivo
+
+Verificar se a aplicação aceitaria um valor que não corresponde ao formato esperado para o identificador.
+
+### Resultado
+
+A aplicação rejeitou a requisição e retornou o erro HTTP 400. Nenhuma alteração foi realizada no banco. O valor foi interrompido antes de ser utilizado em uma operação de acesso aos dados.
+
+### Evidência
+
+
+<img width="494" height="164" alt="image" src="https://github.com/user-attachments/assets/0470cd7b-e9c8-49dc-b05b-5b74678a7ad5" />
+
+
+##  Resumo dos resultados
+
+| Verificação | Resultado |
+| --- | --- |
+| Entrada tentando alterar a lógica | Tratada como texto comum |  
+| Entrada tentando excluir tabela | Tabela de apoio permaneceu intacta |
+| Valor inválido na rota | Requisição rejeitada com erro 400 |
+| Acesso a registros não autorizados | Não ocorreu |
+| Alteração indevida no banco | Não ocorreu |
+| Execução de comando adicional | Não ocorreu |
+
+Com base nos testes realizados, a aplicação resistiu às entradas utilizadas no experimento.
+
+
+## Conferência dos dados após os testes
+
+Após a execução dos testes, foi realizada uma conferência no banco para verificar se os resultados observados na tela correspondiam aos dados realmente armazenados.
+Foram conferidos:
+    - Os nomes registrados durante os testes;
+    - A quantidade de especialidades;
+    - A existência da tabela de apoio;
+    - A permanência do registro criado antes do experimento;
+    - A ausência de alterações indevidas em outras tabelas.
+A quantidade de especialidades após os testes foi de 12 registros. Os valores foram armazenados como texto, sem serem interpretados como comandos. A tabela de apoio permaneceu disponível durante a verificação.
+
+### Evidência
+
+<img width="728" height="286" alt="image" src="https://github.com/user-attachments/assets/10a83052-33a5-48cc-bf99-88128ae3f768" />
+
+
+<img width="723" height="197" alt="image" src="https://github.com/user-attachments/assets/63b5958e-cd8e-4e37-a65d-9c4c6ca2ef15" />
+
+
+<img width="757" height="199" alt="image" src="https://github.com/user-attachments/assets/81b74bb0-f192-4a76-993f-52e52c23e184" />
+
+
+## Limpeza do ambiente de teste
+
+Depois que as verificações foram concluídas, os registros criados durante o experimento foram removidos. A tabela utilizada como apoio também foi excluída. Assim, o banco voltou ao estado anterior ao início dos testes.
+
+### Evidência
+
+
+<img width="974" height="378" alt="AA" src="https://github.com/user-attachments/assets/7d8c714d-e404-4e34-905e-3dba20c305b1" />
+
+
+## Proteção das credenciais
+
+As informações utilizadas para acessar o banco não ficam escritas diretamente no código-fonte. Os valores reais são configurados localmente por cada integrante da equipe. No repositório ficam somente as referências e as instruções de configuração.
+
+### Evidência
+
+
+<img width="773" height="221" alt="image" src="https://github.com/user-attachments/assets/6db2f866-a97a-482a-9185-20fe0e4d1408" />
+
+
+<img width="1035" height="168" alt="image" src="https://github.com/user-attachments/assets/a8fae4b1-5908-4e1c-a10d-e770e8621802" />
+
+
+<img width="1035" height="168" alt="image" src="https://github.com/user-attachments/assets/b63d79d3-78e5-4fcb-8a77-c5e1ff0c2886" />
+
+
+## Arquivos fora do versionamento
+
+Também foi verificado o arquivo .gitignore. As configurações locais da IDE e outros arquivos gerados durante a execução do projeto não são enviados para o Git. Essa medida evita que configurações pessoais ou informações sensíveis sejam compartilhadas por engano.
+
+### Evidência
+
+<img width="413" height="74" alt="image" src="https://github.com/user-attachments/assets/5857b5c6-b8a1-48a2-a922-265bfb58df49" />
+
+## Busca por senhas no repositório
+
+Foi realizada uma busca no repositório por termos relacionados a senhas, usuários e credenciais. A busca não encontrou senhas reais armazenadas em arquivos versionados. Foram encontradas apenas referências às variáveis de ambiente e instruções para configuração local.
+
+### Evidência
+
+<img width="559" height="262" alt="image" src="https://github.com/user-attachments/assets/845c72e6-6c27-48e6-abc3-0cc485035728" />
+
+## Conclusão da B2
+
+Os testes realizados indicaram que a aplicação utiliza uma forma adequada de acesso ao banco para as operações analisadas. As entradas utilizadas no experimento não conseguiram alterar a lógica das operações, acessar registros indevidos ou executar comandos adicionais. A tentativa de exclusão da tabela de apoio não teve efeito, e o valor inválido informado na rota foi rejeitado pela aplicação. Também foi verificado que as credenciais do banco são configuradas por variáveis de ambiente e não ficam expostas nos arquivos versionados. Portanto, os testes realizados atenderam aos principais objetivos da B2.
+
 ## B3 — Operação transacional de edição de médico
 
 ### Implementação e sequência dos comandos
@@ -167,134 +353,6 @@ A sessão A bloqueou o registro base com `SELECT ... FOR UPDATE`. A tentativa de
 - [Resultado final — experimento anterior](evidencias/concorrencia-resultado-final.png)
 
 Esse registro é separado do experimento de 18/10: usa outro profissional, outras conexões e liberação por COMMIT. O isolamento informado para as sessões 10 e 74 não é atribuído às sessões 43 e 45.
-
-
-### B2 - Camada de Acesso a Dados
-
-## Objetivo
-
-Nesta etapa, foi analisada a camada de acesso ao banco de dados da aplicação.
-
-Foram analisados os seguintes pontos:
-    - Utilização de consultas parametrizadas;
-    - Tratamento de entradas que poderiam causar injeção de SQL;
-    - Proteção contra comandos não autorizados;
-    - Armazenamento das credenciais fora do código-fonte;
-    - Ausência de senhas reais no repositório.
-
-
-## Verificação das consultas
-
-Foi feita uma revisão nos repositories para verificar se os dados recebidos dos formulários eram colocados diretamente nas consultas. Durante essa revisão, foram localizadas algumas concatenações entre partes do SQL. Após a análise, verificou-se que elas utilizavam somente trechos fixos definidos no código, como filtros e ordenações. Não foram encontrados valores digitados pelos usuários sendo inseridos diretamente no texto das consultas. Também não foram encontradas chamadas que montassem comandos SQL utilizando métodos considerados inseguros, como createStatement ou formatação de strings para inserir dados do usuário.
-
-## Resultado
-
-A revisão indicou que os valores recebidos da aplicação são enviados separadamente para o banco. Dessa forma, nomes, identificadores, CPFs e outros dados informados nos formulários não alteram a estrutura das consultas.
-
-## Evidência
-
-
-<img width="998" height="333" alt="image" src="https://github.com/user-attachments/assets/c1bb8998-120b-4664-a862-e15251a0d520" />
-
-
-## Preparação do teste
-
-Os testes foram realizados no cadastro de especialidades, utilizando o campo de nome. Essa funcionalidade foi escolhida porque permite que o usuário informe um texto que posteriormente é enviado ao banco. Para verificar uma possível tentativa de exclusão de dados, foi utilizada uma tabela de apoio criada somente para o experimento. Dessa maneira, nenhuma tabela principal do sistema foi colocada em risco.
-
-##Evidência
-
-
-<img width="514" height="258" alt="image" src="https://github.com/user-attachments/assets/e4d95d9a-dbee-4e31-a1a8-2171f2a103b5" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## B4 — Otimização de Consultas
 
