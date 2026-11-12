@@ -3,25 +3,515 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Pacientes — Recepção</title>
+
+    <style>
+/* =================================
+   INTEGRAMED - PACIENTES (RECEPÇÃO)
+================================= */
+
+.recepcao-page {
+    --azul: #1e5abb;
+    --azul-claro: #f3f8ff;
+    --coral: #fe5266;
+    --texto: #26374a;
+    --texto-suave: #64748b;
+    --borda: #dce5ef;
+
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at 10% 15%, rgba(143, 198, 255, 0.35), transparent 30%),
+        radial-gradient(circle at 90% 85%, rgba(254, 82, 102, 0.10), transparent 28%),
+        #f1f6fc;
+
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.recepcao-page * { box-sizing: border-box; }
+
+/* Elementos escondidos nunca aparecem, mesmo com outras regras de display */
+.recepcao-page [hidden] { display: none !important; }
+
+.recepcao-container {
+    width: 100%;
+    max-width: 1050px;
+    margin: auto;
+}
+
+.recepcao-card {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    min-height: 680px;
+    background: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(30, 90, 187, 0.13);
+}
+
+/* =================================
+   ÁREA DA LISTA
+================================= */
+
+.recepcao-area {
+    padding: 45px 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-width: 0;
+}
+
+.recepcao-page .link-voltar {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 9px;
+    margin: 0 0 32px;
+    padding: 10px 16px;
+    border: 1px solid #dce8f7;
+    border-radius: 9px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.recepcao-page .link-voltar span { font-size: 19px; line-height: 1; }
+
+.recepcao-page .link-voltar:hover {
+    background: #e5f0ff;
+    transform: translateX(-3px);
+}
+
+.form-header { margin-bottom: 22px; }
+
+.form-tag {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.form-header h1 {
+    margin: 0 0 10px;
+    color: var(--azul);
+    font-size: 31px;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.form-header p {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Caixa de orientação (sempre visível) */
+
+.info-leitura {
+    display: flex;
+    gap: 12px;
+    margin: 0 0 24px;
+    padding: 14px 16px;
+    border: 1px solid #dce8f7;
+    border-radius: 12px;
+    background: var(--azul-claro);
+}
+
+.info-leitura svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    color: var(--azul);
+}
+
+.info-leitura strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #34465d;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.info-leitura p {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+/* Aviso (só existe quando a lista está vazia) */
+
+.recepcao-page .aviso {
+    margin: 0;
+    padding: 14px 16px 14px 44px;
+    border-radius: 10px;
+    color: #34465d;
+    background-color: #fff;
+    border: 1px dashed #c3d3e6;
+    font-size: 13.5px;
+    line-height: 1.6;
+    background-repeat: no-repeat;
+    background-position: 14px 15px;
+    background-size: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e5abb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4M12 8h.01'/%3E%3C/svg%3E");
+}
+
+.recepcao-page .aviso strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 14px;
+}
+
+/* Lista de pacientes */
+
+.total-pacientes {
+    margin: 0 0 12px;
+    color: var(--texto-suave);
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.lista-pacientes {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.paciente {
+    padding: 16px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: #f9fbfe;
+}
+
+.paciente-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.paciente-nome {
+    margin: 0;
+    color: var(--texto);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.paciente-id {
+    flex: none;
+    padding: 3px 10px;
+    border: 1px solid #dce8f7;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.paciente-dados {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid #e6eef8;
+}
+
+.paciente-dados div { min-width: 0; }
+
+.paciente-dados dt {
+    margin: 0 0 2px;
+    color: var(--texto-suave);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.paciente-dados dd {
+    margin: 0;
+    color: #34465d;
+    font-size: 14px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+/* Foco visível para teclado */
+
+.recepcao-page a:focus-visible {
+    outline: 3px solid rgba(30, 90, 187, 0.45);
+    outline-offset: 2px;
+}
+
+/* =================================
+   PAINEL INTEGRAMED
+================================= */
+
+.recepcao-brand-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 55px 45px;
+    background: linear-gradient(145deg, #1e5abb 0%, #16478f 100%);
+    color: #fff;
+}
+
+.brand-content { position: relative; z-index: 2; }
+
+.brand-logo { width: 66px; height: 66px; margin-bottom: 36px; }
+.brand-logo svg { display: block; width: 100%; height: 100%; }
+
+.brand-overline {
+    margin: 0 0 8px;
+    color: #d6e8ff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.recepcao-brand-panel h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 45px;
+    font-weight: 750;
+    letter-spacing: -1.5px;
+}
+
+.recepcao-brand-panel h2 span { color: #ff9aa5; }
+
+.brand-divider {
+    width: 48px;
+    height: 4px;
+    margin: 22px 0;
+    border-radius: 5px;
+    background: var(--coral);
+}
+
+.recepcao-brand-panel h3 {
+    margin: 0 0 14px;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.brand-description {
+    max-width: 300px;
+    margin: 0;
+    color: #e3efff;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.brand-decoration { position: absolute; inset: 0; pointer-events: none; }
+
+.decoration-circle {
+    position: absolute;
+    display: block;
+    border: 1px solid rgba(143, 198, 255, 0.25);
+    border-radius: 50%;
+}
+
+.circle-one   { width: 240px; height: 240px; right: -145px; top: -120px; }
+.circle-two   { width: 330px; height: 330px; right: -190px; top: -165px; }
+.circle-three { width: 180px; height: 180px; left: -120px; bottom: -100px; background: rgba(143, 198, 255, 0.08); }
+
+.brand-footer {
+    position: relative;
+    z-index: 2;
+    margin: 55px 0 0;
+    color: #d6e8ff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+}
+
+/* =================================
+   RESPONSIVIDADE
+================================= */
+
+@media (max-width: 800px) {
+    .recepcao-card { grid-template-columns: 1fr; min-height: 0; }
+    .recepcao-area { padding: 40px 35px; }
+
+    /* No celular o painel vira uma faixa compacta */
+    .recepcao-brand-panel { padding: 30px 35px; }
+    .brand-logo { width: 48px; height: 48px; margin-bottom: 16px; }
+    .brand-divider,
+    .recepcao-brand-panel h3,
+    .brand-description { display: none; }
+    .brand-footer { margin-top: 20px; }
+}
+
+@media (max-width: 480px) {
+    .recepcao-page { padding: 15px; }
+    .recepcao-card { border-radius: 16px; }
+    .recepcao-area { padding: 30px 22px; }
+    .form-header h1 { font-size: 26px; }
+    .paciente-dados { grid-template-columns: 1fr; gap: 10px; }
+    .recepcao-brand-panel { padding: 26px 25px; }
+    .recepcao-brand-panel h2 { font-size: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .recepcao-page * { transition: none !important; }
+}
+    </style>
 </head>
-<body>
-<main>
-    <p><a th:href="@{/}">Voltar ao início</a></p>
-    <h1>Pacientes — Recepção</h1>
-    <p>Esta consulta é somente para leitura e exibe o CPF mascarado.</p>
-    <table border="1">
-        <thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Nascimento</th></tr></thead>
-        <tbody>
-        <tr th:each="paciente : ${pacientes}">
-            <td th:text="${paciente.id}"></td>
-            <td th:text="${paciente.nome}"></td>
-            <td th:text="${paciente.cpfMascarado}"></td>
-            <td th:text="${paciente.dataNascimento}"></td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(pacientes)}"><td colspan="4">Nenhum paciente cadastrado.</td></tr>
-        </tbody>
-    </table>
-</main>
+
+<body class="recepcao-page">
+
+    <main class="recepcao-container">
+
+        <section class="recepcao-card">
+
+            <div class="recepcao-area">
+
+                <a class="link-voltar" th:href="@{/}">
+                    <span aria-hidden="true">←</span>
+                    Voltar ao início
+                </a>
+
+                <header class="form-header">
+                    <span class="form-tag">IntegraMed · Recepção</span>
+
+                    <h1>Pacientes — Recepção</h1>
+
+                    <p>Esta consulta é somente para leitura e exibe o CPF mascarado.</p>
+                </header>
+
+                <!-- Orientação sempre visível -->
+                <div class="info-leitura">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <div>
+                        <strong>Como ler esta lista</strong>
+                        <p>
+                            Use o nome e o ID para identificar o paciente. O CPF aparece
+                            parcialmente oculto para proteger os dados. Para alterar um
+                            cadastro, procure quem administra o sistema.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Só aparece quando não há pacientes -->
+                <p class="aviso"
+                   hidden
+                   th:hidden="false"
+                   th:if="${#lists.isEmpty(pacientes)}">
+                    <strong>Nenhum paciente cadastrado.</strong>
+                    Quando houver pacientes na clínica, eles aparecerão aqui.
+                </p>
+
+                <div th:unless="${#lists.isEmpty(pacientes)}">
+
+                    <p class="total-pacientes"
+                       th:text="|Total de pacientes: ${#lists.size(pacientes)}|">
+                        Total de pacientes
+                    </p>
+
+                    <ul class="lista-pacientes">
+                        <li class="paciente" th:each="paciente : ${pacientes}">
+
+                            <div class="paciente-topo">
+                                <p class="paciente-nome" th:text="${paciente.nome}"></p>
+                                <span class="paciente-id">ID <span th:text="${paciente.id}"></span></span>
+                            </div>
+
+                            <dl class="paciente-dados">
+                                <div>
+                                    <dt>CPF (mascarado)</dt>
+                                    <dd th:text="${paciente.cpfMascarado}"></dd>
+                                </div>
+                                <div>
+                                    <dt>Nascimento</dt>
+                                    <dd th:text="${paciente.dataNascimento}"></dd>
+                                </div>
+                            </dl>
+
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <aside class="recepcao-brand-panel">
+
+                <div class="brand-content">
+
+                    <div class="brand-logo">
+                        <svg
+                            viewBox="0 0 100 100"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="img"
+                            aria-label="Símbolo médico da IntegraMed">
+
+                            <rect x="5" y="5" width="90" height="90" rx="25"
+                                  fill="none" stroke="#FFFFFF" stroke-width="4"/>
+
+                            <path d="M50 25 V75 M25 50 H75"
+                                  stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+
+                            <circle cx="76" cy="24" r="8" fill="#FE5266"/>
+                        </svg>
+                    </div>
+
+                    <p class="brand-overline">Bem-vindo à</p>
+
+                    <h2>Integra<span>Med</span></h2>
+
+                    <div class="brand-divider"></div>
+
+                    <h3>Cuidar também é conectar.</h3>
+
+                    <p class="brand-description">
+                        Consulte rapidamente os pacientes da clínica,
+                        com os dados sensíveis protegidos.
+                    </p>
+
+                    <div class="brand-decoration" aria-hidden="true">
+                        <span class="decoration-circle circle-one"></span>
+                        <span class="decoration-circle circle-two"></span>
+                        <span class="decoration-circle circle-three"></span>
+                    </div>
+
+                </div>
+
+                <p class="brand-footer">
+                    IntegraMed · Sistema de gestão clínica
+                </p>
+
+            </aside>
+
+        </section>
+
+    </main>
+
 </body>
 </html>

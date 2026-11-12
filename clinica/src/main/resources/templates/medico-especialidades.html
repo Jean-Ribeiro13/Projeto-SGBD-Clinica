@@ -3,98 +3,774 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Especialidades dos médicos | Clínica Médica</title>
+
     <style>
-        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 32px auto; padding: 0 16px; color: #243247; }
-        a { color: #155e75; }
-        label { display: block; margin: 12px 0 5px; }
-        input, select { padding: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #d1d5db; }
-        th { background: #f1f5f9; }
-        .mensagem { padding: 12px; margin: 12px 0; }
-        .sucesso { background: #ecfdf5; color: #166534; }
-        .erro { background: #fff1f2; color: #9f1239; }
-        .acoes { display: flex; align-items: center; gap: 8px; }
-        form { margin: 0; }
+/* =================================
+   INTEGRAMED - ESPECIALIDADES DOS MÉDICOS
+================================= */
+
+.vinculos-page {
+    --azul: #1e5abb;
+    --azul-claro: #f3f8ff;
+    --coral: #fe5266;
+    --texto: #26374a;
+    --texto-suave: #64748b;
+    --borda: #dce5ef;
+
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at 10% 15%, rgba(143, 198, 255, 0.35), transparent 30%),
+        radial-gradient(circle at 90% 85%, rgba(254, 82, 102, 0.10), transparent 28%),
+        #f1f6fc;
+
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.vinculos-page * { box-sizing: border-box; }
+
+/* Elementos escondidos nunca aparecem, mesmo com outras regras de display */
+.vinculos-page [hidden] { display: none !important; }
+
+.vinculos-container {
+    width: 100%;
+    max-width: 1050px;
+    margin: auto;
+}
+
+.vinculos-card {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    min-height: 680px;
+    background: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(30, 90, 187, 0.13);
+}
+
+/* =================================
+   ÁREA DE CONTEÚDO
+================================= */
+
+.vinculos-area {
+    padding: 45px 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-width: 0;
+}
+
+/* Topo: voltar à esquerda, atalhos (botões) à direita */
+
+.topo-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 32px;
+}
+
+/* Voltar e atalhos compartilham o mesmo estilo de botão */
+.vinculos-page .link-voltar,
+.vinculos-page .btn-atalho {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    margin: 0;
+    padding: 10px 16px;
+    border: 1px solid #dce8f7;
+    border-radius: 9px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.25;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.vinculos-page .link-voltar span { font-size: 19px; line-height: 1; }
+
+.vinculos-page .link-voltar:hover {
+    background: #e5f0ff;
+    transform: translateX(-3px);
+}
+
+.links-rapidos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.vinculos-page .btn-atalho svg {
+    flex: none;
+    width: 16px;
+    height: 16px;
+}
+
+.vinculos-page .btn-atalho:hover {
+    background: #e5f0ff;
+    border-color: #c3d8f3;
+    transform: translateY(-1px);
+}
+
+.form-header { margin-bottom: 26px; }
+
+.form-tag {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.form-header h1 {
+    margin: 0 0 10px;
+    color: var(--azul);
+    font-size: 31px;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.form-header p {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Mensagens (só existem quando há conteúdo para mostrar) */
+
+.vinculos-page .erro,
+.vinculos-page .sucesso,
+.vinculos-page .aviso {
+    margin: 0 0 20px;
+    padding: 12px 15px 12px 44px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    background-repeat: no-repeat;
+    background-position: 14px 13px;
+    background-size: 18px;
+}
+
+.vinculos-page .erro {
+    color: #a40000;
+    background-color: #fff0f0;
+    border: 1px solid #ffd1d1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a40000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8v4M12 16h.01'/%3E%3C/svg%3E");
+}
+
+.vinculos-page .sucesso {
+    color: #176b2c;
+    background-color: #effaf1;
+    border: 1px solid #c9ebd0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23176b2c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/%3E%3Cpath d='m9 11 3 3L22 4'/%3E%3C/svg%3E");
+}
+
+.vinculos-page .aviso {
+    color: #34465d;
+    background-color: var(--azul-claro);
+    border: 1px solid #dce8f7;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e5abb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4M12 8h.01'/%3E%3C/svg%3E");
+}
+
+.vinculos-page .aviso a { color: var(--azul); font-weight: 650; }
+
+/* Seções */
+
+.secao + .secao {
+    margin-top: 32px;
+    padding-top: 30px;
+    border-top: 1px solid #e6eef8;
+}
+
+.secao-titulo {
+    margin: 0 0 18px;
+    color: var(--azul);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+/* Formulário de vínculo */
+
+.vinculo-form { width: 100%; }
+
+.form-group { margin-bottom: 18px; }
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #34465d;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 49px;
+    padding: 0 15px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    outline: none;
+    background: #f9fbfe;
+    color: #34465d;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.form-group input:hover,
+.form-group select:hover { border-color: #c3d3e6; }
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--azul);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(30, 90, 187, 0.12);
+}
+
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 42px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+}
+
+/* Select com aparência de placeholder até o usuário escolher */
+.form-group select:invalid { color: #8998aa; }
+.form-group select option { color: #34465d; }
+
+/* Destaque só depois que a pessoa interage, ou quando o servidor devolve erro */
+.form-group input:user-invalid,
+.form-group select:user-invalid,
+.form-group .campo-invalido {
+    border-color: var(--coral);
+    background-color: #fff8f9;
+}
+
+.form-group input:user-invalid:focus,
+.form-group select:user-invalid:focus,
+.form-group .campo-invalido:focus {
+    box-shadow: 0 0 0 4px rgba(254, 82, 102, 0.14);
+}
+
+.campo-erro {
+    margin: 7px 0 0;
+    color: #b3263a;
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+/* Botão principal */
+
+.btn-vincular {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #1e5abb, #3478d5);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-vincular:hover {
+    background: linear-gradient(110deg, #194b9c, #2868bd);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(30, 90, 187, 0.22);
+}
+
+.btn-vincular:active { transform: translateY(0); }
+
+/* Lista de vínculos */
+
+.lista-vinculos {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.vinculo {
+    padding: 16px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: #f9fbfe;
+}
+
+.vinculo-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.vinculo-medico {
+    margin: 0;
+    color: var(--texto);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.vinculo-crm {
+    flex: none;
+    padding: 3px 10px;
+    border: 1px solid #dce8f7;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.vinculo-meta {
+    margin: 0 0 14px;
+    color: var(--texto-suave);
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+.vinculo-meta strong { color: #34465d; font-weight: 650; }
+
+.vinculo-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid #e6eef8;
+}
+
+.vinculo-acoes form { margin: 0; }
+
+.form-editar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.campo-data {
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    color: #34465d;
+    font-family: inherit;
+    font-size: 13px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo-data:hover { border-color: #c3d3e6; }
+
+.campo-data:focus {
+    border-color: var(--azul);
+    box-shadow: 0 0 0 3px rgba(30, 90, 187, 0.12);
+}
+
+.campo-data:user-invalid { border-color: var(--coral); background: #fff8f9; }
+
+.btn-acao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-atualizar {
+    border: 1px solid #dce8f7;
+    background: var(--azul-claro);
+    color: var(--azul);
+}
+
+.btn-atualizar:hover { background: #e5f0ff; }
+
+.btn-excluir {
+    border: 1px solid #ffd1d6;
+    background: #fff;
+    color: #b3263a;
+}
+
+.btn-excluir:hover { background: #fff0f2; border-color: #ffb8c1; }
+
+/* Foco visível para teclado */
+
+.vinculos-page a:focus-visible,
+.vinculos-page button:focus-visible {
+    outline: 3px solid rgba(30, 90, 187, 0.45);
+    outline-offset: 2px;
+}
+
+/* =================================
+   PAINEL INTEGRAMED
+================================= */
+
+.vinculos-brand-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 55px 45px;
+    background: linear-gradient(145deg, #1e5abb 0%, #16478f 100%);
+    color: #fff;
+}
+
+.brand-content { position: relative; z-index: 2; }
+
+.brand-logo { width: 66px; height: 66px; margin-bottom: 36px; }
+.brand-logo svg { display: block; width: 100%; height: 100%; }
+
+.brand-overline {
+    margin: 0 0 8px;
+    color: #d6e8ff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.vinculos-brand-panel h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 45px;
+    font-weight: 750;
+    letter-spacing: -1.5px;
+}
+
+.vinculos-brand-panel h2 span { color: #ff9aa5; }
+
+.brand-divider {
+    width: 48px;
+    height: 4px;
+    margin: 22px 0;
+    border-radius: 5px;
+    background: var(--coral);
+}
+
+.vinculos-brand-panel h3 {
+    margin: 0 0 14px;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.brand-description {
+    max-width: 300px;
+    margin: 0;
+    color: #e3efff;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.brand-decoration { position: absolute; inset: 0; pointer-events: none; }
+
+.decoration-circle {
+    position: absolute;
+    display: block;
+    border: 1px solid rgba(143, 198, 255, 0.25);
+    border-radius: 50%;
+}
+
+.circle-one   { width: 240px; height: 240px; right: -145px; top: -120px; }
+.circle-two   { width: 330px; height: 330px; right: -190px; top: -165px; }
+.circle-three { width: 180px; height: 180px; left: -120px; bottom: -100px; background: rgba(143, 198, 255, 0.08); }
+
+.brand-footer {
+    position: relative;
+    z-index: 2;
+    margin: 55px 0 0;
+    color: #d6e8ff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+}
+
+/* =================================
+   RESPONSIVIDADE
+================================= */
+
+@media (max-width: 800px) {
+    .vinculos-card { grid-template-columns: 1fr; min-height: 0; }
+    .vinculos-area { padding: 40px 35px; }
+
+    /* No celular o painel vira uma faixa compacta */
+    .vinculos-brand-panel { padding: 30px 35px; }
+    .brand-logo { width: 48px; height: 48px; margin-bottom: 16px; }
+    .brand-divider,
+    .vinculos-brand-panel h3,
+    .brand-description { display: none; }
+    .brand-footer { margin-top: 20px; }
+}
+
+@media (max-width: 480px) {
+    .vinculos-page { padding: 15px; }
+    .vinculos-card { border-radius: 16px; }
+    .vinculos-area { padding: 30px 22px; }
+    .form-header h1 { font-size: 26px; }
+
+    /* Voltar e atalhos ocupam a largura toda, lado a lado */
+    .topo-acoes { flex-direction: column; align-items: stretch; }
+    .vinculos-page .link-voltar { align-self: flex-start; }
+    .links-rapidos { margin-left: 0; }
+    .links-rapidos .btn-atalho { flex: 1; }
+
+    .vinculo-acoes { flex-direction: column; align-items: stretch; }
+    .form-editar { flex-direction: column; align-items: stretch; }
+    .btn-acao { width: 100%; }
+    .vinculos-brand-panel { padding: 26px 25px; }
+    .vinculos-brand-panel h2 { font-size: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vinculos-page * { transition: none !important; }
+}
     </style>
 </head>
-<body>
-<nav>
-    <a th:href="@{/}">Início</a> ·
-    <a th:href="@{/medicos}">Médicos</a> ·
-    <a th:href="@{/especialidades}">Especialidades</a>
-</nav>
-<main>
-    <h1>Especialidades dos médicos</h1>
-    <p>Gerencie o vínculo e a data em que cada médico obteve a especialidade.</p>
 
-    <p class="mensagem sucesso" th:if="${sucesso != null}" th:text="${sucesso}" role="status"></p>
-    <p class="mensagem erro" th:if="${erro != null}" th:text="${erro}" role="alert"></p>
+<body class="vinculos-page">
 
-    <section>
-        <h2>Vincular especialidade</h2>
-        <p th:if="${#lists.isEmpty(medicos)}">Cadastre pelo menos um médico antes de criar vínculos.</p>
-        <p th:if="${#lists.isEmpty(especialidades)}">
-            Não há especialidades cadastradas.
-            <a th:href="@{/especialidades/novo}">Cadastrar especialidade</a>.
-        </p>
-        <form th:action="@{/medico-especialidades}" th:object="${formulario}" method="post"
-              th:if="${!#lists.isEmpty(medicos) and !#lists.isEmpty(especialidades)}">
-            <label for="idMedico">Médico</label>
-            <select id="idMedico" th:field="*{idMedico}" required>
-                <option value="">Selecione um médico</option>
-                <option th:each="medico : ${medicos}" th:value="${medico.id()}"
-                        th:text="|${medico.nome()} (${medico.registro()})|"></option>
-            </select>
-            <p class="erro" th:if="${#fields.hasErrors('idMedico')}" th:errors="*{idMedico}"></p>
+    <main class="vinculos-container">
 
-            <label for="idEspecialidade">Especialidade</label>
-            <select id="idEspecialidade" th:field="*{idEspecialidade}" required>
-                <option value="">Selecione uma especialidade</option>
-                <option th:each="especialidade : ${especialidades}" th:value="${especialidade.id()}"
-                        th:text="${especialidade.nome()}"></option>
-            </select>
-            <p class="erro" th:if="${#fields.hasErrors('idEspecialidade')}" th:errors="*{idEspecialidade}"></p>
+        <section class="vinculos-card">
 
-            <label for="dataObtencao">Data de obtenção</label>
-            <input id="dataObtencao" type="date" th:field="*{dataObtencao}" required>
-            <p class="erro" th:if="${#fields.hasErrors('dataObtencao')}" th:errors="*{dataObtencao}"></p>
+            <div class="vinculos-area">
 
-            <button type="submit">Vincular</button>
-        </form>
-    </section>
+                <div class="topo-acoes">
+                    <a class="link-voltar" th:href="@{/}">
+                        <span aria-hidden="true">←</span>
+                        Voltar ao início
+                    </a>
 
-    <section>
-        <h2>Vínculos cadastrados</h2>
-        <p th:if="${#lists.isEmpty(vinculos)}">Nenhum vínculo cadastrado.</p>
-        <table th:unless="${#lists.isEmpty(vinculos)}">
-            <thead>
-            <tr><th>Médico</th><th>CRM</th><th>Especialidade</th><th>Data de obtenção</th><th>Ações</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="vinculo : ${vinculos}">
-                <td th:text="${vinculo.nomeMedico()}"></td>
-                <td th:text="${vinculo.crm()}"></td>
-                <td th:text="${vinculo.nomeEspecialidade()}"></td>
-                <td th:text="${#temporals.format(vinculo.dataObtencao(), 'dd/MM/yyyy')}"></td>
-                <td>
-                    <div class="acoes">
-                        <form th:action="@{/medico-especialidades/{medico}/{especialidade}/editar(medico=${vinculo.idMedico()}, especialidade=${vinculo.idEspecialidade()})}"
-                              method="post">
-                            <input type="date" name="dataObtencao" th:value="${vinculo.dataObtencao()}" required>
-                            <button type="submit">Atualizar data</button>
-                        </form>
-                        <form th:action="@{/medico-especialidades/{medico}/{especialidade}/excluir(medico=${vinculo.idMedico()}, especialidade=${vinculo.idEspecialidade()})}"
-                              method="post" onsubmit="return confirm('Remover este vínculo médico–especialidade?');">
-                            <button type="submit">Excluir vínculo</button>
-                        </form>
+                    <nav class="links-rapidos" aria-label="Páginas relacionadas">
+                        <a class="btn-atalho" th:href="@{/medicos}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            Médicos
+                        </a>
+
+                        <a class="btn-atalho" th:href="@{/especialidades}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2H2v10l9.29 9.29a1 1 0 0 0 1.41 0l8.59-8.59a1 1 0 0 0 0-1.41Z"/><path d="M7 7h.01"/></svg>
+                            Especialidades
+                        </a>
+                    </nav>
+                </div>
+
+                <header class="form-header">
+                    <span class="form-tag">IntegraMed · Administração</span>
+
+                    <h1>Especialidades dos médicos</h1>
+
+                    <p>Gerencie o vínculo e a data em que cada médico obteve a especialidade.</p>
+                </header>
+
+                <p class="sucesso" hidden th:hidden="false"
+                   th:if="${sucesso != null}" th:text="${sucesso}" role="status"></p>
+
+                <p class="erro" hidden th:hidden="false"
+                   th:if="${erro != null}" th:text="${erro}" role="alert"></p>
+
+                <section class="secao">
+                    <h2 class="secao-titulo">Vincular especialidade</h2>
+
+                    <p class="aviso" hidden th:hidden="false"
+                       th:if="${#lists.isEmpty(medicos)}">
+                        Cadastre pelo menos um médico antes de criar vínculos.
+                    </p>
+
+                    <p class="aviso" hidden th:hidden="false"
+                       th:if="${#lists.isEmpty(especialidades)}">
+                        Não há especialidades cadastradas.
+                        <a th:href="@{/especialidades/novo}">Cadastrar especialidade</a>.
+                    </p>
+
+                    <form class="vinculo-form"
+                          th:action="@{/medico-especialidades}"
+                          th:object="${formulario}"
+                          method="post"
+                          th:if="${!#lists.isEmpty(medicos) and !#lists.isEmpty(especialidades)}">
+
+                        <div class="form-group">
+                            <label for="idMedico">Médico</label>
+
+                            <select id="idMedico" th:field="*{idMedico}" th:errorclass="campo-invalido" required>
+                                <option value="">Selecione um médico</option>
+                                <option th:each="medico : ${medicos}" th:value="${medico.id()}"
+                                        th:text="|${medico.nome()} (${medico.registro()})|"></option>
+                            </select>
+
+                            <p class="campo-erro" hidden th:hidden="false"
+                               th:if="${#fields.hasErrors('idMedico')}" th:errors="*{idMedico}"></p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="idEspecialidade">Especialidade</label>
+
+                            <select id="idEspecialidade" th:field="*{idEspecialidade}" th:errorclass="campo-invalido" required>
+                                <option value="">Selecione uma especialidade</option>
+                                <option th:each="especialidade : ${especialidades}" th:value="${especialidade.id()}"
+                                        th:text="${especialidade.nome()}"></option>
+                            </select>
+
+                            <p class="campo-erro" hidden th:hidden="false"
+                               th:if="${#fields.hasErrors('idEspecialidade')}" th:errors="*{idEspecialidade}"></p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dataObtencao">Data de obtenção</label>
+
+                            <input id="dataObtencao" type="date" th:field="*{dataObtencao}" th:errorclass="campo-invalido" required>
+
+                            <p class="campo-erro" hidden th:hidden="false"
+                               th:if="${#fields.hasErrors('dataObtencao')}" th:errors="*{dataObtencao}"></p>
+                        </div>
+
+                        <button type="submit" class="btn-vincular">Vincular</button>
+
+                    </form>
+                </section>
+
+                <section class="secao">
+                    <h2 class="secao-titulo">Vínculos cadastrados</h2>
+
+                    <p class="aviso" hidden th:hidden="false"
+                       th:if="${#lists.isEmpty(vinculos)}">
+                        Nenhum vínculo cadastrado.
+                    </p>
+
+                    <ul class="lista-vinculos" th:unless="${#lists.isEmpty(vinculos)}">
+                        <li class="vinculo" th:each="vinculo : ${vinculos}">
+
+                            <div class="vinculo-topo">
+                                <p class="vinculo-medico" th:text="${vinculo.nomeMedico()}"></p>
+                                <span class="vinculo-crm">CRM <span th:text="${vinculo.crm()}"></span></span>
+                            </div>
+
+                            <p class="vinculo-meta">
+                                <strong th:text="${vinculo.nomeEspecialidade()}"></strong>
+                                · obtida em
+                                <span th:text="${#temporals.format(vinculo.dataObtencao(), 'dd/MM/yyyy')}"></span>
+                            </p>
+
+                            <div class="vinculo-acoes">
+                                <form class="form-editar"
+                                      th:action="@{/medico-especialidades/{medico}/{especialidade}/editar(medico=${vinculo.idMedico()}, especialidade=${vinculo.idEspecialidade()})}"
+                                      method="post">
+                                    <input class="campo-data"
+                                           type="date"
+                                           name="dataObtencao"
+                                           th:value="${vinculo.dataObtencao()}"
+                                           th:attr="aria-label=|Nova data de obtenção para ${vinculo.nomeMedico()}|"
+                                           required>
+                                    <button type="submit" class="btn-acao btn-atualizar">Atualizar data</button>
+                                </form>
+
+                                <form th:action="@{/medico-especialidades/{medico}/{especialidade}/excluir(medico=${vinculo.idMedico()}, especialidade=${vinculo.idEspecialidade()})}"
+                                      method="post" onsubmit="return confirm('Remover este vínculo médico–especialidade?');">
+                                    <button type="submit" class="btn-acao btn-excluir"
+                                            th:attr="aria-label=|Excluir vínculo de ${vinculo.nomeMedico()} com ${vinculo.nomeEspecialidade()}|">Excluir vínculo</button>
+                                </form>
+                            </div>
+
+                        </li>
+                    </ul>
+                </section>
+
+            </div>
+
+            <aside class="vinculos-brand-panel">
+
+                <div class="brand-content">
+
+                    <div class="brand-logo">
+                        <svg
+                            viewBox="0 0 100 100"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="img"
+                            aria-label="Símbolo médico da IntegraMed">
+
+                            <rect x="5" y="5" width="90" height="90" rx="25"
+                                  fill="none" stroke="#FFFFFF" stroke-width="4"/>
+
+                            <path d="M50 25 V75 M25 50 H75"
+                                  stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+
+                            <circle cx="76" cy="24" r="8" fill="#FE5266"/>
+                        </svg>
                     </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
-</main>
+
+                    <p class="brand-overline">Bem-vindo à</p>
+
+                    <h2>Integra<span>Med</span></h2>
+
+                    <div class="brand-divider"></div>
+
+                    <h3>Cuidar também é conectar.</h3>
+
+                    <p class="brand-description">
+                        Associe cada médico às suas especialidades
+                        e mantenha as datas de obtenção sempre
+                        atualizadas.
+                    </p>
+
+                    <div class="brand-decoration" aria-hidden="true">
+                        <span class="decoration-circle circle-one"></span>
+                        <span class="decoration-circle circle-two"></span>
+                        <span class="decoration-circle circle-three"></span>
+                    </div>
+
+                </div>
+
+                <p class="brand-footer">
+                    IntegraMed · Sistema de gestão clínica
+                </p>
+
+            </aside>
+
+        </section>
+
+    </main>
+
 </body>
 </html>

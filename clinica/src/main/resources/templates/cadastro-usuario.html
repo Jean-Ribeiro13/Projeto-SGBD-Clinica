@@ -3,72 +3,874 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cadastrar usuário | Clínica Médica</title>
+
+    <title>Cadastrar usuário | IntegraMed</title>
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            max-width: 520px;
-        }
+/* =================================
+   INTEGRAMED - CADASTRO DE USUÁRIO
+================================= */
 
-        label {
-            display: block;
-            margin-top: 16px;
-        }
+.cadastro-page {
+    --azul: #1e5abb;
+    --azul-claro: #f3f8ff;
+    --coral: #fe5266;
+    --texto: #26374a;
+    --texto-suave: #64748b;
+    --borda: #dce5ef;
 
-        input, select {
-            box-sizing: border-box;
-            padding: 8px;
-            width: 100%;
-            margin-top: 5px;
-        }
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        button {
-            margin-top: 20px;
-            padding: 9px 16px;
-        }
+    background:
+        radial-gradient(circle at 10% 15%, rgba(143, 198, 255, 0.35), transparent 30%),
+        radial-gradient(circle at 90% 85%, rgba(254, 82, 102, 0.10), transparent 28%),
+        #f1f6fc;
 
-        .erro {
-            color: #a40000;
-        }
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
-        .sucesso {
-            color: #176b2c;
-        }
+.cadastro-page * { box-sizing: border-box; }
+
+.cadastro-container {
+    width: 100%;
+    max-width: 1050px;
+    margin: auto;
+}
+
+.cadastro-card {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    min-height: 680px;
+    background: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(30, 90, 187, 0.13);
+}
+
+/* =================================
+   ÁREA DO FORMULÁRIO
+================================= */
+
+.cadastro-form-area {
+    padding: 45px 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.cadastro-page .link-voltar {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 9px;
+    margin: 0 0 32px;
+    padding: 10px 16px;
+    border: 1px solid #dce8f7;
+    border-radius: 9px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.cadastro-page .link-voltar span { font-size: 19px; line-height: 1; }
+
+.cadastro-page .link-voltar:hover {
+    background: #e5f0ff;
+    transform: translateX(-3px);
+}
+
+.form-header { margin-bottom: 26px; }
+
+.form-tag {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.form-header h1 {
+    margin: 0 0 10px;
+    color: var(--azul);
+    font-size: 31px;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.form-header p {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Campos */
+
+.cadastro-form { width: 100%; }
+
+.form-group { margin-bottom: 18px; }
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #34465d;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.input-wrap { position: relative; }
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 49px;
+    padding: 0 15px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    outline: none;
+    background: #f9fbfe;
+    color: #34465d;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.form-group input::placeholder { color: #8998aa; }
+
+/* Evita o ícone de "revelar senha" duplicado no Edge */
+.form-group input::-ms-reveal,
+.form-group input::-ms-clear { display: none; }
+
+.form-group input:hover,
+.form-group select:hover { border-color: #c3d3e6; }
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--azul);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(30, 90, 187, 0.12);
+}
+
+/* Erro só aparece depois que o usuário interage */
+.form-group input.tocado:invalid,
+.form-group select.tocado:invalid {
+    border-color: var(--coral);
+    background: #fff8f9;
+}
+
+.form-group input.tocado:invalid:focus,
+.form-group select.tocado:invalid:focus {
+    box-shadow: 0 0 0 4px rgba(254, 82, 102, 0.14);
+}
+
+.form-group input.tocado:valid { border-color: #4cb27a; }
+
+.has-toggle input { padding-right: 52px; }
+
+.toggle-senha {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #7a8ba0;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.toggle-senha:hover { background: #eaf1fb; color: var(--azul); }
+.toggle-senha svg { width: 20px; height: 20px; }
+.toggle-senha .icone-ocultar { display: none; }
+.toggle-senha[aria-pressed="true"] .icone-ver { display: none; }
+.toggle-senha[aria-pressed="true"] .icone-ocultar { display: block; }
+
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 42px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+}
+
+/* Select com aparência de placeholder até o usuário escolher */
+.form-group select:invalid { color: #8998aa; }
+.form-group select option { color: #34465d; }
+
+/* Dicas e feedback */
+
+.campo-dica {
+    margin: 7px 0 0;
+    color: var(--texto-suave);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.campo-dica[hidden] { display: none; }
+.campo-dica.ok { color: #176b2c; }
+.campo-dica.erro-dica { color: #b3263a; }
+
+.caps-aviso {
+    margin: 7px 0 0;
+    color: #8a5a00;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.caps-aviso[hidden] { display: none; }
+
+.forca {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.forca i {
+    height: 4px;
+    border-radius: 4px;
+    background: #e3eaf3;
+    transition: background 0.25s;
+}
+
+.forca[data-nivel="1"] i:nth-child(-n+1) { background: #e5484d; }
+.forca[data-nivel="2"] i:nth-child(-n+2) { background: #f5a524; }
+.forca[data-nivel="3"] i:nth-child(-n+3) { background: #5aa9e6; }
+.forca[data-nivel="4"] i:nth-child(-n+4) { background: #2fa866; }
+
+.forca-texto {
+    min-height: 18px;
+    margin: 6px 0 0;
+    color: var(--texto-suave);
+    font-size: 12.5px;
+}
+
+.forca-texto.erro-dica { color: #b3263a; }
+
+/* Botão */
+
+.btn-cadastrar {
+    position: relative;
+    width: 100%;
+    min-height: 52px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #1e5abb, #3478d5);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.btn-cadastrar:hover {
+    background: linear-gradient(110deg, #194b9c, #2868bd);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(30, 90, 187, 0.22);
+}
+
+.btn-cadastrar:active { transform: translateY(0); }
+
+.btn-cadastrar:disabled {
+    opacity: 0.75;
+    cursor: wait;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-cadastrar .spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    margin-right: 9px;
+    vertical-align: -2px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: girar 0.7s linear infinite;
+}
+
+.btn-cadastrar.carregando .spinner { display: inline-block; }
+
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* Foco visível para teclado */
+
+.cadastro-page a:focus-visible,
+.cadastro-page button:focus-visible {
+    outline: 3px solid rgba(30, 90, 187, 0.45);
+    outline-offset: 2px;
+}
+
+/* Mensagens do servidor */
+
+.cadastro-page .erro:empty,
+.cadastro-page .sucesso:empty { display: none; }
+
+.cadastro-page .erro:not(:empty),
+.cadastro-page .sucesso:not(:empty) {
+    padding: 12px 15px 12px 44px;
+    margin: 0 0 20px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    background-repeat: no-repeat;
+    background-position: 14px 13px;
+    background-size: 18px;
+}
+
+.cadastro-page .erro:not(:empty) {
+    color: #a40000;
+    background-color: #fff0f0;
+    border: 1px solid #ffd1d1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a40000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8v4M12 16h.01'/%3E%3C/svg%3E");
+}
+
+.cadastro-page .sucesso:not(:empty) {
+    color: #176b2c;
+    background-color: #effaf1;
+    border: 1px solid #c9ebd0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23176b2c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/%3E%3Cpath d='m9 11 3 3L22 4'/%3E%3C/svg%3E");
+}
+
+/* =================================
+   PAINEL INTEGRAMED
+================================= */
+
+.cadastro-brand-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 55px 45px;
+    background: linear-gradient(145deg, #1e5abb 0%, #16478f 100%);
+    color: #fff;
+}
+
+.brand-content { position: relative; z-index: 2; }
+
+.brand-logo {
+    width: 66px;
+    height: 66px;
+    margin-bottom: 36px;
+}
+
+.brand-logo svg { display: block; width: 100%; height: 100%; }
+
+.brand-overline {
+    margin: 0 0 8px;
+    color: #d6e8ff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.cadastro-brand-panel h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 45px;
+    font-weight: 750;
+    letter-spacing: -1.5px;
+}
+
+.cadastro-brand-panel h2 span { color: #ff9aa5; }
+
+.brand-divider {
+    width: 48px;
+    height: 4px;
+    margin: 22px 0;
+    border-radius: 5px;
+    background: var(--coral);
+}
+
+.cadastro-brand-panel h3 {
+    margin: 0 0 14px;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.brand-description {
+    max-width: 300px;
+    margin: 0;
+    color: #e3efff;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+/* Decoração */
+
+.brand-decoration { position: absolute; inset: 0; pointer-events: none; }
+
+.decoration-circle {
+    position: absolute;
+    display: block;
+    border: 1px solid rgba(143, 198, 255, 0.25);
+    border-radius: 50%;
+}
+
+.circle-one   { width: 240px; height: 240px; right: -145px; top: -120px; }
+.circle-two   { width: 330px; height: 330px; right: -190px; top: -165px; }
+.circle-three { width: 180px; height: 180px; left: -120px; bottom: -100px; background: rgba(143, 198, 255, 0.08); }
+
+.brand-footer {
+    position: relative;
+    z-index: 2;
+    margin: 55px 0 0;
+    color: #d6e8ff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+}
+
+/* =================================
+   RESPONSIVIDADE
+================================= */
+
+@media (max-width: 800px) {
+    .cadastro-card { grid-template-columns: 1fr; min-height: 0; }
+    .cadastro-form-area { padding: 40px 35px; }
+
+    /* No celular o painel vira uma faixa compacta, para o formulário não ficar longe */
+    .cadastro-brand-panel { padding: 30px 35px; }
+    .brand-logo { width: 48px; height: 48px; margin-bottom: 16px; }
+    .brand-divider,
+    .cadastro-brand-panel h3,
+    .brand-description { display: none; }
+    .brand-footer { margin-top: 20px; }
+}
+
+@media (max-width: 480px) {
+    .cadastro-page { padding: 15px; }
+    .cadastro-card { border-radius: 16px; }
+    .cadastro-form-area { padding: 30px 22px; }
+    .form-header h1 { font-size: 26px; }
+    .cadastro-brand-panel { padding: 26px 25px; }
+    .cadastro-brand-panel h2 { font-size: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cadastro-page * { transition: none !important; animation: none !important; }
+}
     </style>
 </head>
-<body>
-<main>
-    <h1>Cadastrar usuário</h1>
-    <p>Esta área é exclusiva para administradores.</p>
-    <p class="erro" th:if="${erro}" th:text="${erro}" role="alert"></p>
-    <p class="sucesso" th:if="${sucesso}" th:text="${sucesso}" role="status"></p>
 
-    <form th:action="@{/usuarios}" method="post">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+<body class="cadastro-page">
 
-        <label for="login">Login</label>
-        <input id="login" name="login" type="text" minlength="3" maxlength="50"
-               pattern="[A-Za-z0-9._-]{3,50}" autocomplete="username" required>
+    <main class="cadastro-container">
 
-        <label for="senha">Senha</label>
-        <input id="senha" name="senha" type="password" minlength="8" maxlength="100"
-               autocomplete="new-password" required>
+        <section class="cadastro-card">
 
-        <label for="confirmarSenha">Confirmar senha</label>
-        <input id="confirmarSenha" name="confirmarSenha" type="password" minlength="8" maxlength="100"
-               autocomplete="new-password" required>
+            <div class="cadastro-form-area">
 
-        <label for="perfil">Perfil</label>
-        <select id="perfil" name="perfil" required>
-            <option value="" disabled selected>Selecione um perfil</option>
-            <option th:each="perfil : ${perfis}" th:value="${perfil}"
-                    th:text="${#strings.capitalize(perfil)}"></option>
-        </select>
+                <a class="link-voltar" th:href="@{/}">
+                    <span aria-hidden="true">←</span>
+                    Voltar ao início
+                </a>
 
-        <button type="submit">Cadastrar usuário</button>
-    </form>
-    <p><a th:href="@{/}">Voltar ao início</a></p>
-</main>
+                <header class="form-header">
+                    <span class="form-tag">IntegraMed · Administração</span>
+
+                    <h1>Cadastrar usuário</h1>
+
+                    <p>
+                        Crie um novo acesso para a equipe da clínica.
+                        Preencha os dados abaixo para continuar.
+                    </p>
+                </header>
+
+                <p class="erro"
+                   th:if="${erro}"
+                   th:text="${erro}"
+                   role="alert"></p>
+
+                <p class="sucesso"
+                   th:if="${sucesso}"
+                   th:text="${sucesso}"
+                   role="status"></p>
+
+                <form class="cadastro-form"
+                      id="formCadastro"
+                      th:action="@{/usuarios}"
+                      method="post"
+                      novalidate>
+
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+                    <div class="form-group">
+                        <label for="login">Login</label>
+
+                        <input
+                            id="login"
+                            name="login"
+                            type="text"
+                            placeholder="Ex.: maria.silva"
+                            minlength="3"
+                            maxlength="50"
+                            pattern="[A-Za-z0-9._-]{3,50}"
+                            autocomplete="username"
+                            autocapitalize="none"
+                            spellcheck="false"
+                            aria-describedby="loginDica"
+                            th:value="${login}"
+                            autofocus
+                            required>
+
+                        <p class="campo-dica" id="loginDica" aria-live="polite">
+                            De 3 a 50 caracteres: letras, números, ponto, hífen ou sublinhado.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="senha">Senha</label>
+
+                        <div class="input-wrap has-toggle">
+                            <input
+                                id="senha"
+                                name="senha"
+                                type="password"
+                                placeholder="Mínimo de 8 caracteres"
+                                minlength="8"
+                                maxlength="100"
+                                autocomplete="new-password"
+                                aria-describedby="forcaTexto"
+                                required>
+
+                            <button type="button"
+                                    class="toggle-senha"
+                                    data-alvo="senha"
+                                    aria-label="Mostrar senha"
+                                    aria-pressed="false">
+                                <svg class="icone-ver" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="icone-ocultar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.4 10.4 0 0 1 12 19c-6.4 0-10-7-10-7a18.6 18.6 0 0 1 5.06-5.94M9.9 4.24A9.7 9.7 0 0 1 12 4c6.4 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                            </button>
+                        </div>
+
+                        <p class="caps-aviso" id="senhaCaps" hidden>Caps Lock está ativado.</p>
+
+                        <div class="forca" id="forca" data-nivel="0" aria-hidden="true">
+                            <i></i><i></i><i></i><i></i>
+                        </div>
+                        <p class="forca-texto" id="forcaTexto" aria-live="polite"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmarSenha">Confirmar senha</label>
+
+                        <div class="input-wrap has-toggle">
+                            <input
+                                id="confirmarSenha"
+                                name="confirmarSenha"
+                                type="password"
+                                placeholder="Digite a senha novamente"
+                                minlength="8"
+                                maxlength="100"
+                                autocomplete="new-password"
+                                aria-describedby="confirmaDica"
+                                required>
+
+                            <button type="button"
+                                    class="toggle-senha"
+                                    data-alvo="confirmarSenha"
+                                    aria-label="Mostrar senha"
+                                    aria-pressed="false">
+                                <svg class="icone-ver" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="icone-ocultar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.4 10.4 0 0 1 12 19c-6.4 0-10-7-10-7a18.6 18.6 0 0 1 5.06-5.94M9.9 4.24A9.7 9.7 0 0 1 12 4c6.4 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                            </button>
+                        </div>
+
+                        <p class="caps-aviso" id="confirmarSenhaCaps" hidden>Caps Lock está ativado.</p>
+
+                        <p class="campo-dica" id="confirmaDica" aria-live="polite"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perfil">Perfil de acesso</label>
+
+                        <select id="perfil" name="perfil" aria-describedby="perfilErro" required>
+                            <option value="" disabled selected>
+                                Selecione um perfil
+                            </option>
+
+                            <option
+                                th:each="perfil : ${perfis}"
+                                th:value="${perfil}"
+                                th:text="${#strings.capitalize(perfil)}">
+                            </option>
+                        </select>
+
+                        <p class="campo-dica erro-dica" id="perfilErro" aria-live="polite" hidden>
+                            Selecione um perfil de acesso.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn-cadastrar" id="btnCadastrar">
+                        <span class="spinner" aria-hidden="true"></span>
+                        <span class="btn-texto">Cadastrar usuário</span>
+                    </button>
+
+                </form>
+
+            </div>
+
+            <aside class="cadastro-brand-panel">
+
+                <div class="brand-content">
+
+                    <div class="brand-logo">
+                        <svg
+                            viewBox="0 0 100 100"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="img"
+                            aria-label="Símbolo médico da IntegraMed">
+
+                            <rect x="5" y="5" width="90" height="90" rx="25"
+                                  fill="none" stroke="#FFFFFF" stroke-width="4"/>
+
+                            <path d="M50 25 V75 M25 50 H75"
+                                  stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+
+                            <circle cx="76" cy="24" r="8" fill="#FE5266"/>
+                        </svg>
+                    </div>
+
+                    <p class="brand-overline">Bem-vindo à</p>
+
+                    <h2>Integra<span>Med</span></h2>
+
+                    <div class="brand-divider"></div>
+
+                    <h3>Cuidar também é conectar.</h3>
+
+                    <p class="brand-description">
+                        Um ambiente integrado para organizar
+                        acessos e facilitar o trabalho de quem
+                        cuida da saúde.
+                    </p>
+
+                    <div class="brand-decoration" aria-hidden="true">
+                        <span class="decoration-circle circle-one"></span>
+                        <span class="decoration-circle circle-two"></span>
+                        <span class="decoration-circle circle-three"></span>
+                    </div>
+
+                </div>
+
+                <p class="brand-footer">
+                    IntegraMed · Sistema de gestão clínica
+                </p>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+    <script>
+    (function () {
+        var form     = document.getElementById('formCadastro');
+        var login    = document.getElementById('login');
+        var senha    = document.getElementById('senha');
+        var confirma = document.getElementById('confirmarSenha');
+        var perfil   = document.getElementById('perfil');
+        var campos   = [login, senha, confirma, perfil];
+
+        var loginDica  = document.getElementById('loginDica');
+        var forca      = document.getElementById('forca');
+        var forcaTxt   = document.getElementById('forcaTexto');
+        var confDica   = document.getElementById('confirmaDica');
+        var perfilErro = document.getElementById('perfilErro');
+        var btn        = document.getElementById('btnCadastrar');
+        var btnTexto   = btn.querySelector('.btn-texto');
+
+        var LOGIN_DICA = 'De 3 a 50 caracteres: letras, números, ponto, hífen ou sublinhado.';
+        var ROTULOS = ['', 'Fraca', 'Razoável', 'Boa', 'Forte'];
+
+        function tocado(el) { return el.classList.contains('tocado'); }
+
+        /* ---------- Login ---------- */
+        function validarLogin() {
+            var v = login.value, msg = '';
+            if (!v) msg = 'Informe o login.';
+            else if (v.length < 3) msg = 'O login precisa ter pelo menos 3 caracteres.';
+            else if (!/^[A-Za-z0-9._-]+$/.test(v)) msg = 'Use apenas letras, números, ponto, hífen ou sublinhado.';
+
+            login.setCustomValidity(msg);
+
+            if (msg && tocado(login)) {
+                loginDica.textContent = msg;
+                loginDica.className = 'campo-dica erro-dica';
+            } else {
+                loginDica.textContent = LOGIN_DICA;
+                loginDica.className = 'campo-dica';
+            }
+        }
+
+        /* ---------- Senha e força ---------- */
+        function calcularForca(v) {
+            if (!v) return 0;
+            var pontos = 0;
+            if (v.length >= 8) pontos++;
+            if (/[a-z]/.test(v) && /[A-Z]/.test(v)) pontos++;
+            if (/\d/.test(v)) pontos++;
+            if (/[^A-Za-z0-9]/.test(v)) pontos++;
+            if (v.length < 8) pontos = Math.min(pontos, 1);
+            return Math.max(pontos, 1);
+        }
+
+        function validarSenha() {
+            var v = senha.value;
+            var nivel = calcularForca(v);
+            forca.setAttribute('data-nivel', nivel);
+            forcaTxt.className = 'forca-texto';
+
+            if (!v) {
+                if (tocado(senha)) {
+                    forcaTxt.textContent = 'Informe uma senha.';
+                    forcaTxt.className = 'forca-texto erro-dica';
+                } else {
+                    forcaTxt.textContent = '';
+                }
+            } else if (v.length < 8) {
+                var falta = 8 - v.length;
+                forcaTxt.textContent = (falta === 1 ? 'Falta 1 caractere' : 'Faltam ' + falta + ' caracteres') + ' para o mínimo de 8.';
+                if (tocado(senha)) forcaTxt.className = 'forca-texto erro-dica';
+            } else {
+                forcaTxt.textContent = 'Força da senha: ' + ROTULOS[nivel];
+            }
+        }
+
+        /* ---------- Confirmação ---------- */
+        function validarConfirmacao() {
+            confDica.className = 'campo-dica';
+
+            if (!confirma.value) {
+                confirma.setCustomValidity('');
+                if (tocado(confirma)) {
+                    confDica.textContent = 'Confirme a senha.';
+                    confDica.className = 'campo-dica erro-dica';
+                } else {
+                    confDica.textContent = '';
+                }
+                return;
+            }
+
+            if (confirma.value !== senha.value) {
+                confirma.setCustomValidity('As senhas não coincidem.');
+                confDica.textContent = 'As senhas ainda não coincidem.';
+                confDica.className = 'campo-dica erro-dica';
+            } else {
+                confirma.setCustomValidity('');
+                confDica.textContent = 'As senhas coincidem.';
+                confDica.className = 'campo-dica ok';
+            }
+        }
+
+        /* ---------- Perfil ---------- */
+        function validarPerfil() {
+            perfilErro.hidden = !(tocado(perfil) && !perfil.value);
+        }
+
+        /* ---------- Orquestração ---------- */
+        function validarTudo() {
+            validarLogin();
+            validarSenha();
+            validarConfirmacao();
+            validarPerfil();
+            campos.forEach(function (el) {
+                var invalido = tocado(el) && !el.checkValidity();
+                el.setAttribute('aria-invalid', invalido ? 'true' : 'false');
+            });
+        }
+
+        campos.forEach(function (el) {
+            el.addEventListener('input', validarTudo);
+            el.addEventListener('blur', function () { el.classList.add('tocado'); validarTudo(); });
+            el.addEventListener('change', function () { el.classList.add('tocado'); validarTudo(); });
+        });
+
+        /* ---------- Mostrar / ocultar senha ---------- */
+        document.querySelectorAll('.toggle-senha').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var campo = document.getElementById(b.dataset.alvo);
+                var visivel = campo.type === 'text';
+                campo.type = visivel ? 'password' : 'text';
+                b.setAttribute('aria-pressed', String(!visivel));
+                b.setAttribute('aria-label', visivel ? 'Mostrar senha' : 'Ocultar senha');
+            });
+        });
+
+        /* ---------- Aviso de Caps Lock ---------- */
+        [senha, confirma].forEach(function (campo) {
+            var aviso = document.getElementById(campo.id + 'Caps');
+            function checar(e) {
+                if (!e.getModifierState) return;
+                aviso.hidden = !e.getModifierState('CapsLock');
+            }
+            campo.addEventListener('keydown', checar);
+            campo.addEventListener('keyup', checar);
+            campo.addEventListener('blur', function () { aviso.hidden = true; });
+        });
+
+        /* ---------- Envio ---------- */
+        form.addEventListener('submit', function (e) {
+            campos.forEach(function (el) { el.classList.add('tocado'); });
+            validarTudo();
+
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                var primeiro = form.querySelector(':invalid');
+                if (primeiro) primeiro.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.classList.add('carregando');
+            btnTexto.textContent = 'Cadastrando…';
+        });
+
+        // Se o usuário voltar pelo navegador, o botão não fica travado
+        window.addEventListener('pageshow', function (e) {
+            if (e.persisted) {
+                btn.disabled = false;
+                btn.classList.remove('carregando');
+                btnTexto.textContent = 'Cadastrar usuário';
+            }
+        });
+
+        validarTudo();
+    })();
+    </script>
+
 </body>
 </html>

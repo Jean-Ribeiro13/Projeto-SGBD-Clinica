@@ -2,38 +2,542 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title th:text="${titulo}">Especialidades</title>
+
+    <style>
+/* =================================
+   INTEGRAMED - LISTA DE ESPECIALIDADES
+================================= */
+
+.especialidades-page {
+    --azul: #1e5abb;
+    --azul-claro: #f3f8ff;
+    --coral: #fe5266;
+    --texto: #26374a;
+    --texto-suave: #64748b;
+    --borda: #dce5ef;
+
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at 10% 15%, rgba(143, 198, 255, 0.35), transparent 30%),
+        radial-gradient(circle at 90% 85%, rgba(254, 82, 102, 0.10), transparent 28%),
+        #f1f6fc;
+
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.especialidades-page * { box-sizing: border-box; }
+
+.especialidades-container {
+    width: 100%;
+    max-width: 1050px;
+    margin: auto;
+}
+
+.especialidades-card {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    min-height: 680px;
+    background: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(30, 90, 187, 0.13);
+}
+
+/* =================================
+   ÁREA DA LISTA
+================================= */
+
+.especialidades-area {
+    padding: 45px 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-width: 0;
+}
+
+.especialidades-page .link-voltar {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 9px;
+    margin: 0 0 32px;
+    padding: 10px 16px;
+    border: 1px solid #dce8f7;
+    border-radius: 9px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.especialidades-page .link-voltar span { font-size: 19px; line-height: 1; }
+
+.especialidades-page .link-voltar:hover {
+    background: #e5f0ff;
+    transform: translateX(-3px);
+}
+
+.form-header { margin-bottom: 26px; }
+
+.form-tag {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.form-header h1 {
+    margin: 0 0 10px;
+    color: var(--azul);
+    font-size: 31px;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.form-header p {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Mensagens do servidor */
+
+.especialidades-page .erro:empty,
+.especialidades-page .sucesso:empty { display: none; }
+
+.especialidades-page .erro:not(:empty),
+.especialidades-page .sucesso:not(:empty) {
+    padding: 12px 15px 12px 44px;
+    margin: 0 0 20px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    background-repeat: no-repeat;
+    background-position: 14px 13px;
+    background-size: 18px;
+}
+
+.especialidades-page .erro:not(:empty) {
+    color: #a40000;
+    background-color: #fff0f0;
+    border: 1px solid #ffd1d1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a40000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8v4M12 16h.01'/%3E%3C/svg%3E");
+}
+
+.especialidades-page .sucesso:not(:empty) {
+    color: #176b2c;
+    background-color: #effaf1;
+    border: 1px solid #c9ebd0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23176b2c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/%3E%3Cpath d='m9 11 3 3L22 4'/%3E%3C/svg%3E");
+}
+
+/* Botão principal */
+
+.btn-nova {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    gap: 8px;
+    min-height: 48px;
+    margin-bottom: 20px;
+    padding: 0 22px;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #1e5abb, #3478d5);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-nova span { font-size: 20px; line-height: 1; }
+
+.btn-nova:hover {
+    background: linear-gradient(110deg, #194b9c, #2868bd);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(30, 90, 187, 0.22);
+}
+
+.btn-nova:active { transform: translateY(0); }
+
+/* Tabela */
+
+.tabela-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+}
+
+.tabela {
+    width: 100%;
+    min-width: 440px;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.tabela th {
+    padding: 12px 14px;
+    background: var(--azul-claro);
+    border-bottom: 1px solid var(--borda);
+    color: #34465d;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.tabela td {
+    padding: 13px 14px;
+    border-bottom: 1px solid #edf2f8;
+    color: #34465d;
+    vertical-align: middle;
+}
+
+.tabela tbody tr:last-child td { border-bottom: none; }
+
+.tabela tbody tr { transition: background 0.15s; }
+.tabela tbody tr:hover { background: #f9fbfe; }
+
+.col-id, .col-medicos { text-align: center !important; }
+.col-id { width: 56px; color: var(--texto-suave); font-variant-numeric: tabular-nums; }
+.col-medicos { width: 88px; font-variant-numeric: tabular-nums; }
+.col-nome { font-weight: 650; overflow-wrap: anywhere; }
+.col-acoes { width: 1%; white-space: nowrap; text-align: right !important; }
+
+.tabela td.vazio {
+    padding: 38px 20px;
+    text-align: center;
+    color: var(--texto-suave);
+    font-weight: 500;
+}
+
+/* Ações da linha */
+
+.acoes {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.acoes form { margin: 0; }
+
+.btn-acao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 13px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-editar {
+    border: 1px solid #dce8f7;
+    background: var(--azul-claro);
+    color: var(--azul);
+}
+
+.btn-editar:hover { background: #e5f0ff; }
+
+.btn-excluir {
+    border: 1px solid #ffd1d6;
+    background: #fff;
+    color: #b3263a;
+}
+
+.btn-excluir:hover {
+    background: #fff0f2;
+    border-color: #ffb8c1;
+}
+
+/* Foco visível para teclado */
+
+.especialidades-page a:focus-visible,
+.especialidades-page button:focus-visible {
+    outline: 3px solid rgba(30, 90, 187, 0.45);
+    outline-offset: 2px;
+}
+
+/* =================================
+   PAINEL INTEGRAMED
+================================= */
+
+.especialidades-brand-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 55px 45px;
+    background: linear-gradient(145deg, #1e5abb 0%, #16478f 100%);
+    color: #fff;
+}
+
+.brand-content { position: relative; z-index: 2; }
+
+.brand-logo {
+    width: 66px;
+    height: 66px;
+    margin-bottom: 36px;
+}
+
+.brand-logo svg { display: block; width: 100%; height: 100%; }
+
+.brand-overline {
+    margin: 0 0 8px;
+    color: #d6e8ff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.especialidades-brand-panel h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 45px;
+    font-weight: 750;
+    letter-spacing: -1.5px;
+}
+
+.especialidades-brand-panel h2 span { color: #ff9aa5; }
+
+.brand-divider {
+    width: 48px;
+    height: 4px;
+    margin: 22px 0;
+    border-radius: 5px;
+    background: var(--coral);
+}
+
+.especialidades-brand-panel h3 {
+    margin: 0 0 14px;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.brand-description {
+    max-width: 300px;
+    margin: 0;
+    color: #e3efff;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+/* Decoração */
+
+.brand-decoration { position: absolute; inset: 0; pointer-events: none; }
+
+.decoration-circle {
+    position: absolute;
+    display: block;
+    border: 1px solid rgba(143, 198, 255, 0.25);
+    border-radius: 50%;
+}
+
+.circle-one   { width: 240px; height: 240px; right: -145px; top: -120px; }
+.circle-two   { width: 330px; height: 330px; right: -190px; top: -165px; }
+.circle-three { width: 180px; height: 180px; left: -120px; bottom: -100px; background: rgba(143, 198, 255, 0.08); }
+
+.brand-footer {
+    position: relative;
+    z-index: 2;
+    margin: 55px 0 0;
+    color: #d6e8ff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+}
+
+/* =================================
+   RESPONSIVIDADE
+================================= */
+
+@media (max-width: 800px) {
+    .especialidades-card { grid-template-columns: 1fr; min-height: 0; }
+    .especialidades-area { padding: 40px 35px; }
+
+    /* No celular o painel vira uma faixa compacta */
+    .especialidades-brand-panel { padding: 30px 35px; }
+    .brand-logo { width: 48px; height: 48px; margin-bottom: 16px; }
+    .brand-divider,
+    .especialidades-brand-panel h3,
+    .brand-description { display: none; }
+    .brand-footer { margin-top: 20px; }
+}
+
+@media (max-width: 480px) {
+    .especialidades-page { padding: 15px; }
+    .especialidades-card { border-radius: 16px; }
+    .especialidades-area { padding: 30px 22px; }
+    .form-header h1 { font-size: 26px; }
+    .btn-nova { align-self: stretch; }
+    .especialidades-brand-panel { padding: 26px 25px; }
+    .especialidades-brand-panel h2 { font-size: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .especialidades-page * { transition: none !important; }
+}
+    </style>
 </head>
-<body>
-<p><a th:href="@{/}">&larr; Início</a></p>
-<h1 th:text="${titulo}">Especialidades</h1>
 
-<p th:if="${sucesso}" th:text="${sucesso}" style="color:green"></p>
-<p th:if="${erro}" th:text="${erro}" style="color:red"></p>
+<body class="especialidades-page">
 
-<p><a th:href="@{/especialidades/novo}">Nova especialidade</a></p>
+    <main class="especialidades-container">
 
-<table border="1" cellpadding="6">
-    <thead>
-    <tr><th>ID</th><th>Nome</th><th>Médicos</th><th>Ações</th></tr>
-    </thead>
-    <tbody>
-    <tr th:each="e : ${especialidades}">
-        <td th:text="${e.id}"></td>
-        <td th:text="${e.nome}"></td>
-        <td th:text="${e.qtdMedicos}"></td>
-        <td>
-            <a th:href="@{/especialidades/{id}/editar(id=${e.id})}">Editar</a>
-            <form th:action="@{/especialidades/{id}/excluir(id=${e.id})}" method="post"
-                  style="display:inline" onsubmit="return confirm('Excluir esta especialidade?');">
-                <button type="submit">Excluir</button>
-            </form>
-        </td>
-    </tr>
-    <tr th:if="${#lists.isEmpty(especialidades)}">
-        <td colspan="4">Nenhuma especialidade cadastrada.</td>
-    </tr>
-    </tbody>
-</table>
+        <section class="especialidades-card">
+
+            <div class="especialidades-area">
+
+                <a class="link-voltar" th:href="@{/}">
+                    <span aria-hidden="true">←</span>
+                    Voltar ao início
+                </a>
+
+                <header class="form-header">
+                    <span class="form-tag">IntegraMed · Administração</span>
+
+                    <h1 th:text="${titulo}">Especialidades</h1>
+
+                    <p>Consulte, edite ou exclua as especialidades médicas da clínica.</p>
+                </header>
+
+                <p class="sucesso"
+                   th:if="${sucesso}"
+                   th:text="${sucesso}"
+                   role="status"></p>
+
+                <p class="erro"
+                   th:if="${erro}"
+                   th:text="${erro}"
+                   role="alert"></p>
+
+                <a class="btn-nova" th:href="@{/especialidades/novo}">
+                    <span aria-hidden="true">+</span>
+                    Nova especialidade
+                </a>
+
+                <div class="tabela-wrapper">
+                    <table class="tabela">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="col-id">ID</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col" class="col-medicos">Médicos</th>
+                            <th scope="col" class="col-acoes">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="e : ${especialidades}">
+                            <td class="col-id" th:text="${e.id}"></td>
+                            <td class="col-nome" th:text="${e.nome}"></td>
+                            <td class="col-medicos" th:text="${e.qtdMedicos}"></td>
+                            <td class="col-acoes">
+                                <div class="acoes">
+                                    <a class="btn-acao btn-editar"
+                                       th:href="@{/especialidades/{id}/editar(id=${e.id})}"
+                                       th:attr="aria-label=${'Editar ' + e.nome}">Editar</a>
+
+                                    <form th:action="@{/especialidades/{id}/excluir(id=${e.id})}"
+                                          method="post"
+                                          onsubmit="return confirm('Excluir esta especialidade?');">
+                                        <button type="submit"
+                                                class="btn-acao btn-excluir"
+                                                th:attr="aria-label=${'Excluir ' + e.nome}">Excluir</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(especialidades)}">
+                            <td colspan="4" class="vazio">Nenhuma especialidade cadastrada.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <aside class="especialidades-brand-panel">
+
+                <div class="brand-content">
+
+                    <div class="brand-logo">
+                        <svg
+                            viewBox="0 0 100 100"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="img"
+                            aria-label="Símbolo médico da IntegraMed">
+
+                            <rect x="5" y="5" width="90" height="90" rx="25"
+                                  fill="none" stroke="#FFFFFF" stroke-width="4"/>
+
+                            <path d="M50 25 V75 M25 50 H75"
+                                  stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+
+                            <circle cx="76" cy="24" r="8" fill="#FE5266"/>
+                        </svg>
+                    </div>
+
+                    <p class="brand-overline">Bem-vindo à</p>
+
+                    <h2>Integra<span>Med</span></h2>
+
+                    <div class="brand-divider"></div>
+
+                    <h3>Cuidar também é conectar.</h3>
+
+                    <p class="brand-description">
+                        Mantenha as especialidades da clínica
+                        organizadas em um só lugar.
+                    </p>
+
+                    <div class="brand-decoration" aria-hidden="true">
+                        <span class="decoration-circle circle-one"></span>
+                        <span class="decoration-circle circle-two"></span>
+                        <span class="decoration-circle circle-three"></span>
+                    </div>
+
+                </div>
+
+                <p class="brand-footer">
+                    IntegraMed · Sistema de gestão clínica
+                </p>
+
+            </aside>
+
+        </section>
+
+    </main>
+
 </body>
 </html>

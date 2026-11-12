@@ -3,66 +3,682 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Relatório consolidado</title>
+
+    <style>
+/* =================================
+   INTEGRAMED - RELATÓRIO CONSOLIDADO
+================================= */
+
+.relatorio-page {
+    --azul: #1e5abb;
+    --azul-claro: #f3f8ff;
+    --coral: #fe5266;
+    --texto: #26374a;
+    --texto-suave: #64748b;
+    --borda: #dce5ef;
+
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at 10% 15%, rgba(143, 198, 255, 0.35), transparent 30%),
+        radial-gradient(circle at 90% 85%, rgba(254, 82, 102, 0.10), transparent 28%),
+        #f1f6fc;
+
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.relatorio-page * { box-sizing: border-box; }
+
+/* Elementos escondidos nunca aparecem, mesmo com outras regras de display */
+.relatorio-page [hidden] { display: none !important; }
+
+.relatorio-container {
+    width: 100%;
+    max-width: 1050px;
+    margin: auto;
+}
+
+.relatorio-card {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    min-height: 680px;
+    background: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(30, 90, 187, 0.13);
+}
+
+/* =================================
+   ÁREA DE CONTEÚDO
+================================= */
+
+.relatorio-area {
+    padding: 45px 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-width: 0;
+}
+
+.relatorio-page .link-voltar {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 9px;
+    margin: 0 0 32px;
+    padding: 10px 16px;
+    border: 1px solid #dce8f7;
+    border-radius: 9px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.relatorio-page .link-voltar span { font-size: 19px; line-height: 1; }
+
+.relatorio-page .link-voltar:hover {
+    background: #e5f0ff;
+    transform: translateX(-3px);
+}
+
+.form-header { margin-bottom: 26px; }
+
+.form-tag {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.form-header h1 {
+    margin: 0 0 10px;
+    color: var(--azul);
+    font-size: 31px;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.form-header p {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Seções */
+
+.secao + .secao {
+    margin-top: 32px;
+    padding-top: 30px;
+    border-top: 1px solid #e6eef8;
+}
+
+.secao-titulo {
+    margin: 0 0 18px;
+    color: var(--azul);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+/* Avisos (só existem quando há conteúdo para mostrar) */
+
+.relatorio-page .aviso {
+    margin: 0 0 18px;
+    padding: 12px 15px 12px 44px;
+    border-radius: 10px;
+    color: #34465d;
+    background-color: var(--azul-claro);
+    border: 1px solid #dce8f7;
+    font-size: 13.5px;
+    line-height: 1.5;
+    background-repeat: no-repeat;
+    background-position: 14px 13px;
+    background-size: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e5abb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4M12 8h.01'/%3E%3C/svg%3E");
+}
+
+/* Filtros */
+
+.filtro-form { width: 100%; }
+
+.form-group { margin-bottom: 18px; }
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #34465d;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.linha-datas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.linha-datas .form-group { min-width: 0; }
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 49px;
+    padding: 0 15px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    outline: none;
+    background: #f9fbfe;
+    color: #34465d;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.form-group input:hover,
+.form-group select:hover { border-color: #c3d3e6; }
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--azul);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(30, 90, 187, 0.12);
+}
+
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 42px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+}
+
+.form-group select option { color: #34465d; }
+
+/* Destaque só depois que a pessoa interage, ou quando o servidor devolve erro */
+.form-group input:user-invalid,
+.form-group select:user-invalid,
+.form-group .campo-invalido {
+    border-color: var(--coral);
+    background-color: #fff8f9;
+}
+
+.form-group input:user-invalid:focus,
+.form-group select:user-invalid:focus,
+.form-group .campo-invalido:focus {
+    box-shadow: 0 0 0 4px rgba(254, 82, 102, 0.14);
+}
+
+.campo-erro {
+    margin: 7px 0 0;
+    color: #b3263a;
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.btn-gerar {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #1e5abb, #3478d5);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-gerar:hover {
+    background: linear-gradient(110deg, #194b9c, #2868bd);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(30, 90, 187, 0.22);
+}
+
+.btn-gerar:active { transform: translateY(0); }
+
+/* Resultado por médico */
+
+.lista-resumos {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.resumo {
+    padding: 16px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: #f9fbfe;
+}
+
+.resumo-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.resumo-medico {
+    margin: 0;
+    color: var(--texto);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.resumo-crm {
+    flex: none;
+    padding: 3px 10px;
+    border: 1px solid #dce8f7;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.resumo-espec {
+    margin: 0 0 14px;
+    color: var(--texto-suave);
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+.resumo dl { margin: 0; }
+.resumo dl div { min-width: 0; }
+
+.resumo dt {
+    margin: 0 0 2px;
+    color: var(--texto-suave);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.resumo dd {
+    margin: 0;
+    color: #34465d;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.resumo-numeros {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid #e6eef8;
+}
+
+.resumo-numeros dd { font-size: 18px; }
+
+.resumo-valores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e6eef8;
+}
+
+.resumo-valores dd { color: var(--azul); font-size: 16px; }
+
+/* Nota técnica discreta */
+
+.nota-tecnica {
+    margin: 28px 0 0;
+    color: var(--texto-suave);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.nota-tecnica code {
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--azul-claro);
+    font-size: 11.5px;
+}
+
+/* Foco visível para teclado */
+
+.relatorio-page a:focus-visible,
+.relatorio-page button:focus-visible {
+    outline: 3px solid rgba(30, 90, 187, 0.45);
+    outline-offset: 2px;
+}
+
+/* =================================
+   PAINEL INTEGRAMED
+================================= */
+
+.relatorio-brand-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 55px 45px;
+    background: linear-gradient(145deg, #1e5abb 0%, #16478f 100%);
+    color: #fff;
+}
+
+.brand-content { position: relative; z-index: 2; }
+
+.brand-logo { width: 66px; height: 66px; margin-bottom: 36px; }
+.brand-logo svg { display: block; width: 100%; height: 100%; }
+
+.brand-overline {
+    margin: 0 0 8px;
+    color: #d6e8ff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.relatorio-brand-panel h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 45px;
+    font-weight: 750;
+    letter-spacing: -1.5px;
+}
+
+.relatorio-brand-panel h2 span { color: #ff9aa5; }
+
+.brand-divider {
+    width: 48px;
+    height: 4px;
+    margin: 22px 0;
+    border-radius: 5px;
+    background: var(--coral);
+}
+
+.relatorio-brand-panel h3 {
+    margin: 0 0 14px;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.brand-description {
+    max-width: 300px;
+    margin: 0;
+    color: #e3efff;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.brand-decoration { position: absolute; inset: 0; pointer-events: none; }
+
+.decoration-circle {
+    position: absolute;
+    display: block;
+    border: 1px solid rgba(143, 198, 255, 0.25);
+    border-radius: 50%;
+}
+
+.circle-one   { width: 240px; height: 240px; right: -145px; top: -120px; }
+.circle-two   { width: 330px; height: 330px; right: -190px; top: -165px; }
+.circle-three { width: 180px; height: 180px; left: -120px; bottom: -100px; background: rgba(143, 198, 255, 0.08); }
+
+.brand-footer {
+    position: relative;
+    z-index: 2;
+    margin: 55px 0 0;
+    color: #d6e8ff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+}
+
+/* =================================
+   RESPONSIVIDADE
+================================= */
+
+@media (max-width: 800px) {
+    .relatorio-card { grid-template-columns: 1fr; min-height: 0; }
+    .relatorio-area { padding: 40px 35px; }
+
+    /* No celular o painel vira uma faixa compacta */
+    .relatorio-brand-panel { padding: 30px 35px; }
+    .brand-logo { width: 48px; height: 48px; margin-bottom: 16px; }
+    .brand-divider,
+    .relatorio-brand-panel h3,
+    .brand-description { display: none; }
+    .brand-footer { margin-top: 20px; }
+}
+
+@media (max-width: 480px) {
+    .relatorio-page { padding: 15px; }
+    .relatorio-card { border-radius: 16px; }
+    .relatorio-area { padding: 30px 22px; }
+    .form-header h1 { font-size: 26px; }
+    .linha-datas { grid-template-columns: 1fr; gap: 0; }
+
+    /* Números em linhas, para os rótulos longos não quebrarem */
+    .resumo-numeros { grid-template-columns: 1fr; gap: 8px; }
+    .resumo-numeros div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .resumo-numeros dt { margin: 0; }
+
+    .relatorio-brand-panel { padding: 26px 25px; }
+    .relatorio-brand-panel h2 { font-size: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .relatorio-page * { transition: none !important; }
+}
+    </style>
 </head>
-<body>
-<a th:href="@{/}">Voltar ao início</a>
-<h1>Relatório consolidado de consultas por médico</h1>
-<p>Os dados são consultados na visão <code>vw_relatorio_consolidado</code>.</p>
 
-<form th:action="@{/relatorios/consolidado/pesquisar}" th:object="${filtro}" method="get">
-    <div>
-        <label for="idMedico">Médico:</label>
-        <select id="idMedico" th:field="*{idMedico}">
-            <option value="">Todos os médicos</option>
-            <option th:each="medico : ${medicos}" th:value="${medico.id()}"
-                    th:text="|${medico.nome()} — ${medico.registro()}|"></option>
-        </select>
-        <p th:if="${#fields.hasErrors('idMedico')}" th:errors="*{idMedico}" role="alert"></p>
-    </div>
-    <div>
-        <label for="dataInicial">Data inicial:</label>
-        <input type="date" id="dataInicial" th:field="*{dataInicial}" required>
-        <p th:if="${#fields.hasErrors('dataInicial')}" th:errors="*{dataInicial}" role="alert"></p>
-    </div>
-    <div>
-        <label for="dataFinal">Data final:</label>
-        <input type="date" id="dataFinal" th:field="*{dataFinal}" required>
-        <p th:if="${#fields.hasErrors('dataFinal')}" th:errors="*{dataFinal}" role="alert"></p>
-    </div>
-    <button type="submit">Gerar relatório</button>
-</form>
+<body class="relatorio-page">
 
-<section th:if="${pesquisado}">
-    <h2>Resultado por médico</h2>
-    <p>O valor total soma os valores cadastrados nas consultas; não representa pagamentos recebidos.</p>
-    <p th:if="${#lists.isEmpty(resumos)}">Nenhum médico encontrado para os filtros informados.</p>
-    <table th:unless="${#lists.isEmpty(resumos)}" border="1" cellpadding="6">
-        <thead>
-        <tr>
-            <th scope="col">Médico</th>
-            <th scope="col">CRM</th>
-            <th scope="col">Especialidades</th>
-            <th scope="col">Consultas</th>
-            <th scope="col">Pacientes distintos</th>
-            <th scope="col">Prescrições</th>
-            <th scope="col">Valor total (R$)</th>
-            <th scope="col">Média por consulta (R$)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="resumo : ${resumos}">
-            <td th:text="${resumo.nomeMedico()}"></td>
-            <td th:text="${resumo.crm()}"></td>
-            <td th:text="${resumo.especialidades() != null ? resumo.especialidades() : 'Sem especialidade cadastrada'}"></td>
-            <td th:text="${resumo.quantidadeConsultas()}"></td>
-            <td th:text="${resumo.quantidadePacientes()}"></td>
-            <td th:text="${resumo.quantidadePrescricoes()}"></td>
-            <td th:text="${#numbers.formatDecimal(resumo.valorTotal(), 1, 'POINT', 2, 'COMMA')}"></td>
-            <td th:text="${#numbers.formatDecimal(resumo.valorMedio(), 1, 'POINT', 2, 'COMMA')}"></td>
-        </tr>
-        </tbody>
-    </table>
-</section>
+    <main class="relatorio-container">
+
+        <section class="relatorio-card">
+
+            <div class="relatorio-area">
+
+                <a class="link-voltar" th:href="@{/}">
+                    <span aria-hidden="true">←</span>
+                    Voltar ao início
+                </a>
+
+                <header class="form-header">
+                    <span class="form-tag">IntegraMed · Relatórios</span>
+
+                    <h1>Relatório consolidado de consultas por médico</h1>
+
+                    <p>Escolha o período e, se quiser, um médico específico para gerar o relatório.</p>
+                </header>
+
+                <section class="secao">
+                    <h2 class="secao-titulo">Filtros</h2>
+
+                    <form class="filtro-form"
+                          th:action="@{/relatorios/consolidado/pesquisar}"
+                          th:object="${filtro}"
+                          method="get">
+
+                        <div class="form-group">
+                            <label for="idMedico">Médico</label>
+
+                            <select id="idMedico" th:field="*{idMedico}" th:errorclass="campo-invalido">
+                                <option value="">Todos os médicos</option>
+                                <option th:each="medico : ${medicos}" th:value="${medico.id()}"
+                                        th:text="|${medico.nome()} — ${medico.registro()}|"></option>
+                            </select>
+
+                            <p class="campo-erro" hidden th:hidden="false"
+                               th:if="${#fields.hasErrors('idMedico')}" th:errors="*{idMedico}" role="alert"></p>
+                        </div>
+
+                        <div class="linha-datas">
+
+                            <div class="form-group">
+                                <label for="dataInicial">Data inicial</label>
+
+                                <input type="date" id="dataInicial"
+                                       th:field="*{dataInicial}" th:errorclass="campo-invalido" required>
+
+                                <p class="campo-erro" hidden th:hidden="false"
+                                   th:if="${#fields.hasErrors('dataInicial')}" th:errors="*{dataInicial}" role="alert"></p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dataFinal">Data final</label>
+
+                                <input type="date" id="dataFinal"
+                                       th:field="*{dataFinal}" th:errorclass="campo-invalido" required>
+
+                                <p class="campo-erro" hidden th:hidden="false"
+                                   th:if="${#fields.hasErrors('dataFinal')}" th:errors="*{dataFinal}" role="alert"></p>
+                            </div>
+
+                        </div>
+
+                        <button type="submit" class="btn-gerar">Gerar relatório</button>
+
+                    </form>
+                </section>
+
+                <!-- Só aparece depois que o relatório é gerado -->
+                <section class="secao" hidden th:hidden="false" th:if="${pesquisado}">
+                    <h2 class="secao-titulo">Resultado por médico</h2>
+
+                    <p class="aviso">
+                        O valor total soma os valores cadastrados nas consultas; não representa pagamentos recebidos.
+                    </p>
+
+                    <p class="aviso" hidden th:hidden="false"
+                       th:if="${#lists.isEmpty(resumos)}">
+                        Nenhum médico encontrado para os filtros informados.
+                    </p>
+
+                    <ul class="lista-resumos" th:unless="${#lists.isEmpty(resumos)}">
+                        <li class="resumo" th:each="resumo : ${resumos}">
+
+                            <div class="resumo-topo">
+                                <p class="resumo-medico" th:text="${resumo.nomeMedico()}"></p>
+                                <span class="resumo-crm">CRM <span th:text="${resumo.crm()}"></span></span>
+                            </div>
+
+                            <p class="resumo-espec"
+                               th:text="${resumo.especialidades() != null ? resumo.especialidades() : 'Sem especialidade cadastrada'}"></p>
+
+                            <dl class="resumo-numeros">
+                                <div>
+                                    <dt>Consultas</dt>
+                                    <dd th:text="${resumo.quantidadeConsultas()}"></dd>
+                                </div>
+                                <div>
+                                    <dt>Pacientes distintos</dt>
+                                    <dd th:text="${resumo.quantidadePacientes()}"></dd>
+                                </div>
+                                <div>
+                                    <dt>Prescrições</dt>
+                                    <dd th:text="${resumo.quantidadePrescricoes()}"></dd>
+                                </div>
+                            </dl>
+
+                            <dl class="resumo-valores">
+                                <div>
+                                    <dt>Valor total</dt>
+                                    <dd th:text="'R$ ' + ${#numbers.formatDecimal(resumo.valorTotal(), 1, 'POINT', 2, 'COMMA')}"></dd>
+                                </div>
+                                <div>
+                                    <dt>Média por consulta</dt>
+                                    <dd th:text="'R$ ' + ${#numbers.formatDecimal(resumo.valorMedio(), 1, 'POINT', 2, 'COMMA')}"></dd>
+                                </div>
+                            </dl>
+
+                        </li>
+                    </ul>
+                </section>
+
+                <p class="nota-tecnica">
+                    Os dados são consultados na visão <code>vw_relatorio_consolidado</code>.
+                </p>
+
+            </div>
+
+            <aside class="relatorio-brand-panel">
+
+                <div class="brand-content">
+
+                    <div class="brand-logo">
+                        <svg
+                            viewBox="0 0 100 100"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="img"
+                            aria-label="Símbolo médico da IntegraMed">
+
+                            <rect x="5" y="5" width="90" height="90" rx="25"
+                                  fill="none" stroke="#FFFFFF" stroke-width="4"/>
+
+                            <path d="M50 25 V75 M25 50 H75"
+                                  stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+
+                            <circle cx="76" cy="24" r="8" fill="#FE5266"/>
+                        </svg>
+                    </div>
+
+                    <p class="brand-overline">Bem-vindo à</p>
+
+                    <h2>Integra<span>Med</span></h2>
+
+                    <div class="brand-divider"></div>
+
+                    <h3>Cuidar também é conectar.</h3>
+
+                    <p class="brand-description">
+                        Acompanhe consultas, pacientes e prescrições
+                        de cada médico em um só lugar.
+                    </p>
+
+                    <div class="brand-decoration" aria-hidden="true">
+                        <span class="decoration-circle circle-one"></span>
+                        <span class="decoration-circle circle-two"></span>
+                        <span class="decoration-circle circle-three"></span>
+                    </div>
+
+                </div>
+
+                <p class="brand-footer">
+                    IntegraMed · Sistema de gestão clínica
+                </p>
+
+            </aside>
+
+        </section>
+
+    </main>
+
 </body>
 </html>

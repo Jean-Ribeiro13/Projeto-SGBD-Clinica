@@ -3,25 +3,501 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Acesso à Clínica</title>
+
+    <style>
+/* =================================
+   INTEGRAMED - ACESSO
+================================= */
+
+.login-page {
+    --azul: #1e5abb;
+    --azul-claro: #f3f8ff;
+    --coral: #fe5266;
+    --texto: #26374a;
+    --texto-suave: #64748b;
+    --borda: #dce5ef;
+
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at 10% 15%, rgba(143, 198, 255, 0.35), transparent 30%),
+        radial-gradient(circle at 90% 85%, rgba(254, 82, 102, 0.10), transparent 28%),
+        #f1f6fc;
+
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.login-page * { box-sizing: border-box; }
+
+/* Elementos escondidos nunca aparecem, mesmo com outras regras de display */
+.login-page [hidden] { display: none !important; }
+
+.login-container {
+    width: 100%;
+    max-width: 1050px;
+    margin: auto;
+}
+
+/* A altura do cartão acompanha o conteúdo */
+.login-card {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    background: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(30, 90, 187, 0.13);
+}
+
+/* =================================
+   ÁREA DO FORMULÁRIO
+================================= */
+
+.login-form-area {
+    padding: 45px 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.login-page .link-voltar {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 9px;
+    margin: 0 0 32px;
+    padding: 10px 16px;
+    border: 1px solid #dce8f7;
+    border-radius: 9px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.login-page .link-voltar span { font-size: 19px; line-height: 1; }
+
+.login-page .link-voltar:hover {
+    background: #e5f0ff;
+    transform: translateX(-3px);
+}
+
+.form-header { margin-bottom: 26px; }
+
+.form-tag {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.form-header h1 {
+    margin: 0 0 10px;
+    color: var(--azul);
+    font-size: 31px;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.form-header p {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Campos */
+
+.login-form { width: 100%; }
+
+.form-group { margin-bottom: 18px; }
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #34465d;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.form-group input {
+    width: 100%;
+    height: 49px;
+    padding: 0 15px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    outline: none;
+    background: #f9fbfe;
+    color: #34465d;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.form-group input::placeholder { color: #8998aa; }
+
+/* Evita o ícone de "revelar senha" nativo do Edge */
+.form-group input::-ms-reveal,
+.form-group input::-ms-clear { display: none; }
+
+.form-group input:hover { border-color: #c3d3e6; }
+
+.form-group input:focus {
+    border-color: var(--azul);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(30, 90, 187, 0.12);
+}
+
+/* Destaque só depois que a pessoa interage com o campo */
+.form-group input:user-invalid {
+    border-color: var(--coral);
+    background: #fff8f9;
+}
+
+.form-group input:user-invalid:focus {
+    box-shadow: 0 0 0 4px rgba(254, 82, 102, 0.14);
+}
+
+/* Botão */
+
+.btn-entrar {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #1e5abb, #3478d5);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-entrar:hover {
+    background: linear-gradient(110deg, #194b9c, #2868bd);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(30, 90, 187, 0.22);
+}
+
+.btn-entrar:active { transform: translateY(0); }
+
+/* Foco visível para teclado */
+
+.login-page a:focus-visible,
+.login-page button:focus-visible {
+    outline: 3px solid rgba(30, 90, 187, 0.45);
+    outline-offset: 2px;
+}
+
+/* Mensagens do servidor (só existem quando há erro ou logout) */
+
+.login-page .erro,
+.login-page .sucesso {
+    margin: 0 0 22px;
+    padding: 13px 15px 13px 44px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    background-repeat: no-repeat;
+    background-position: 14px 14px;
+    background-size: 18px;
+}
+
+.login-page .erro strong,
+.login-page .sucesso strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.login-page .erro {
+    color: #a40000;
+    background-color: #fff0f0;
+    border: 1px solid #ffd1d1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a40000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8v4M12 16h.01'/%3E%3C/svg%3E");
+}
+
+.login-page .sucesso {
+    color: #176b2c;
+    background-color: #effaf1;
+    border: 1px solid #c9ebd0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23176b2c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/%3E%3Cpath d='m9 11 3 3L22 4'/%3E%3C/svg%3E");
+}
+
+/* =================================
+   PAINEL INTEGRAMED
+================================= */
+
+.login-brand-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 55px 45px;
+    background: linear-gradient(145deg, #1e5abb 0%, #16478f 100%);
+    color: #fff;
+}
+
+.brand-content { position: relative; z-index: 2; }
+
+.brand-logo {
+    width: 66px;
+    height: 66px;
+    margin-bottom: 36px;
+}
+
+.brand-logo svg { display: block; width: 100%; height: 100%; }
+
+.brand-overline {
+    margin: 0 0 8px;
+    color: #d6e8ff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.login-brand-panel h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 45px;
+    font-weight: 750;
+    letter-spacing: -1.5px;
+}
+
+.login-brand-panel h2 span { color: #ff9aa5; }
+
+.brand-divider {
+    width: 48px;
+    height: 4px;
+    margin: 22px 0;
+    border-radius: 5px;
+    background: var(--coral);
+}
+
+.login-brand-panel h3 {
+    margin: 0 0 14px;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.brand-description {
+    max-width: 300px;
+    margin: 0;
+    color: #e3efff;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+/* Decoração */
+
+.brand-decoration { position: absolute; inset: 0; pointer-events: none; }
+
+.decoration-circle {
+    position: absolute;
+    display: block;
+    border: 1px solid rgba(143, 198, 255, 0.25);
+    border-radius: 50%;
+}
+
+.circle-one   { width: 240px; height: 240px; right: -145px; top: -120px; }
+.circle-two   { width: 330px; height: 330px; right: -190px; top: -165px; }
+.circle-three { width: 180px; height: 180px; left: -120px; bottom: -100px; background: rgba(143, 198, 255, 0.08); }
+
+.brand-footer {
+    position: relative;
+    z-index: 2;
+    margin: 55px 0 0;
+    color: #d6e8ff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+}
+
+/* =================================
+   RESPONSIVIDADE
+================================= */
+
+@media (max-width: 800px) {
+    .login-card { grid-template-columns: 1fr; }
+    .login-form-area { padding: 40px 35px; }
+
+    /* No celular o painel vira uma faixa compacta */
+    .login-brand-panel { padding: 30px 35px; }
+    .brand-logo { width: 48px; height: 48px; margin-bottom: 16px; }
+    .brand-divider,
+    .login-brand-panel h3,
+    .brand-description { display: none; }
+    .brand-footer { margin-top: 20px; }
+}
+
+@media (max-width: 480px) {
+    .login-page { padding: 15px; }
+    .login-card { border-radius: 16px; }
+    .login-form-area { padding: 30px 22px; }
+    .form-header h1 { font-size: 26px; }
+    .login-brand-panel { padding: 26px 25px; }
+    .login-brand-panel h2 { font-size: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-page * { transition: none !important; }
+}
+    </style>
 </head>
-<body>
-<main>
-    <h1>Acesso à Clínica Médica</h1>
-    <p th:if="${param.error}" role="alert">Login ou senha inválidos.</p>
-    <p th:if="${param.logout}">Você saiu do sistema.</p>
-    <form th:action="@{/login}" method="post">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <p>
-            <label for="username">Login</label><br>
-            <input id="username" name="username" type="text" autocomplete="username" required>
-        </p>
-        <p>
-            <label for="password">Senha</label><br>
-            <input id="password" name="password" type="password" autocomplete="current-password" required>
-        </p>
-        <button type="submit">Entrar</button>
-    </form>
-</main>
+
+<body class="login-page">
+
+    <main class="login-container">
+
+        <section class="login-card">
+
+            <div class="login-form-area">
+
+                <a class="link-voltar" th:href="@{/}">
+                    <span aria-hidden="true">←</span>
+                    Voltar ao início
+                </a>
+
+                <header class="form-header">
+                    <span class="form-tag">IntegraMed · Acesso</span>
+
+                    <h1>Acesso à Clínica Médica</h1>
+
+                    <p>Informe seu login e senha para continuar.</p>
+                </header>
+
+                <!-- Só aparece quando o login falha (?error) -->
+                <p class="erro"
+                   hidden
+                   th:hidden="false"
+                   th:if="${param.error}"
+                   role="alert">
+                    <strong>Não foi possível entrar</strong>
+                    Confira o login e a senha e tente novamente.
+                </p>
+
+                <!-- Só aparece depois de sair do sistema (?logout) -->
+                <p class="sucesso"
+                   hidden
+                   th:hidden="false"
+                   th:if="${param.logout}"
+                   role="status">
+                    <strong>Sessão encerrada</strong>
+                    Você saiu do sistema. Entre novamente quando quiser continuar.
+                </p>
+
+                <form class="login-form" th:action="@{/login}" method="post">
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                    <div class="form-group">
+                        <label for="username">Login</label>
+
+                        <input
+                            id="username"
+                            name="username"
+                            type="text"
+                            placeholder="Digite seu login"
+                            autocomplete="username"
+                            autocapitalize="none"
+                            spellcheck="false"
+                            autofocus
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            placeholder="Digite sua senha"
+                            autocomplete="current-password"
+                            required>
+                    </div>
+
+                    <button type="submit" class="btn-entrar">Entrar</button>
+
+                </form>
+
+            </div>
+
+            <aside class="login-brand-panel">
+
+                <div class="brand-content">
+
+                    <div class="brand-logo">
+                        <svg
+                            viewBox="0 0 100 100"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="img"
+                            aria-label="Símbolo médico da IntegraMed">
+
+                            <rect x="5" y="5" width="90" height="90" rx="25"
+                                  fill="none" stroke="#FFFFFF" stroke-width="4"/>
+
+                            <path d="M50 25 V75 M25 50 H75"
+                                  stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+
+                            <circle cx="76" cy="24" r="8" fill="#FE5266"/>
+                        </svg>
+                    </div>
+
+                    <p class="brand-overline">Bem-vindo à</p>
+
+                    <h2>Integra<span>Med</span></h2>
+
+                    <div class="brand-divider"></div>
+
+                    <h3>Cuidar também é conectar.</h3>
+
+                    <p class="brand-description">
+                        Um ambiente integrado para organizar
+                        acessos e facilitar o trabalho de quem
+                        cuida da saúde.
+                    </p>
+
+                    <div class="brand-decoration" aria-hidden="true">
+                        <span class="decoration-circle circle-one"></span>
+                        <span class="decoration-circle circle-two"></span>
+                        <span class="decoration-circle circle-three"></span>
+                    </div>
+
+                </div>
+
+                <p class="brand-footer">
+                    IntegraMed · Sistema de gestão clínica
+                </p>
+
+            </aside>
+
+        </section>
+
+    </main>
+
 </body>
 </html>

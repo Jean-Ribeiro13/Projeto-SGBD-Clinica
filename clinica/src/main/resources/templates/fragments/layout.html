@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:fragment="pagina(titulo, conteudo)">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title th:text="${titulo + ' · IntegraMed'}">IntegraMed</title>
+
+    <link rel="stylesheet" th:href="@{/css/integramed.css}">
+</head>
+
+<body>
+
+<aside class="menu-lateral">
+    <a class="marca" th:href="@{/}">
+        <span class="marca-simbolo" aria-hidden="true">+</span>
+
+        <span>
+            IntegraMed
+            <small>CLÍNICA INTEGRADA</small>
+        </span>
+    </a>
+
+    <nav aria-label="Menu principal">
+        <a th:href="@{/}"
+           th:classappend="${uiCaminho == '/' ? 'ativo' : ''}">
+            Visão geral
+        </a>
+
+        <th:block th:if="${uiClinico}">
+            <span class="menu-grupo">Atendimento</span>
+
+            <a th:href="@{/pacientes}"
+               th:classappend="${#strings.startsWith(uiCaminho, '/pacientes')
+                   ? 'ativo' : ''}">
+                Pacientes
+            </a>
+
+            <a th:href="@{/medicamentos}"
+               th:classappend="${#strings.startsWith(uiCaminho, '/medicamentos')
+                   ? 'ativo' : ''}">
+                Medicamentos
+            </a>
+        </th:block>
+
+        <th:block th:if="${uiRecepcao}">
+            <a th:href="@{/recepcao/pacientes}"
+               th:classappend="${#strings.startsWith(uiCaminho, '/recepcao')
+                   ? 'ativo' : ''}">
+                Consulta da recepção
+            </a>
+        </th:block>
+
+        <th:block th:if="${uiAdmin}">
+            <span class="menu-grupo">Gestão da clínica</span>
+
+            <a th:href="@{/profissionais}">Equipe clínica</a>
+            <a th:href="@{/medicos}">Médicos</a>
+            <a th:href="@{/enfermeiros}">Enfermeiros</a>
+            <a th:href="@{/especialidades}">Especialidades</a>
+            <a th:href="@{/medico-especialidades}">Vínculos médicos</a>
+            <a th:href="@{/usuarios/novo}">Usuários e acesso</a>
+        </th:block>
+
+        <th:block th:if="${uiClinico}">
+            <span class="menu-grupo">Consultas e relatórios</span>
+
+            <a th:href="@{/consultas/resumo}">
+                Resumo de consultas
+            </a>
+
+            <a th:href="@{/prescricoes/resumo}">
+                Resumo de prescrições
+            </a>
+
+            <a th:href="@{/relatorios/consolidado}">
+                Relatório consolidado
+            </a>
+        </th:block>
+    </nav>
+</aside>
+
+<div class="aplicacao">
+    <header class="barra-superior">
+        <span>IntegraMed / Portal da clínica</span>
+
+        <div class="conta" th:if="${uiAutenticado}">
+            <div>
+                <strong th:text="${uiNome}"></strong>
+                <small th:text="${uiPerfil}"></small>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit">Sair</button>
+            </form>
+        </div>
+
+        <a th:unless="${uiAutenticado}"
+           class="botao"
+           th:href="@{/login}">
+            Entrar
+        </a>
+    </header>
+
+    <div class="conteudo" th:insert="${conteudo}"></div>
+
+    <footer class="rodape">
+        IntegraMed · Cuidado que conecta.
+    </footer>
+</div>
+
+</body>
+</html>
