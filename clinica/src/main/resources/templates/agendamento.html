@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Agendar consulta · IntegraMed</title>
+
+    <style>
+/* =================================
+   INTEGRAMED - AGENDAMENTO
+================================= */
+
+.agenda-page {
+    --azul: #1e5abb;
+    --azul-claro: #f3f8ff;
+    --coral: #fe5266;
+    --texto: #26374a;
+    --texto-suave: #64748b;
+    --borda: #dce5ef;
+
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at 10% 15%, rgba(143, 198, 255, 0.35), transparent 30%),
+        radial-gradient(circle at 90% 85%, rgba(254, 82, 102, 0.10), transparent 28%),
+        #f1f6fc;
+
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+}
+
+.agenda-page * { box-sizing: border-box; }
+.agenda-page [hidden] { display: none !important; }
+
+.agenda-container { width: 100%; max-width: 1050px; margin: auto; }
+
+.agenda-card {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    background: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(30, 90, 187, 0.13);
+}
+
+/* ---------- Área do formulário ---------- */
+
+.agenda-area { padding: 45px 55px; }
+
+.agenda-page .link-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 28px;
+    padding: 10px 16px;
+    border: 1px solid #dce8f7;
+    border-radius: 9px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.agenda-page .link-voltar:hover { background: #e5f0ff; }
+
+.agenda-header { margin-bottom: 24px; }
+
+.agenda-header h1 {
+    margin: 0 0 10px;
+    color: var(--azul);
+    font-size: 31px;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.agenda-header p {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Mensagens */
+
+.agenda-page .erro,
+.agenda-page .sucesso {
+    margin: 0 0 20px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+.agenda-page .erro { color: #a40000; background: #fff0f0; border: 1px solid #ffd1d1; }
+.agenda-page .sucesso { color: #0b5d34; background: #eafaf1; border: 1px solid #bfe9d0; font-weight: 600; }
+
+.campo-erro { margin: 7px 0 0; color: #b3263a; font-size: 12.5px; line-height: 1.5; }
+
+/* Etapas */
+
+.etapa {
+    margin: 0 0 22px;
+    padding: 0 0 22px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.etapa:last-of-type { border-bottom: 0; padding-bottom: 0; }
+
+.etapa h2 {
+    margin: 0 0 14px;
+    color: #34465d;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Campos */
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.form-grid .inteiro { grid-column: 1 / -1; }
+
+.form-group { margin-bottom: 16px; }
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #34465d;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 49px;
+    padding: 0 15px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    outline: none;
+    background: #f9fbfe;
+    color: #34465d;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.form-group input:hover,
+.form-group select:hover { border-color: #c3d3e6; }
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--azul);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(30, 90, 187, 0.12);
+}
+
+.form-group input.campo-invalido { border-color: var(--coral); background: #fff8f9; }
+
+.dica { margin: 6px 0 0; color: var(--texto-suave); font-size: 12.5px; }
+
+/* Horários */
+
+.horarios { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+
+.horario { position: relative; }
+
+.horario input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+
+.horario span {
+    display: block;
+    padding: 11px 0;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: #f9fbfe;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 650;
+    color: #34465d;
+}
+
+.horario input:hover + span { border-color: #c3d3e6; }
+.horario input:checked + span { background: var(--azul); border-color: var(--azul); color: #fff; }
+.horario input:focus-visible + span { outline: 3px solid rgba(30, 90, 187, 0.45); outline-offset: 2px; }
+
+.sem-horarios {
+    margin: 0;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: var(--azul-claro);
+    border: 1px solid #dce8f7;
+    color: #34465d;
+    font-size: 13.5px;
+}
+
+/* Botões */
+
+.btn-agenda {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #1e5abb, #3478d5);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-agenda:hover { background: linear-gradient(110deg, #194b9c, #2868bd); }
+
+.btn-busca {
+    min-height: 44px;
+    padding: 0 20px;
+    border: 1px solid #dce8f7;
+    border-radius: 10px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-busca:hover { background: #e5f0ff; }
+
+.agenda-page a:focus-visible,
+.agenda-page button:focus-visible,
+.agenda-page select:focus-visible,
+.agenda-page input:focus-visible { outline: 3px solid rgba(30, 90, 187, 0.45); outline-offset: 2px; }
+
+/* ---------- Painel da marca ---------- */
+
+.agenda-brand {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 50px 38px;
+    background: linear-gradient(145deg, #1e5abb 0%, #16478f 100%);
+    color: #fff;
+}
+
+.agenda-brand svg { display: block; width: 60px; height: 60px; margin-bottom: 30px; }
+.agenda-brand h2 { margin: 0; font-size: 38px; font-weight: 750; letter-spacing: -1.2px; }
+.agenda-brand h2 span { color: #ff9aa5; }
+
+.agenda-brand .divisor {
+    width: 48px;
+    height: 4px;
+    margin: 20px 0;
+    border-radius: 5px;
+    background: var(--coral);
+}
+
+.agenda-brand p { margin: 0; color: #e3efff; font-size: 15px; line-height: 1.8; }
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 800px) {
+    .agenda-card { grid-template-columns: 1fr; }
+    .agenda-area { padding: 38px 30px; }
+    .agenda-brand { order: -1; padding: 24px 30px; }
+    .agenda-brand svg { width: 42px; height: 42px; margin-bottom: 12px; }
+    .agenda-brand .divisor,
+    .agenda-brand p { display: none; }
+}
+
+@media (max-width: 520px) {
+    .agenda-page { padding: 15px; }
+    .agenda-card { border-radius: 16px; }
+    .agenda-area { padding: 28px 20px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .agenda-header h1 { font-size: 26px; }
+}
+    </style>
+</head>
+
+<body class="agenda-page">
+
+<main class="agenda-container">
+    <section class="agenda-card">
+
+        <div class="agenda-area">
+
+            <a class="link-voltar" th:href="@{/}">
+                <span aria-hidden="true">←</span>
+                Voltar ao início
+            </a>
+
+            <header class="agenda-header">
+                <h1>Agendar consulta</h1>
+                <p>Escolha o médico e o horário. Depois, confirme com seu CPF e data de nascimento.</p>
+            </header>
+
+            <p class="sucesso" th:if="${sucesso != null}" th:text="${sucesso}" role="status"></p>
+            <p class="erro" th:if="${erro != null}" th:text="${erro}" role="alert"></p>
+
+            <!-- Etapa 1: busca de horários (GET, o servidor recalcula a lista) -->
+            <form th:action="@{/agendar}" method="get" class="etapa">
+                <h2>1. Médico e data</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="especialidade">Especialidade</label>
+                        <select id="especialidade" name="especialidade"
+                                onchange="this.form.medico.value=''; this.form.submit();">
+                            <option value="">Todas</option>
+                            <option th:each="e : ${especialidades}"
+                                    th:value="${e.id()}"
+                                    th:text="${e.nome()}"
+                                    th:selected="${e.id() == especialidadeSel}">Clínica geral</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medico">Médico</label>
+                        <select id="medico" name="medico" required>
+                            <option value="">Selecione</option>
+                            <option th:each="m : ${medicos}"
+                                    th:value="${m.id()}"
+                                    th:text="${m.nome()}"
+                                    th:selected="${m.id() == medicoSel}">Dra. Ana</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group inteiro">
+                        <label for="data">Data</label>
+                        <input type="date" id="data" name="data"
+                               th:min="${hoje}" th:value="${dataSel}" required>
+                        <p class="dica">Atendemos de segunda a sexta, das 8h às 12h e das 14h às 18h.</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-busca">Ver horários livres</button>
+            </form>
+
+            <!-- Etapa 2: horários e identificação (POST) -->
+            <form th:if="${buscou}"
+                  th:action="@{/agendar}"
+                  th:object="${formulario}"
+                  method="post"
+                  class="etapa">
+
+                <input type="hidden" name="idMedico" th:value="${medicoSel}">
+                <input type="hidden" name="data" th:value="${dataSel}">
+
+                <h2>2. Horário</h2>
+
+                <p class="erro" th:each="e : ${#fields.globalErrors()}" th:text="${e}" role="alert"></p>
+
+                <p class="sem-horarios" th:if="${horarios.isEmpty()}">
+                    Não há horários livres nesse dia. Escolha outra data.
+                </p>
+
+                <th:block th:unless="${horarios.isEmpty()}">
+                    <div class="horarios" role="radiogroup" aria-label="Horários livres">
+                        <label class="horario" th:each="h : ${horarios}">
+                            <input type="radio" name="hora" th:value="${h}"
+                                   th:checked="${h == formulario.hora}" required>
+                            <span th:text="${h}">08:00</span>
+                        </label>
+                    </div>
+
+                    <p class="campo-erro" th:if="${#fields.hasErrors('hora')}" th:errors="*{hora}"></p>
+                    <p class="campo-erro" th:if="${#fields.hasErrors('idMedico')}" th:errors="*{idMedico}"></p>
+                    <p class="campo-erro" th:if="${#fields.hasErrors('data')}" th:errors="*{data}"></p>
+
+                    <h2 style="margin-top: 26px;">3. Seus dados</h2>
+                    <p class="dica" style="margin: -6px 0 14px;">Primeira vez aqui? <a th:href="@{/cadastrar}">Faça seu cadastro</a>.</p>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="cpf">CPF</label>
+                            <input type="text" id="cpf" th:field="*{cpf}"
+                                   th:errorclass="campo-invalido"
+                                   placeholder="Somente números"
+                                   maxlength="11" inputmode="numeric" autocomplete="off" required>
+                            <p class="campo-erro" th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dataNascimento">Data de nascimento</label>
+                            <input type="date" id="dataNascimento" th:field="*{dataNascimento}"
+                                   th:errorclass="campo-invalido" required>
+                            <p class="campo-erro" th:if="${#fields.hasErrors('dataNascimento')}"
+                               th:errors="*{dataNascimento}"></p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-agenda">Confirmar agendamento</button>
+                </th:block>
+            </form>
+
+        </div>
+
+        <aside class="agenda-brand">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img"
+                 aria-label="Símbolo médico da IntegraMed">
+                <rect x="5" y="5" width="90" height="90" rx="25" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+                <path d="M50 25 V75 M25 50 H75" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+                <circle cx="76" cy="24" r="8" fill="#FE5266"/>
+            </svg>
+
+            <h2>Integra<span>Med</span></h2>
+            <div class="divisor"></div>
+            <p>Marque sua consulta em poucos passos, sem precisar ligar para a clínica.</p>
+        </aside>
+
+    </section>
+</main>
+
+</body>
+</html>
