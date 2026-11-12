@@ -344,8 +344,6 @@
 
                     <div style="display:flex; gap:10px; flex-wrap:wrap;" th:if="${!uiAutenticado}">
                         <a class="btn-sessao" th:href="@{/cadastrar}">Cadastrar-se</a>
-                        <a class="btn-sessao" th:href="@{/agendar}">Agendar consulta</a>
-                        <a class="btn-sessao" th:href="@{/minhas-consultas}">Minhas consultas</a>
                         <a class="btn-sessao" th:href="@{/login}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
                         Entrar
@@ -403,6 +401,14 @@
                             <li><a class="item-link" th:href="@{/consultas/resumo}">Resumo de consultas</a></li>
                             <li><a class="item-link" th:href="@{/prescricoes/resumo}">Resumo de prescrições</a></li>
                             <li><a class="item-link" th:href="@{/relatorios/consolidado}">Relatório consolidado</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="grupo">
+                        <h2 class="grupo-titulo">Paciente</h2>
+                        <ul class="lista-links">
+                            <li><a class="item-link" th:href="@{/agendar}">Agendar consulta</a></li>
+                            <li><a class="item-link" th:href="@{/minhas-consultas}">Minhas consultas</a></li>
                         </ul>
                     </div>
 
