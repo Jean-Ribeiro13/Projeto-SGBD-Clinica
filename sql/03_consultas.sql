@@ -66,11 +66,11 @@ WHERE pr.id_prontuario IS NULL; -- Filtra quem ficou sem prontuário na junção
 -- Relaciona-se com RN17: "O valor cobrado por uma consulta não pode ser inferior a zero"
 -- Pergunta de negócio: ajuda a gestão a comparar produtividade e receita entre médicos da mesma especialidade.
 SELECT
-    esp.nome                 AS especialidade,
-    prof.nome                AS medico,
-    COUNT(c.id_consulta)     AS total_consultas,
-    SUM(c.valor)             AS faturamento_total,
-    ROUND(AVG(c.valor), 2)   AS valor_medio
+    esp.nome AS especialidade,
+    prof.nome AS medico,
+    COUNT(c.id_consulta) AS total_consultas,
+    SUM(c.valor) AS faturamento_total,
+    ROUND(AVG(c.valor), 2) AS valor_medio
 FROM Consulta c
 JOIN Medico m ON m.id_profissional = c.id_medico -- Liga a consulta ao médico responsável
 JOIN Profissional_Saude prof ON prof.id_profissional = m.id_profissional -- Busca o nome do médico
